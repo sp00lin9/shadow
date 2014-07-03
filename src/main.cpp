@@ -5491,6 +5491,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         
         CTxDB txdb("r");
 
+<<<<<<< HEAD
         // Temp fix to remove unwanted transaction
         if(tx.GetHash() == uint256("0x209e365b66621a3b4733bfe177f92ee481880f1363c2e3596280d3843b5577d1"))
         {
@@ -5499,6 +5500,20 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         } else
         {
             if (nNodeMode == NT_FULL)
+=======
+        bool fMissingInputs = false;
+
+        mapAlreadyAskedFor.erase(inv);
+
+        if (AcceptToMemoryPool(mempool, tx, true, &fMissingInputs))
+        {
+            RelayTransaction(tx, inv.hash);
+            vWorkQueue.push_back(inv.hash);
+            vEraseQueue.push_back(inv.hash);
+
+            // Recursively process any orphan transactions that depended on this one
+            for (unsigned int i = 0; i < vWorkQueue.size(); i++)
+>>>>>>> a5da097... Remove tx from AlreadyAskedFor list once we receive it, not when we process it.
             {
                 CInv inv(MSG_TX, tx.GetHash());
                 pfrom->AddInventoryKnown(inv);
@@ -5515,6 +5530,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     // Recursively process any orphan transactions that depended on this one
                     for (unsigned int i = 0; i < vWorkQueue.size(); i++)
                     {
+<<<<<<< HEAD
                         uint256 hashPrev = vWorkQueue[i];
                         for (set<uint256>::iterator mi = mapOrphanTransactionsByPrev[hashPrev].begin();
                              mi != mapOrphanTransactionsByPrev[hashPrev].end();
@@ -5567,6 +5583,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 for (it = vIncomingMerkleBlocks.begin(); !fProcessed && it < vIncomingMerkleBlocks.end(); ++it)
                 {
                     for (uint32_t i = 0; i < it->vMatch.size(); ++i)
+=======
+                        printf("   accepted orphan tx %s\n", orphanTxHash.ToString().c_str());
+                        RelayTransaction(orphanTx, orphanTxHash);
+                        vWorkQueue.push_back(orphanTxHash);
+                        vEraseQueue.push_back(orphanTxHash);
+                    }
+                    else if (!fMissingInputs2)
+>>>>>>> a5da097... Remove tx from AlreadyAskedFor list once we receive it, not when we process it.
                     {
                         if (it->vMatch[i] != txHash)
                             continue;
