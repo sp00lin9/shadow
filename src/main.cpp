@@ -5506,7 +5506,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 {
                     SyncWithWallets(tx, NULL, true);
                     RelayTransaction(tx, inv.hash);
-                    mapAlreadyAskedFor.erase(inv);
                     vWorkQueue.push_back(inv.hash);
                     vEraseQueue.push_back(inv.hash);
 
@@ -5558,6 +5557,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 CInv inv(MSG_TX, txHash);
                 pfrom->AddInventoryKnown(inv);
+                mapAlreadyAskedFor.erase(inv);
 
                 bool fProcessed = false;
                 std::vector<CMerkleBlockIncoming>::iterator it;
@@ -5606,7 +5606,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                         if (added)
                         {
                             RelayTransaction(tx, inv.hash);
-                            mapAlreadyAskedFor.erase(inv);
                         } else
                         {
                             // -- not interested in txn if not for this wallet
@@ -5644,32 +5643,33 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         LogPrintf("Received mblk %d\n", nBlocks);
         nTimeLastMblkRecv = GetTime();
         
-        for (uint32_t i = 0; i < nBlocks; ++i)
         {
-            CBlock &block = vBlocks[i];
+            LOCK(cs_main);
+	        for (uint32_t i = 0; i < nBlocks; ++i)
+	        {
+	            CBlock &block = vBlocks[i];
             
-            uint256 hashBlock = block.GetHash();
-            //LogPrintf("received block %s\n", hashBlock.ToString().substr(0,20).c_str());
-            // block.print();
+	            uint256 hashBlock = block.GetHash();
+	            //LogPrintf("received block %s\n", hashBlock.ToString().substr(0,20).c_str());
+	            // block.print();
             
-            CInv inv(MSG_BLOCK, hashBlock);
-            
-            {
-                LOCK(cs_main);
-                // -- if peer is thin, it will want the (merkle) block sent if accepted
-                if (pfrom->nTypeInd == NT_FULL)
-                    pfrom->AddInventoryKnown(inv);
-                
-                if (ProcessBlock(pfrom, &block, hashBlock))
-                    mapAlreadyAskedFor.erase(inv);
+	            CInv inv(MSG_BLOCK, hashBlock);
+			
+	            // -- if peer is thin, it will want the (merkle) block sent if accepted
+	            if (pfrom->nTypeInd == NT_FULL)
+	                pfrom->AddInventoryKnown(inv);
 
-                if (block.nDoS)
-                    pfrom->Misbehaving(block.nDoS);
-            } // cs_main
+	            mapAlreadyAskedFor.erase(inv);
+
+	            ProcessBlock(pfrom, &block, hashBlock)
+
+	            if (block.nDoS)
+	                pfrom->Misbehaving(block.nDoS);
             
-            if (fSecMsgEnabled)
-                SecureMsgScanBlock(block);
-        };
+	            if (fSecMsgEnabled)
+	                SecureMsgScanBlock(block);
+	        };
+        } // cs_main
 
 
     } else
@@ -5724,13 +5724,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         // block.print();
 
         CInv inv(MSG_BLOCK, hashBlock);
-
+        mapAlreadyAskedFor.erase(inv);
         // -- if peer is thin, it will want the (merkle) block sent if accepted
         if (pfrom->nTypeInd == NT_FULL)
             pfrom->AddInventoryKnown(inv);
 
-        if (ProcessBlock(pfrom, &block, hashBlock))
-            mapAlreadyAskedFor.erase(inv);
+        ProcessBlock(pfrom, &block, hashBlock);
 
         if (block.nDoS)
             pfrom->Misbehaving(block.nDoS);
