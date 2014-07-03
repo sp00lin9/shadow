@@ -5502,6 +5502,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             {
                 CInv inv(MSG_TX, tx.GetHash());
                 pfrom->AddInventoryKnown(inv);
+                mapAlreadyAskedFor.erase(inv);
 
                 bool fMissingInputs = false;
                 if (AcceptToMemoryPool(mempool, tx, txdb, &fMissingInputs))
