@@ -413,7 +413,7 @@ bool AppInit2()
 
     fTestNet = GetBoolArg("-testnet");
     
-    //if (fTestNet)
+    if (fTestNet)
     {
         SoftSetBoolArg("-irc", true);
     }
