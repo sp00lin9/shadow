@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
     BOOST_CHECK(CNode::IsBanned(addr1));  // ... but 1 still should be
     dummyNode2.Misbehaving(50);
     BOOST_CHECK(CNode::IsBanned(addr2));
-}    
+}
 
 BOOST_AUTO_TEST_CASE(DoS_banscore)
 {

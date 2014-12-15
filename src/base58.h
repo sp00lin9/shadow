@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include "state.h"
 #include "bignum.h"
 #include "key.h"
 #include "script.h"

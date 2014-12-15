@@ -1,4 +1,4 @@
-ShadowCoin-qt: Qt5 GUI for ShadowCoin
+Shadow: Qt5 GUI for ShadowCoin
 ===============================
 
 Build instructions
@@ -24,9 +24,9 @@ then execute the following:
     qmake
     make
 
-Alternatively, install Qt Creator and open the `shadowcoin-qt.pro` file.
+Alternatively, install Qt Creator and open the `shadow.pro` file.
 
-An executable named `shadowcoin-qt` will be built.
+An executable named `shadow` will be built.
 
 
 Windows
@@ -134,7 +134,7 @@ Ubuntu 11.10 warning
 ====================
 
 Ubuntu 11.10 has a package called 'qt-at-spi' installed by default.  At the time of writing, having that package
-installed causes shadowcoin-qt to crash intermittently.  The issue has been reported as `launchpad bug 857790`_, but
+installed causes shadow to crash intermittently.  The issue has been reported as `launchpad bug 857790`_, but
 isn't yet fixed.
 
 Until the bug is fixed, you can remove the qt-at-spi package to work around the problem, though this will presumably

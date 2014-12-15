@@ -92,31 +92,64 @@ bool CCryptoKeyStore::LockKeyStore()
 
 bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn)
 {
+    if (fDebug)
+        printf("CCryptoKeyStore::Unlock()\n");
+    
     {
         LOCK(cs_KeyStore);
         if (!SetCrypted())
             return false;
-
+        
+        int nUnlocked = 0;
+        
         CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
         for (; mi != mapCryptedKeys.end(); ++mi)
         {
             const CPubKey &vchPubKey = (*mi).second.first;
             const std::vector<unsigned char> &vchCryptedSecret = (*mi).second.second;
             CSecret vchSecret;
-            if(!DecryptSecret(vMasterKeyIn, vchCryptedSecret, vchPubKey.GetHash(), vchSecret))
+            
+            if (vchCryptedSecret.size() < 1) // key was recieved from stealth/anon txn with wallet locked, will be expanded after this
+            {
+                if (fDebug)
+                    printf("Skipping unexpanded key %s.\n", vchPubKey.GetHash().ToString().c_str());
+                continue;
+            };
+            
+            if (!DecryptSecret(vMasterKeyIn, vchCryptedSecret, vchPubKey.GetHash(), vchSecret))
+            {
+                printf("DecryptSecret() failed.\n");
                 return false;
+            };
+            
             if (vchSecret.size() != 32)
                 return false;
+            
             CKey key;
             key.SetPubKey(vchPubKey);
             key.SetSecret(vchSecret);
-            if (key.GetPubKey() == vchPubKey)
-                break;
+            
+            if (key.GetPubKey() != vchPubKey)
+            {
+                printf("Unlock failed: PubKey mismatch %s.\n", vchPubKey.GetHash().ToString().c_str());
+                return false;
+            };
+            
+            nUnlocked++;
+            break;
+        };
+        
+        if (nUnlocked < 1) // at least 1 key must pass the test
+        {
+            printf("Unlock failed: No keys unlocked.\n");
             return false;
-        }
+        };
+        
         vMasterKey = vMasterKeyIn;
     }
+    
     NotifyStatusChanged(this);
+    
     return true;
 }
 
@@ -133,9 +166,11 @@ bool CCryptoKeyStore::AddKey(const CKey& key)
         std::vector<unsigned char> vchCryptedSecret;
         CPubKey vchPubKey = key.GetPubKey();
         bool fCompressed;
+        
         if (!EncryptSecret(vMasterKey, key.GetSecret(fCompressed), vchPubKey.GetHash(), vchCryptedSecret))
             return false;
-
+        
+        // -- NOTE: this is CWallet::AddCryptedKey
         if (!AddCryptedKey(key.GetPubKey(), vchCryptedSecret))
             return false;
     }
@@ -149,9 +184,10 @@ bool CCryptoKeyStore::AddCryptedKey(const CPubKey &vchPubKey, const std::vector<
         LOCK(cs_KeyStore);
         if (!SetCrypted())
             return false;
-
+        
         mapCryptedKeys[vchPubKey.GetID()] = make_pair(vchPubKey, vchCryptedSecret);
     }
+    
     return true;
 }
 

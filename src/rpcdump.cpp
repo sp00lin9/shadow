@@ -52,38 +52,46 @@ int64_t DecodeDumpTime(const std::string& s)
         is.imbue(formats[i]);
         is >> pt;
         if(pt != bt::ptime()) break;
-    }
+    };
 
     return pt_to_time_t(pt);
 }
 
-std::string static EncodeDumpTime(int64_t nTime) {
+std::string static EncodeDumpTime(int64_t nTime)
+{
     return DateTimeStrFormat("%Y-%m-%dT%H:%M:%SZ", nTime);
 }
 
-std::string static EncodeDumpString(const std::string &str) {
+std::string static EncodeDumpString(const std::string &str)
+{
     std::stringstream ret;
-    BOOST_FOREACH(unsigned char c, str) {
-        if (c <= 32 || c >= 128 || c == '%') {
+    BOOST_FOREACH(unsigned char c, str)
+    {
+        if (c <= 32 || c >= 128 || c == '%')
+        {
             ret << '%' << HexStr(&c, &c + 1);
-        } else {
+        } else
+        {
             ret << c;
-        }
-    }
+        };
+    };
     return ret.str();
 }
 
-std::string DecodeDumpString(const std::string &str) {
+std::string DecodeDumpString(const std::string &str)
+{
     std::stringstream ret;
-    for (unsigned int pos = 0; pos < str.length(); pos++) {
+    for (unsigned int pos = 0; pos < str.length(); pos++)
+    {
         unsigned char c = str[pos];
-        if (c == '%' && pos+2 < str.length()) {
-            c = (((str[pos+1]>>6)*9+((str[pos+1]-'0')&15)) << 4) | 
-                ((str[pos+2]>>6)*9+((str[pos+2]-'0')&15));
+        if (c == '%' && pos+2 < str.length())
+        {
+            c = (((str[pos+1]>>6)*9+((str[pos+1]-'0')&15)) << 4)
+                | ((str[pos+2]>>6)*9+((str[pos+2]-'0')&15));
             pos += 2;
-        }
+        };
         ret << c;
-    }
+    };
     return ret.str();
 }
 
@@ -148,7 +156,7 @@ Value importprivkey(const Array& params, bool fHelp)
 
         pwalletMain->ScanForWalletTransactions(pindexGenesisBlock, true);
         pwalletMain->ReacceptWalletTransactions();
-    }
+    };
 
     return Value::null;
 }
@@ -171,7 +179,8 @@ Value importwallet(const Array& params, bool fHelp)
 
     bool fGood = true;
 
-    while (file.good()) {
+    while (file.good())
+    {
         std::string line;
         std::getline(file, line);
         if (line.empty() || line[0] == '#')
@@ -191,35 +200,42 @@ Value importwallet(const Array& params, bool fHelp)
         key.SetSecret(secret, fCompressed);
         CKeyID keyid = key.GetPubKey().GetID();
 
-        if (pwalletMain->HaveKey(keyid)) {
+        if (pwalletMain->HaveKey(keyid))
+        {
             printf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString().c_str());
             continue;
-        }
+        };
+        
         int64_t nTime = DecodeDumpTime(vstr[1]);
         std::string strLabel;
         bool fLabel = true;
-        for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
+        for (unsigned int nStr = 2; nStr < vstr.size(); nStr++)
+        {
             if (boost::algorithm::starts_with(vstr[nStr], "#"))
                 break;
             if (vstr[nStr] == "change=1")
                 fLabel = false;
             if (vstr[nStr] == "reserve=1")
                 fLabel = false;
-            if (boost::algorithm::starts_with(vstr[nStr], "label=")) {
+            if (boost::algorithm::starts_with(vstr[nStr], "label="))
+            {
                 strLabel = DecodeDumpString(vstr[nStr].substr(6));
                 fLabel = true;
-            }
-        }
+            };
+        };
+        
         printf("Importing %s...\n", CBitcoinAddress(keyid).ToString().c_str());
-        if (!pwalletMain->AddKey(key)) {
+        if (!pwalletMain->AddKey(key))
+        {
             fGood = false;
             continue;
-        }
+        };
+        
         pwalletMain->mapKeyMetadata[keyid].nCreateTime = nTime;
         if (fLabel)
             pwalletMain->SetAddressBookName(keyid, strLabel);
         nTimeBegin = std::min(nTimeBegin, nTime);
-    }
+    };
     file.close();
 
     CBlockIndex *pindex = pindexBest;
@@ -290,9 +306,11 @@ Value dumpwallet(const Array& params, bool fHelp)
 
     // sort time/key pairs
     std::vector<std::pair<int64_t, CKeyID> > vKeyBirth;
-    for (std::map<CKeyID, int64_t>::const_iterator it = mapKeyBirth.begin(); it != mapKeyBirth.end(); it++) {
+    for (std::map<CKeyID, int64_t>::const_iterator it = mapKeyBirth.begin(); it != mapKeyBirth.end(); it++)
+    {
         vKeyBirth.push_back(std::make_pair(it->second, it->first));
-    }
+    };
+    
     mapKeyBirth.clear();
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
@@ -302,26 +320,32 @@ Value dumpwallet(const Array& params, bool fHelp)
     file << strprintf("# * Best block at time of backup was %i (%s),\n", nBestHeight, hashBestChain.ToString().c_str());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(pindexBest->nTime).c_str());
     file << "\n";
-    for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++) {
+    for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++)
+    {
         const CKeyID &keyid = it->second;
         std::string strTime = EncodeDumpTime(it->first);
         std::string strAddr = CBitcoinAddress(keyid).ToString();
         bool IsCompressed;
 
         CKey key;
-        if (pwalletMain->GetKey(keyid, key)) {
-            if (pwalletMain->mapAddressBook.count(keyid)) {
+        if (pwalletMain->GetKey(keyid, key))
+        {
+            if (pwalletMain->mapAddressBook.count(keyid))
+            {
                 CSecret secret = key.GetSecret(IsCompressed);
                 file << strprintf("%s %s label=%s # addr=%s\n", CBitcoinSecret(secret, IsCompressed).ToString().c_str(), strTime.c_str(), EncodeDumpString(pwalletMain->mapAddressBook[keyid]).c_str(), strAddr.c_str());
-            } else if (setKeyPool.count(keyid)) {
+            } else
+            if (setKeyPool.count(keyid))
+            {
                 CSecret secret = key.GetSecret(IsCompressed);
                 file << strprintf("%s %s reserve=1 # addr=%s\n", CBitcoinSecret(secret, IsCompressed).ToString().c_str(), strTime.c_str(), strAddr.c_str());
-            } else {
+            } else
+            {
                 CSecret secret = key.GetSecret(IsCompressed);
                 file << strprintf("%s %s change=1 # addr=%s\n", CBitcoinSecret(secret, IsCompressed).ToString().c_str(), strTime.c_str(), strAddr.c_str());
-            }
-        }
-    }
+            };
+        };
+    };
     file << "\n";
     file << "# End of dump\n";
     file.close();

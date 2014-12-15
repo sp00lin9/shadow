@@ -69,6 +69,13 @@ private:
 public:
     CPubKey() { }
     CPubKey(const std::vector<unsigned char> &vchPubKeyIn) : vchPubKey(vchPubKeyIn) { }
+    
+    CPubKey(const unsigned char* p, int len)
+    {
+        vchPubKey.resize(len);
+        memcpy(&vchPubKey[0], p, len);
+    }
+    
     friend bool operator==(const CPubKey &a, const CPubKey &b) { return a.vchPubKey == b.vchPubKey; }
     friend bool operator!=(const CPubKey &a, const CPubKey &b) { return a.vchPubKey != b.vchPubKey; }
     friend bool operator<(const CPubKey &a, const CPubKey &b) { return a.vchPubKey < b.vchPubKey; }
@@ -84,7 +91,14 @@ public:
     uint256 GetHash() const {
         return Hash(vchPubKey.begin(), vchPubKey.end());
     }
-
+    
+    bool SetZero()
+    {
+        vchPubKey.resize(33);
+        memset(&vchPubKey[0], 0, 33);
+        return true;
+    }
+    
     bool IsValid() const {
         return vchPubKey.size() == 33 || vchPubKey.size() == 65;
     }
@@ -95,6 +109,13 @@ public:
 
     std::vector<unsigned char> Raw() const {
         return vchPubKey;
+    }
+    
+    unsigned char* begin()
+    {
+        if (vchPubKey.size() > 0)
+            return (unsigned char*)&vchPubKey[0];
+        return NULL;
     }
 };
 

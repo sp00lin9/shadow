@@ -8,7 +8,8 @@
 #include <boost/lexical_cast.hpp>
 
 #include "smessage.h"
-#include "init.h" // pwalletMain
+#include "init.h"
+#include "util.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -34,7 +35,7 @@ Value smsgenable(const Array& params, bool fHelp)
     } else
     {
         result.push_back(Pair("result", "Enabled secure messaging."));
-    }
+    };
     return result;
 }
 
@@ -54,7 +55,7 @@ Value smsgdisable(const Array& params, bool fHelp)
     } else
     {
         result.push_back(Pair("result", "Disabled secure messaging."));
-    }
+    };
     return result;
 }
 
@@ -94,11 +95,11 @@ Value smsgoptions(const Array& params, bool fHelp)
         
         if (optname == "newAddressRecv")
         {
-            if (value == "+" || value == "on"  || value == "true"  || value == "1")
+            if (IsStringBoolPositive(value))
             {
                 smsgOptions.fNewAddressRecv = true;
             } else
-            if (value == "-" || value == "off" || value == "false" || value == "0")
+            if (IsStringBoolNegative(value))
             {
                 smsgOptions.fNewAddressRecv = false;
             } else
@@ -110,11 +111,11 @@ Value smsgoptions(const Array& params, bool fHelp)
         } else
         if (optname == "newAddressAnon")
         {
-            if (value == "+" || value == "on"  || value == "true"  || value == "1")
+            if (IsStringBoolPositive(value))
             {
                 smsgOptions.fNewAddressAnon = true;
             } else
-            if (value == "-" || value == "off" || value == "false" || value == "0")
+            if (IsStringBoolNegative(value))
             {
                 smsgOptions.fNewAddressAnon = false;
             } else
@@ -361,7 +362,7 @@ Value smsgscanchain(const Array& params, bool fHelp)
     } else
     {
         result.push_back(Pair("result", "Scan Chain Completed."));
-    }
+    };
     return result;
 }
 
@@ -385,7 +386,7 @@ Value smsgscanbuckets(const Array& params, bool fHelp)
     } else
     {
         result.push_back(Pair("result", "Scan Buckets Completed."));
-    }
+    };
     return result;
 }
 
@@ -580,7 +581,7 @@ Value smsginbox(const Array& params, bool fHelp)
     if (params.size() > 0)
     {
         mode = params[0].get_str();
-    }
+    };
     
     
     Object result;
@@ -837,7 +838,7 @@ Value smsgbuckets(const Array& params, bool fHelp)
                         uint64_t nFBytes = 0;
                         nFBytes = boost::filesystem::file_size(fullPath);
                         nBytes += nFBytes;
-                        objM.push_back(Pair("file size", fsReadable(nFBytes)));
+                        objM.push_back(Pair("file size", bytesReadable(nFBytes)));
                     } catch (const boost::filesystem::filesystem_error& ex)
                     {
                         objM.push_back(Pair("file size, error", ex.what()));
@@ -855,7 +856,7 @@ Value smsgbuckets(const Array& params, bool fHelp)
         Object objM;
         objM.push_back(Pair("buckets", snBuckets));
         objM.push_back(Pair("messages", snMessages));
-        objM.push_back(Pair("size", fsReadable(nBytes)));
+        objM.push_back(Pair("size", bytesReadable(nBytes)));
         result.push_back(Pair("total", objM));
         
     } else

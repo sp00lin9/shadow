@@ -16,8 +16,6 @@ static const int nCheckpointSpan = 10;
 
 namespace Checkpoints
 {
-    typedef std::map<int, uint256> MapCheckpoints;
-
     //
     // What makes a good checkpoint block?
     // + Is surrounded by blocks with reasonable timestamps
@@ -25,7 +23,7 @@ namespace Checkpoints
     //    timestamp before)
     // + Contains no strange transactions
     //
-    static MapCheckpoints mapCheckpoints =
+    MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         ( 0,      hashGenesisBlock )
         ( 5000,   uint256("0xe90df0416d506c6d41ea693c88604e6efde1467408adeccf7166cdec9192c03b") )
@@ -44,17 +42,18 @@ namespace Checkpoints
         ( 110000, uint256("0xb582e172d169bc67adc79969c35851c9156b5a4ad57c3fb3647a3aed20c8ba51") )
         ( 120000, uint256("0xa4d5f4a951f2cb5f6beafcbf8490a4645ac7585f0389d730613d4e22a96590eb") )
         ( 130000, uint256("0xa51baaa8f0b5f35217479b4defd61f3ae18b5792033a723dd9bd802a78b48803") )
-        ( 140000, uint256("0x179d20535a7cd197c9e79258aac98c193cffa0265ce2ec0ea8c71b2e7f1fc021") )        
+        ( 140000, uint256("0x179d20535a7cd197c9e79258aac98c193cffa0265ce2ec0ea8c71b2e7f1fc021") )
         ( 150000, uint256("0x5d78df4991a4f10879452680f4643c27ef603f3928ff0d6ac05b5f14e5182029") )
         ( 160000, uint256("0x2fecb1a06ec490922e500b653948923952a6241c478df754f894c3b66d95f234") )
         ( 170000, uint256("0x04aa633b0850a8ca967ab40436c3068c385000d2ad08def923c8cb1328affa49") )
         ( 180000, uint256("0x79f341c763f658833280f62e70d04ecdb4c8e22181dca4e423692dd6d2dc7c92") )
         ( 190000, uint256("0x19ff2576455a3256772efebc1d88c356ebe18c74005454880cf46fab50c627c7") )
         ( 200000, uint256("0xd9af28b1b16e20aff1bdafdbdeaa793af8475681e3c2b5b6ad13d28ae6da6b1e") )
+
     ;
 
     // TestNet has no checkpoints
-    static MapCheckpoints mapCheckpointsTestnet =
+    MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
         ( 0, hashGenesisBlockTestNet )
     ;
@@ -64,7 +63,8 @@ namespace Checkpoints
         MapCheckpoints& checkpoints = (fTestNet ? mapCheckpointsTestnet : mapCheckpoints);
 
         MapCheckpoints::const_iterator i = checkpoints.find(nHeight);
-        if (i == checkpoints.end()) return true;
+        if (i == checkpoints.end())
+            return true;
         return hash == i->second;
     }
 
@@ -85,7 +85,8 @@ namespace Checkpoints
             std::map<uint256, CBlockIndex*>::const_iterator t = mapBlockIndex.find(hash);
             if (t != mapBlockIndex.end())
                 return t->second;
-        }
+        };
+
         return NULL;
     }
 
@@ -102,9 +103,19 @@ namespace Checkpoints
     {
         LOCK(cs_hashSyncCheckpoint);
         if (!mapBlockIndex.count(hashSyncCheckpoint))
-            error("GetSyncCheckpoint: block index missing for current sync-checkpoint %s", hashSyncCheckpoint.ToString().c_str());
+            printf("GetSyncCheckpoint: block index missing for current sync-checkpoint %s", hashSyncCheckpoint.ToString().c_str());
         else
             return mapBlockIndex[hashSyncCheckpoint];
+        return NULL;
+    }
+
+    CBlockThinIndex* GetLastSyncCheckpointHeader()
+    {
+        LOCK(cs_hashSyncCheckpoint);
+        if (!mapBlockThinIndex.count(hashSyncCheckpoint))
+            error("GetLastSyncCheckpointHeader: block index missing for current sync-checkpoint %s", hashSyncCheckpoint.ToString().c_str());
+        else
+            return mapBlockThinIndex[hashSyncCheckpoint];
         return NULL;
     }
 
@@ -147,7 +158,80 @@ namespace Checkpoints
         {
             hashInvalidCheckpoint = hashCheckpoint;
             return error("ValidateSyncCheckpoint: new sync-checkpoint %s is not a descendant of current sync-checkpoint %s", hashCheckpoint.ToString().c_str(), hashSyncCheckpoint.ToString().c_str());
-        }
+        };
+
+        return true;
+    }
+
+    bool ValidateSyncCheckpointHeaders(uint256 hashCheckpoint)
+    {
+
+        if (!mapBlockThinIndex.count(hashCheckpoint))
+            return error("ValidateSyncCheckpointHeaders: block index missing for received sync-checkpoint %s", hashCheckpoint.ToString().c_str());
+
+        CBlockThinIndex* pindexCheckpointRecv = mapBlockThinIndex[hashCheckpoint];
+
+
+        if (!mapBlockThinIndex.count(hashSyncCheckpoint))
+        {
+            if (fThinFullIndex)
+                return error("ValidateSyncCheckpointHeaders: block index missing for current sync-checkpoint %s", hashSyncCheckpoint.ToString().c_str());
+
+            //if hashSyncCheckpoint
+            //printf("[rem] ValidateSyncCheckpointHeaders ReadBlockThinIndex\n");
+            CTxDB txdb("r");
+            CDiskBlockThinIndex diskindex;
+            if (!txdb.ReadBlockThinIndex(hashCheckpoint, diskindex)
+                || diskindex.hashNext == 0)
+                return error("ValidateSyncCheckpointHeaders() : block not in db %s", hashCheckpoint.ToString().c_str());
+
+
+            // TODO: add checks
+            // so long as it's in the db with hashNext it should be in the main chain
+
+            return true;
+        };
+
+
+        CBlockThinIndex* pindexSyncCheckpoint = mapBlockThinIndex[hashSyncCheckpoint];
+
+
+        if (pindexCheckpointRecv->nHeight <= pindexSyncCheckpoint->nHeight)
+        {
+            // Received an older checkpoint, trace back from current checkpoint
+            // to the same height of the received checkpoint to verify
+            // that current checkpoint should be a descendant block
+            CBlockThinIndex* pindex = pindexSyncCheckpoint;
+            while (pindex->nHeight > pindexCheckpointRecv->nHeight)
+            {
+                if (!(pindex = pindex->pprev))
+                    return error("ValidateSyncCheckpointHeaders: pprev null - block index structure failure");
+            };
+
+            if (pindex->GetBlockHash() != hashCheckpoint)
+            {
+                hashInvalidCheckpoint = hashCheckpoint;
+                return error("ValidateSyncCheckpointHeaders: new sync-checkpoint %s is conflicting with current sync-checkpoint %s", hashCheckpoint.ToString().c_str(), hashSyncCheckpoint.ToString().c_str());
+            };
+
+            return false; // ignore older checkpoint
+        };
+
+        // Received checkpoint should be a descendant block of the current
+        // checkpoint. Trace back to the same height of current checkpoint
+        // to verify.
+        CBlockThinIndex* pindex = pindexCheckpointRecv;
+        while (pindex->nHeight > pindexSyncCheckpoint->nHeight)
+        {
+            if (!(pindex = pindex->pprev))
+                return error("ValidateSyncCheckpointHeaders: pprev2 null - block index structure failure");
+        };
+
+        if (pindex->GetBlockHash() != hashSyncCheckpoint)
+        {
+            hashInvalidCheckpoint = hashCheckpoint;
+            return error("ValidateSyncCheckpointHeaders: new sync-checkpoint %s is not a descendant of current sync-checkpoint %s", hashCheckpoint.ToString().c_str(), hashSyncCheckpoint.ToString().c_str());
+        };
         return true;
     }
 
@@ -186,19 +270,22 @@ namespace Checkpoints
                 CBlock block;
                 if (!block.ReadFromDisk(pindexCheckpoint))
                     return error("AcceptPendingSyncCheckpoint: ReadFromDisk failed for sync checkpoint %s", hashPendingCheckpoint.ToString().c_str());
+
                 if (!block.SetBestChain(txdb, pindexCheckpoint))
                 {
                     hashInvalidCheckpoint = hashPendingCheckpoint;
                     return error("AcceptPendingSyncCheckpoint: SetBestChain failed for sync checkpoint %s", hashPendingCheckpoint.ToString().c_str());
-                }
-            }
+                };
+            };
 
             if (!WriteSyncCheckpoint(hashPendingCheckpoint))
                 return error("AcceptPendingSyncCheckpoint(): failed to write sync checkpoint %s", hashPendingCheckpoint.ToString().c_str());
+
             hashPendingCheckpoint = 0;
             checkpointMessage = checkpointMessagePending;
             checkpointMessagePending.SetNull();
             printf("AcceptPendingSyncCheckpoint : sync-checkpoint at %s\n", hashSyncCheckpoint.ToString().c_str());
+
             // relay the checkpoint
             if (!checkpointMessage.IsNull())
             {
@@ -210,7 +297,7 @@ namespace Checkpoints
         return false;
     }
 
-    // Automatically select a suitable sync-checkpoint 
+    // Automatically select a suitable sync-checkpoint
     uint256 AutoSelectSyncCheckpoint()
     {
         const CBlockIndex *pindex = pindexBest;
@@ -240,7 +327,8 @@ namespace Checkpoints
                     return error("CheckSync: pprev null - block index structure failure");
             if (pindex->nHeight < pindexSync->nHeight || pindex->GetBlockHash() != hashSyncCheckpoint)
                 return false; // only descendant of sync-checkpoint can pass check
-        }
+        };
+
         if (nHeight == pindexSync->nHeight && hashBlock != hashSyncCheckpoint)
             return false; // same height with sync-checkpoint
         if (nHeight < pindexSync->nHeight && !mapBlockIndex.count(hashBlock))
@@ -255,8 +343,21 @@ namespace Checkpoints
             return false;
         if (hashBlock == hashPendingCheckpoint)
             return true;
-        if (mapOrphanBlocks.count(hashPendingCheckpoint) 
+        if (mapOrphanBlocks.count(hashPendingCheckpoint)
             && hashBlock == WantedByOrphan(mapOrphanBlocks[hashPendingCheckpoint]))
+            return true;
+        return false;
+    }
+
+    bool WantedByPendingSyncCheckpointHeader(uint256 hashBlock)
+    {
+        LOCK(cs_hashSyncCheckpoint);
+        if (hashPendingCheckpoint == 0)
+            return false;
+        if (hashBlock == hashPendingCheckpoint)
+            return true;
+        if (mapOrphanBlockThins.count(hashPendingCheckpoint)
+            && hashBlock == WantedByOrphanHeader(mapOrphanBlockThins[hashPendingCheckpoint]))
             return true;
         return false;
     }
@@ -277,15 +378,15 @@ namespace Checkpoints
             if (!block.SetBestChain(txdb, mapBlockIndex[hash]))
             {
                 return error("ResetSyncCheckpoint: SetBestChain failed for hardened checkpoint %s", hash.ToString().c_str());
-            }
-        }
-        else if(!mapBlockIndex.count(hash))
+            };
+        } else
+        if (!mapBlockIndex.count(hash))
         {
             // checkpoint block not yet accepted
             hashPendingCheckpoint = hash;
             checkpointMessagePending.SetNull();
             printf("ResetSyncCheckpoint: pending for sync-checkpoint %s\n", hashPendingCheckpoint.ToString().c_str());
-        }
+        };
 
         BOOST_REVERSE_FOREACH(const MapCheckpoints::value_type& i, mapCheckpoints)
         {
@@ -296,8 +397,48 @@ namespace Checkpoints
                     return error("ResetSyncCheckpoint: failed to write sync checkpoint %s", hash.ToString().c_str());
                 printf("ResetSyncCheckpoint: sync-checkpoint reset to %s\n", hashSyncCheckpoint.ToString().c_str());
                 return true;
-            }
-        }
+            };
+        };
+
+        return false;
+    }
+
+    bool ResetSyncCheckpointThin()
+    {
+        LOCK(cs_hashSyncCheckpoint);
+        const uint256& hash = mapCheckpoints.rbegin()->second;
+        if (mapBlockThinIndex.count(hash) && !mapBlockThinIndex[hash]->IsInMainChain())
+        {
+            // checkpoint block accepted but not yet in main chain
+            printf("ResetSyncCheckpointThin: SetBestChain to hardened checkpoint %s\n", hash.ToString().c_str());
+
+            CBlockThin block = mapBlockThinIndex[hash]->GetBlockThin();
+            CTxDB txdb;
+            if (!block.SetBestThinChain(txdb, mapBlockThinIndex[hash]))
+            {
+                return error("ResetSyncCheckpointThin: SetBestChain failed for sync checkpoint %s", hash.ToString().c_str());
+            };
+
+        } else
+        if (!mapBlockThinIndex.count(hash))
+        {
+            // checkpoint block not yet accepted
+            hashPendingCheckpoint = hash;
+            checkpointMessagePending.SetNull();
+            printf("ResetSyncCheckpointThin: pending for sync-checkpoint %s\n", hashPendingCheckpoint.ToString().c_str());
+        };
+
+        BOOST_REVERSE_FOREACH(const MapCheckpoints::value_type& i, mapCheckpoints)
+        {
+            const uint256& hash = i.second;
+            if (mapBlockThinIndex.count(hash) && mapBlockThinIndex[hash]->IsInMainChain())
+            {
+                if (!WriteSyncCheckpoint(hash))
+                    return error("ResetSyncCheckpoint: failed to write sync checkpoint %s", hash.ToString().c_str());
+                printf("ResetSyncCheckpoint: sync-checkpoint reset to %s\n", hashSyncCheckpoint.ToString().c_str());
+                return true;
+            };
+        };
 
         return false;
     }
@@ -313,7 +454,7 @@ namespace Checkpoints
     {
         if (fDebug)
             printf("SetCheckpointPrivKey()\n");
-        
+
         // Test signing a sync-checkpoint with genesis block
         CSyncCheckpoint checkpoint;
         checkpoint.hashCheckpoint = !fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet;
@@ -336,7 +477,7 @@ namespace Checkpoints
     {
         if (fDebug)
             printf("SendSyncCheckpoint()\n");
-        
+
         CSyncCheckpoint checkpoint;
         checkpoint.hashCheckpoint = hashCheckpoint;
         CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
@@ -345,6 +486,7 @@ namespace Checkpoints
 
         if (CSyncCheckpoint::strMasterPrivKey.empty())
             return error("SendSyncCheckpoint: Checkpoint master key unavailable.");
+
         std::vector<unsigned char> vchPrivKey = ParseHex(CSyncCheckpoint::strMasterPrivKey);
         CKey key;
         key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end())); // if key is not correct openssl may crash
@@ -355,7 +497,7 @@ namespace Checkpoints
         {
             printf("WARNING: SendSyncCheckpoint: Failed to process checkpoint.\n");
             return false;
-        }
+        };
 
         // Relay checkpoint
         {
@@ -378,7 +520,7 @@ namespace Checkpoints
     }
 }
 
-// ppcoin: sync-checkpoint master key                 
+// ppcoin: sync-checkpoint master key
 const std::string CSyncCheckpoint::strMasterPubKey = "02334512c0d7a9a69289c4b7ad1c76e5330ef9dacd9da912c91a853986bddf0434";
 
 std::string CSyncCheckpoint::strMasterPrivKey = "";
@@ -389,6 +531,7 @@ bool CSyncCheckpoint::CheckSignature()
     CKey key;
     if (!key.SetPubKey(ParseHex(CSyncCheckpoint::strMasterPubKey)))
         return error("CSyncCheckpoint::CheckSignature() : SetPubKey failed");
+
     if (!key.Verify(Hash(vchMsg.begin(), vchMsg.end()), vchSig))
         return error("CSyncCheckpoint::CheckSignature() : verify signature failed");
 
@@ -415,12 +558,13 @@ bool CSyncCheckpoint::ProcessSyncCheckpoint(CNode* pfrom)
         if (pfrom)
         {
             pfrom->PushGetBlocks(pindexBest, hashCheckpoint);
+
             // ask directly as well in case rejected earlier by duplicate
             // proof-of-stake because getblocks may not get it this time
-            pfrom->AskFor(CInv(MSG_BLOCK, mapOrphanBlocks.count(hashCheckpoint)? WantedByOrphan(mapOrphanBlocks[hashCheckpoint]) : hashCheckpoint));
-        }
+            pfrom->AskFor(CInv(MSG_BLOCK, mapOrphanBlocks.count(hashCheckpoint) ? WantedByOrphan(mapOrphanBlocks[hashCheckpoint]) : hashCheckpoint));
+        };
         return false;
-    }
+    };
 
     if (!Checkpoints::ValidateSyncCheckpoint(hashCheckpoint))
         return false;
@@ -433,12 +577,13 @@ bool CSyncCheckpoint::ProcessSyncCheckpoint(CNode* pfrom)
         CBlock block;
         if (!block.ReadFromDisk(pindexCheckpoint))
             return error("ProcessSyncCheckpoint: ReadFromDisk failed for sync checkpoint %s", hashCheckpoint.ToString().c_str());
+
         if (!block.SetBestChain(txdb, pindexCheckpoint))
         {
             Checkpoints::hashInvalidCheckpoint = hashCheckpoint;
             return error("ProcessSyncCheckpoint: SetBestChain failed for sync checkpoint %s", hashCheckpoint.ToString().c_str());
-        }
-    }
+        };
+    };
 
     if (!Checkpoints::WriteSyncCheckpoint(hashCheckpoint))
         return error("ProcessSyncCheckpoint(): failed to write sync checkpoint %s", hashCheckpoint.ToString().c_str());
@@ -446,5 +591,64 @@ bool CSyncCheckpoint::ProcessSyncCheckpoint(CNode* pfrom)
     Checkpoints::hashPendingCheckpoint = 0;
     Checkpoints::checkpointMessagePending.SetNull();
     printf("ProcessSyncCheckpoint: sync-checkpoint at %s\n", hashCheckpoint.ToString().c_str());
+    return true;
+}
+
+bool CSyncCheckpoint::ProcessSyncCheckpointHeaders(CNode* pfrom)
+{
+    if (!CheckSignature())
+        return false;
+
+    LOCK(Checkpoints::cs_hashSyncCheckpoint);
+    if (!mapBlockThinIndex.count(hashCheckpoint))
+    {
+        // We haven't received the checkpoint chain, keep the checkpoint as pending
+        Checkpoints::hashPendingCheckpoint = hashCheckpoint;
+        Checkpoints::checkpointMessagePending = *this;
+        printf("ProcessSyncCheckpointHeaders: pending for sync-checkpoint %s\n", hashCheckpoint.ToString().c_str());
+
+        // Ask this guy to fill in what we're missing
+        if (pfrom)
+        {
+            pfrom->PushGetBlocks(pindexBestHeader, hashCheckpoint);
+
+            // ask directly as well in case rejected earlier by duplicate
+            // proof-of-stake because getblocks may not get it this time
+
+            if (nNodeMode != NT_FULL)
+                pfrom->AskFor(CInv(MSG_FILTERED_BLOCK, mapOrphanBlockThins.count(hashCheckpoint) ? WantedByOrphanHeader(mapOrphanBlockThins[hashCheckpoint]) : hashCheckpoint));
+            else
+                pfrom->AskFor(CInv(MSG_BLOCK, mapOrphanBlockThins.count(hashCheckpoint) ? WantedByOrphanHeader(mapOrphanBlockThins[hashCheckpoint]) : hashCheckpoint));
+        };
+
+        return false;
+    };
+
+    if (!Checkpoints::ValidateSyncCheckpointHeaders(hashCheckpoint))
+        return false;
+
+    CTxDB txdb;
+    CBlockThinIndex* pindexCheckpoint = mapBlockThinIndex[hashCheckpoint];
+    if (!pindexCheckpoint->IsInMainChain())
+    {
+        // checkpoint chain received but not yet main chain
+        CBlockThin block = pindexCheckpoint->GetBlockThin();
+        //if (!block.ReadFromDisk(pindexCheckpoint))
+        //    return error("ProcessSyncCheckpoint: ReadFromDisk failed for sync checkpoint %s", hashCheckpoint.ToString().c_str());
+
+        if (!block.SetBestThinChain(txdb, pindexCheckpoint))
+        {
+            Checkpoints::hashInvalidCheckpoint = hashCheckpoint;
+            return error("ProcessSyncCheckpointHeaders: SetBestChain failed for sync checkpoint %s", hashCheckpoint.ToString().c_str());
+        };
+    };
+
+    if (!Checkpoints::WriteSyncCheckpoint(hashCheckpoint))
+        return error("ProcessSyncCheckpointHeaders(): failed to write sync checkpoint %s", hashCheckpoint.ToString().c_str());
+
+    Checkpoints::checkpointMessage = *this;
+    Checkpoints::hashPendingCheckpoint = 0;
+    Checkpoints::checkpointMessagePending.SetNull();
+    printf("ProcessSyncCheckpointHeaders: sync-checkpoint at %s\n", hashCheckpoint.ToString().c_str());
     return true;
 }
