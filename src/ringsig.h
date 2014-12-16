@@ -27,6 +27,9 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut);
 
 int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage);
 
+
+int generateRingSignature(std::vector<uint8_t>& keyImage, uint256& txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, uint8_t *pSigc, uint8_t *pSigr);
+
 int verifyRingSignature(std::vector<uint8_t>& keyImage, uint256& txnHash, int nRingSize, const uint8_t *pPubkeys, const uint8_t *pSigc, const uint8_t *pSigr);
 
 

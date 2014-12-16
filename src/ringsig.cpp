@@ -232,6 +232,297 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
 };
 
 
+
+
+
+
+
+int generateRingSignature(std::vector<uint8_t>& keyImage, uint256& txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, uint8_t *pSigc, uint8_t *pSigr)
+{
+    if (fDebugRingSig)
+        printf("generateRingSignature() size %d\n", nRingSize);
+    
+    int rv = 0;
+    int nBytes;
+    
+    BN_CTX_start(bnCtx);
+    
+    BIGNUM*   bnKS     = BN_CTX_get(bnCtx);
+    BIGNUM*   bnK1     = BN_CTX_get(bnCtx);
+    BIGNUM*   bnK2     = BN_CTX_get(bnCtx);
+    BIGNUM*   bnT      = BN_CTX_get(bnCtx);
+    BIGNUM*   bnH      = BN_CTX_get(bnCtx);
+    BIGNUM*   bnSum    = BN_CTX_get(bnCtx);
+    EC_POINT* ptT1     = NULL;
+    EC_POINT* ptT2     = NULL;
+    EC_POINT* ptT3     = NULL;
+    EC_POINT* ptPk     = NULL;
+    EC_POINT* ptKi     = NULL;
+    EC_POINT* ptL      = NULL;
+    EC_POINT* ptR      = NULL;
+    
+    uint8_t tempData[66]; // hold raw point data to hash
+    uint256 commitHash;
+    ec_secret scData1, scData2;
+    
+    CHashWriter ssCommitHash(SER_GETHASH, PROTOCOL_VERSION);
+    
+    ssCommitHash << txnHash;
+    
+    
+    // zero signature
+    memset(pSigc, 0, ec_secret_size * nRingSize);
+    memset(pSigr, 0, ec_secret_size * nRingSize);
+    
+    
+    // ks = random 256 bit int mod P
+    if (GenerateRandomSecret(scData1) != 0)
+    {
+        printf("generateRingSignature(): GenerateRandomSecret failed.\n");
+        rv = 1; goto End;
+    };
+    
+    if (!bnKS || !(BN_bin2bn(&scData1.e[0], 32, bnKS)))
+    {
+        printf("generateRingSignature(): BN_bin2bn failed.\n");
+        rv = 1; goto End;
+    };
+    
+    // zero sum
+    if (!bnSum || !(BN_zero(bnSum)))
+    {
+        printf("generateRingSignature(): BN_zero failed.\n");
+        rv = 1; goto End;
+    };
+    
+    if (   !(ptT1 = EC_POINT_new(ecGrp))
+        || !(ptT2 = EC_POINT_new(ecGrp))
+        || !(ptT3 = EC_POINT_new(ecGrp))
+        || !(ptPk = EC_POINT_new(ecGrp))
+        || !(ptKi = EC_POINT_new(ecGrp))
+        || !(ptL  = EC_POINT_new(ecGrp))
+        || !(ptR  = EC_POINT_new(ecGrp)))
+    {
+        printf("generateRingSignature(): EC_POINT_new failed.\n");
+        rv = 1; goto End;
+    };
+    
+    // get keyimage as point
+    if (!(bnT = BN_bin2bn(&keyImage[0], ec_compressed_size, bnT))
+        || !(ptKi) || !(ptKi = EC_POINT_bn2point(ecGrp, bnT, ptKi, bnCtx)))
+    {
+        printf("generateRingSignature(): extract ptKi failed\n");
+        rv = 1; goto End;
+    };
+    
+    for (int i = 0; i < nRingSize; ++i)
+    {
+        if (i == nSecretOffset)
+        {
+            // k = random 256 bit int mod P
+            // L = k * G
+            // R = k * HashToEC(PKi)
+            
+            if (!EC_POINT_mul(ecGrp, ptL, bnKS, NULL, NULL, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_mul failed.\n");
+                rv = 1; goto End;
+            };
+            
+            if (hashToEC(&pPubkeys[i * ec_compressed_size], ec_compressed_size, bnT, ptT1) != 0)
+            {
+                printf("generateRingSignature(): hashToEC failed.\n");
+                rv = 1; goto End;
+            };
+            
+            if (!EC_POINT_mul(ecGrp, ptR, NULL, ptT1, bnKS, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_mul failed.\n");
+                rv = 1; goto End;
+            };
+            
+        } else
+        {
+            // k1 = random 256 bit int mod P
+            // k2 = random 256 bit int mod P
+            // Li = k1 * Pi + k2 * G
+            // Ri = k1 * I + k2 * Hp(Pi)
+            // ci = k1
+            // ri = k2
+            
+            if (GenerateRandomSecret(scData1) != 0
+                || !bnK1 || !(BN_bin2bn(&scData1.e[0], 32, bnK1))
+                || GenerateRandomSecret(scData2) != 0
+                || !bnK2 || !(BN_bin2bn(&scData2.e[0], 32, bnK2)))
+            {
+                printf("generateRingSignature(): k1 and k2 failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // get Pk i as point
+            if (!(bnT = BN_bin2bn(&pPubkeys[i * ec_compressed_size], ec_compressed_size, bnT))
+                || !(ptPk) || !(ptPk = EC_POINT_bn2point(ecGrp, bnT, ptPk, bnCtx)))
+            {
+                printf("generateRingSignature(): extract ptPk failed\n");
+                rv = 1; goto End;
+            };
+            
+            // ptT1 = k1 * Pi
+            if (!EC_POINT_mul(ecGrp, ptT1, NULL, ptPk, bnK1, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_mul failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // ptT2 = k2 * G
+            if (!EC_POINT_mul(ecGrp, ptT2, bnK2, NULL, NULL, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_mul failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // ptL = ptT1 + ptT2
+            if (!EC_POINT_add(ecGrp, ptL, ptT1, ptT2, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_add failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // ptT3 = Hp(Pi)
+            if (hashToEC(&pPubkeys[i * ec_compressed_size], ec_compressed_size, bnT, ptT3) != 0)
+            {
+                printf("generateRingSignature(): hashToEC failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // ptT1 = k1 * I
+            if (!EC_POINT_mul(ecGrp, ptT1, NULL, ptKi, bnK1, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_mul failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // ptT2 = k2 * ptT3
+            if (!EC_POINT_mul(ecGrp, ptT2, NULL, ptT3, bnK2, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_mul failed.\n");
+                rv = 1; goto End;
+            };
+            
+            // ptR = ptT1 + ptT2
+            if (!EC_POINT_add(ecGrp, ptR, ptT1, ptT2, bnCtx))
+            {
+                printf("generateRingSignature(): EC_POINT_add failed.\n");
+                rv = 1; goto End;
+            };
+            
+            memcpy(&pSigc[i * ec_secret_size], &scData1.e[0], ec_secret_size);
+            memcpy(&pSigr[i * ec_secret_size], &scData2.e[0], ec_secret_size);
+            
+            // sum = (sum + sigc) % N , sigc == bnK1
+            if (!BN_mod_add(bnSum, bnSum, bnK1, bnN, bnCtx))
+            {
+                printf("generateRingSignature(): BN_mod_add failed.\n");
+                rv = 1; goto End;
+            };
+        };
+        
+        // -- add ptL and ptR to hash
+        if (!(EC_POINT_point2bn(ecGrp, ptL, POINT_CONVERSION_COMPRESSED, bnT, bnCtx))
+            || BN_num_bytes(bnT) != (int) ec_compressed_size
+            || BN_bn2bin(bnT, &tempData[0]) != (int) ec_compressed_size
+            || !(EC_POINT_point2bn(ecGrp, ptR, POINT_CONVERSION_COMPRESSED, bnT, bnCtx))
+            || BN_num_bytes(bnT) != (int) ec_compressed_size
+            || BN_bn2bin(bnT, &tempData[33]) != (int) ec_compressed_size)
+        {
+            printf("extract ptL and ptR failed.\n");
+            rv = 1; goto End;
+        };
+        
+        ssCommitHash.write((const char*)&tempData[0], 66);
+    };
+    
+    commitHash = ssCommitHash.GetHash();
+    
+    if (!(bnH) || !(bnH = BN_bin2bn(commitHash.begin(), ec_secret_size, bnH)))
+    {
+        printf("generateRingSignature(): commitHash -> bnH failed\n");
+        rv = 1; goto End;
+    };
+    
+    
+    if (!BN_mod(bnH, bnH, bnN, bnCtx)) // this is necessary
+    {
+        printf("generateRingSignature(): BN_mod failed.\n");
+        rv = 1; goto End;
+    };
+    
+    //printBN(bnSum, "[rem]2 bnSum");
+    //printBN(bnH, "[rem]2 bnH");
+    
+    // sigc[nSecretOffset] = (bnH - bnSum) % N
+    if (!BN_mod_sub(bnT, bnH, bnSum, bnN, bnCtx))
+    {
+        printf("generateRingSignature(): BN_mod_sub failed.\n");
+        rv = 1; goto End;
+    };
+    
+    if ((nBytes = BN_num_bytes(bnT)) > (int)ec_secret_size
+        || BN_bn2bin(bnT, &pSigc[nSecretOffset * ec_secret_size + (32-nBytes)]) != nBytes)
+    {
+        printf("bnT -> pSigc failed.\n");
+        rv = 1; goto End;
+    };
+    
+    // sigr[nSecretOffset] = (bnKS - sigc[nSecretOffset] * bnSecret) % N
+    // reuse bnH for bnSecret
+    if (!bnH || !(BN_bin2bn(&secret.e[0], 32, bnH)))
+    {
+        printf("generateRingSignature(): BN_bin2bn failed.\n");
+        rv = 1; goto End;
+    };
+    
+    // bnT = sigc[nSecretOffset] * bnSecret , TODO: mod N ?
+    if (!BN_mul(bnT, bnT, bnH, bnCtx))
+    {
+        printf("generateRingSignature(): BN_mul failed.\n");
+        rv = 1; goto End;
+    };
+    
+    if (!BN_mod_sub(bnT, bnKS, bnT, bnN, bnCtx))
+    {
+        printf("generateRingSignature(): BN_mod_sub failed.\n");
+        rv = 1; goto End;
+    };
+    
+    if ((nBytes = BN_num_bytes(bnT)) > (int)ec_secret_size
+        || BN_bn2bin(bnT, &pSigr[nSecretOffset * ec_secret_size + (32-nBytes)]) != nBytes)
+    {
+        printf("bnT -> pSigr failed.\n");
+        rv = 1; goto End;
+    };
+    
+    End:
+    if (ptT1)
+        EC_POINT_free(ptT1);
+    if (ptT2)
+        EC_POINT_free(ptT2);
+    if (ptT3)
+        EC_POINT_free(ptT3);
+    if (ptPk)
+        EC_POINT_free(ptPk);
+    if (ptKi)
+        EC_POINT_free(ptKi);
+    if (ptL)
+        EC_POINT_free(ptL);
+    if (ptR)
+        EC_POINT_free(ptR);
+    
+    BN_CTX_end(bnCtx);
+    
+    return rv;
+};
+
 int verifyRingSignature(std::vector<uint8_t>& keyImage, uint256& txnHash, int nRingSize, const uint8_t *pPubkeys, const uint8_t *pSigc, const uint8_t *pSigr)
 {
     if (fDebugRingSig)

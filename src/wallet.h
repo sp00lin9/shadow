@@ -260,6 +260,15 @@ public:
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
     int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, uint8_t* p);
     bool AreOutputsUnique(CWalletTx& wtxNew);
+    bool AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError);
+    bool SendSdcToAnon(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
+    bool SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
+    bool SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
+    
+    bool ExpandLockedAnonOutput(CWalletDB* pdb, CKeyID& ckeyId, CLockedAnonOutput& lao);
+    bool ProcessLockedAnonOutputs();
+    
+    bool EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, std::string& sError);
     
     int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly);
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly);
