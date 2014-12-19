@@ -368,7 +368,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
     CWalletTx wtx;
 
     std::string sNarr;
-    if (params.size() == 3 || params.size() == 5)
+    if(params.size() == 5)
     {
         int nNarr = params.size() - 1;
         if(params[nNarr].type() != null_type && !params[nNarr].get_str().empty())
