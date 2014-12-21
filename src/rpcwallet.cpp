@@ -366,23 +366,18 @@ Value sendtoaddress(const Array& params, bool fHelp)
     int64_t nAmount = AmountFromValue(params[1]);
 
     CWalletTx wtx;
-
     std::string sNarr;
-    if (params.size() == 3 || params.size() == 5)
-    {
-        int nNarr = params.size() - 1;
-        if(params[nNarr].type() != null_type && !params[nNarr].get_str().empty())
-            sNarr = params[nNarr].get_str();
-    }
-
-    if (sNarr.length() > 24)
-        throw runtime_error("Narration must be 24 characters or less.");
 
     // Wallet comments
     if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
         wtx.mapValue["comment"] = params[2].get_str();
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["to"]      = params[3].get_str();
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        sNarr                   = params[4].get_str();
+    if (sNarr.length() > 24)
+        throw runtime_error("Narration must be 24 characters or less.");
+
 
     string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, sNarr, wtx);
 
