@@ -46,7 +46,7 @@ enum
 enum
 {
     SCRIPT_VERIFY_NONE      = 0,
-    
+
     // Evaluate P2SH subscripts (softfork safe, BIP16).
     SCRIPT_VERIFY_P2SH      = (1U << 0),
     SCRIPT_VERIFY_NULLDUMMY = (1U << 1), // verify dummy stack item consumed by CHECKMULTISIG is of zero-length
@@ -62,9 +62,9 @@ enum
     SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS = (1U << 2),
 
     SCRIPT_VERIFY_STRICTENC = (1U << 3),
-    
     SCRIPT_VERIFY_NOCACHE   = (1U << 4), // do not store results in signature cache (but do query it)
-    
+    SCRIPT_VERIFY_ALLOW_EMPTY_SIG = (1U << 5),
+    SCRIPT_VERIFY_FIX_HASHTYPE = (1U << 6),
 };
 
 // Mandatory script verification flags that all new blocks must comply with for

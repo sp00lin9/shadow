@@ -342,10 +342,15 @@ bool static IsDefinedHashtypeSignature(const valtype &vchSig) {
     return true;
 }
 
-bool static CheckSignatureEncoding(const valtype &vchSig) {
+bool static CheckSignatureEncoding(const valtype &vchSig, unsigned int flags) {
+    // Empty signature. Not strictly DER encoded, but allowed to provide a
+    // compact way to provide an invalid signature for use with CHECK(MULTI)SIG
+    if ((flags & SCRIPT_VERIFY_ALLOW_EMPTY_SIG) && vchSig.size() == 0) {
+        return true;
+    }
     if (!IsLowDERSignature(vchSig)) {
         return false;
-    } else if (!IsDefinedHashtypeSignature(vchSig)) {
+    } else if (!(flags & SCRIPT_VERIFY_FIX_HASHTYPE) && !IsDefinedHashtypeSignature(vchSig)) {
         return false;
     }
     return true;
@@ -387,7 +392,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 return false;
             if (opcode > OP_16 && ++nOpCount > 201)
                 return false;
-            
+
             if (opcode == OP_CAT ||
                 opcode == OP_SUBSTR ||
                 opcode == OP_LEFT ||
@@ -834,7 +839,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     valtype& vch1 = stacktop(-2);
                     valtype& vch2 = stacktop(-1);
                     bool fEqual = (vch1 == vch2);
-                    
+
                     // OP_NOTEQUAL is disabled because it would be too easy to say
                     // something like n != 1 and have some wiseguy pass in 1 with extra
                     // zero bytes after it (numerically, 0x01 == 0x0001 == 0x000001)
@@ -1005,7 +1010,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     // (in -- hash)
                     if (stack.size() < 1)
                         return false;
-                    
+
                     valtype& vch = stacktop(-1);
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
                     if (opcode == OP_RIPEMD160)
@@ -1051,12 +1056,12 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
 
                     // Drop the signature, since there's no way for a signature to sign itself
                     scriptCode.FindAndDelete(CScript(vchSig));
-                    
-                    if ((flags & SCRIPT_VERIFY_STRICTENC) && (!CheckSignatureEncoding(vchSig) || !CheckPubKeyEncoding(vchPubKey)))
+
+                    if ((flags & SCRIPT_VERIFY_STRICTENC) && (!CheckSignatureEncoding(vchSig, flags) || !CheckPubKeyEncoding(vchPubKey)))
                         return false;
 
-                    bool fSuccess = CheckSig(vchSig, vchPubKey, scriptCode, txTo, nIn, nHashType, flags);
-                        
+                    bool fSuccess = CheckSignatureEncoding(vchSig, flags) && CheckPubKeyEncoding(vchPubKey) &&
+                        CheckSig(vchSig, vchPubKey, scriptCode, txTo, nIn, nHashType, flags);
 
                     popstack(stack);
                     popstack(stack);
@@ -1114,13 +1119,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     {
                         valtype& vchSig    = stacktop(-isig);
                         valtype& vchPubKey = stacktop(-ikey);
-                        
-                        if ((flags & SCRIPT_VERIFY_STRICTENC) && (!CheckSignatureEncoding(vchSig) || !CheckPubKeyEncoding(vchPubKey)))
+
+                        if ((flags & SCRIPT_VERIFY_STRICTENC) && (!CheckSignatureEncoding(vchSig, flags) || !CheckPubKeyEncoding(vchPubKey)))
                             return false;
 
                         // Check signature
-                        bool fOk = CheckSig(vchSig, vchPubKey, scriptCode, txTo, nIn, nHashType, flags);
-                            
+                        bool fOk = CheckSignatureEncoding(vchSig, flags) && CheckPubKeyEncoding(vchPubKey) &&
+                            CheckSig(vchSig, vchPubKey, scriptCode, txTo, nIn, nHashType, flags);
 
                         if (fOk)
                         {
@@ -1519,7 +1524,7 @@ static bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint2
     std::vector<valtype> vSolutions;
     if (!Solver(scriptPubKey, whichTypeRet, vSolutions))
         return false;
-    
+
     CKeyID keyID;
     switch (whichTypeRet)
     {
@@ -1645,15 +1650,15 @@ public:
         if (keystore.GetCScript(scriptId, script))
             Process(script);
     }
-    
+
     void operator()(const CStealthAddress &sxAddr) {
         CScript script;
-        
+
     }
-    
+
     void operator()(const CExtKeyPair &ek) {
         CScript script;
-        
+
     }
 
     void operator()(const CNoDestination &none) {}
@@ -1703,29 +1708,29 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, const C
     vector<vector<unsigned char> > stack, stackCopy;
     if (!EvalScript(stack, scriptSig, txTo, nIn, flags, nHashType))
         return false;
-    
+
     stackCopy = stack;
-    
-    
+
+
     if (!EvalScript(stack, scriptPubKey, txTo, nIn, flags, nHashType))
         return false;
-    
+
     if (stack.empty())
         return false;
-    
+
     if (CastToBool(stack.back()) == false)
         return false;
-    
+
     // Additional validation for spend-to-script-hash transactions:
     if ((flags & SCRIPT_VERIFY_P2SH) && scriptPubKey.IsPayToScriptHash())
     {
         if (!scriptSig.IsPushOnly()) // scriptSig must be literals-only
             return false;            // or validation fails
-        
+
         const valtype& pubKeySerialized = stackCopy.back();
         CScript pubKey2(pubKeySerialized.begin(), pubKeySerialized.end());
         popstack(stackCopy);
-        
+
         if (!EvalScript(stackCopy, pubKey2, txTo, nIn, flags, nHashType))
             return false;
         if (stackCopy.empty())
@@ -1748,7 +1753,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransa
     txnouttype whichType;
     if (!Solver(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
         return false;
-    
+
     if (whichType == TX_SCRIPTHASH)
     {
         // Solver returns the subscript that need to be evaluated;
@@ -1766,7 +1771,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CTransa
         txin.scriptSig << static_cast<valtype>(subscript);
         if (!fSolved) return false;
     }
-    
+
     // Test solution
     return VerifyScript(txin.scriptSig, fromPubKey, txTo, nIn, STANDARD_SCRIPT_VERIFY_FLAGS, 0);
 }
@@ -1776,7 +1781,7 @@ bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CTrans
     assert(nIn < txTo.vin.size());
     CTxIn& txin = txTo.vin[nIn];
     assert(txin.prevout.n < txFrom.vout.size());
-    
+
     const CTxOut& txout = txFrom.vout[txin.prevout.n];
 
     return SignSignature(keystore, txout.scriptPubKey, txTo, nIn, nHashType);
@@ -2026,13 +2031,13 @@ public:
         *script << OP_HASH160 << scriptID << OP_EQUAL;
         return true;
     }
-    
+
     bool operator()(const CStealthAddress &sxAddr) const {
         script->clear();
         LogPrintf("CScriptVisitor(CStealthAddress) TODO\n");
         return false;
     }
-    
+
     bool operator()(const CExtKeyPair &ek) const {
         script->clear();
         LogPrintf("CScriptVisitor(CExtKeyPair) TODO\n");
@@ -2057,7 +2062,7 @@ void CScript::SetMultisig(int nRequired, const std::vector<CPubKey>& keys)
 
 bool CScriptCompressor::IsToKeyID(CKeyID &hash) const
 {
-    if (script.size() == 25 && script[0] == OP_DUP && script[1] == OP_HASH160 
+    if (script.size() == 25 && script[0] == OP_DUP && script[1] == OP_HASH160
                             && script[2] == 20 && script[23] == OP_EQUALVERIFY
                             && script[24] == OP_CHECKSIG) {
         memcpy(&hash, &script[3], 20);
