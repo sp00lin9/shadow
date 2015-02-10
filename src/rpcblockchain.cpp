@@ -520,7 +520,7 @@ Value rewindchain(const Array& params, bool fHelp)
     };
     
     Object result;
-    uint32_t nRemoved = 0;
+    int nRemoved = 0;
     
     {
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -534,7 +534,7 @@ Value rewindchain(const Array& params, bool fHelp)
     
     void* nFind;
     
-    for (uint32_t i = 0; i < nNumber; ++i)
+    for (int i = 0; i < nNumber; ++i)
     {
         memset(buffer, 0, sizeof(buffer));
         
@@ -564,7 +564,7 @@ Value rewindchain(const Array& params, bool fHelp)
         long int readSize = sizeof(buffer) / 2;
         while (fpos > 0)
         {
-            if (fpos < sizeof(buffer) / 2)
+            if (fpos < (long int)sizeof(buffer) / 2)
                 readSize = fpos;
             
             memcpy(buffer+readSize, buffer, readSize); // move last read data (incase token crosses a boundary) 
@@ -597,7 +597,10 @@ Value rewindchain(const Array& params, bool fHelp)
                         break;
                     } else
                     {
-                        findPos = ((uint8_t*)nFind - buffer) - 1; // step over matched char that wasn't pchMessageStart
+                        findPos = ((uint8_t*)nFind - buffer);
+                        // -- step over matched char that wasn't pchMessageStart
+                        if (findPos > 0) // prevent findPos < 0 (unsigned)
+                            findPos--;
                     };
                 } else
                 {
@@ -609,7 +612,7 @@ Value rewindchain(const Array& params, bool fHelp)
                 break;
         };
         
-        printf("fpos %u, foundPos %u.\n", fpos, foundPos);
+        printf("fpos %ld, foundPos %ld.\n", fpos, foundPos);
         
         if (foundPos < 0)
         {
@@ -711,7 +714,7 @@ Value rewindchain(const Array& params, bool fHelp)
     
     // -- need restart, setStakeSeen etc
     if (nRemoved > 0)
-        result.push_back(Pair("Please restart application", ""));
+        result.push_back(Pair("Please restart shadowcoin", ""));
     
     if (nRemoved == nNumber)
         result.push_back(Pair("result", "success"));

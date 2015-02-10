@@ -327,6 +327,7 @@ std::string HelpMessage()
         "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n" +
         "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n" +
         "  -loadblock=<file>      " + _("Imports blocks from external blk000?.dat file") + "\n" +
+        "  -reindex               " + _("Rebuild block chain index from current blk000?.dat files on startup") + "\n" +
 
         "\n" + _("Thin options:") + "\n" +
         "  -thinmode              " + _("Operate in less secure, less resource hungry 'thin' mode") + "\n" +
@@ -1088,13 +1089,14 @@ bool AppInit2()
 
         BOOST_FOREACH(string strFile, mapMultiArgs["-loadblock"])
         {
-            FILE *file = fopen(strFile.c_str(), "rb");
+            FILE* file = fopen(strFile.c_str(), "rb");
             if (file)
                 LoadExternalBlockFile(file);
             else
                 printf("Error: -loadblock '%s' - file not found.\n", strFile.c_str());
         };
         printf("Terminating: loadblock completed.\n");
+        Finalise();
         exit(0);
     };
 
@@ -1103,7 +1105,7 @@ bool AppInit2()
     {
         uiInterface.InitMessage(_("Importing bootstrap blockchain data file."));
 
-        FILE *file = fopen(pathBootstrap.string().c_str(), "rb");
+        FILE* file = fopen(pathBootstrap.string().c_str(), "rb");
         if (file)
         {
             filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
@@ -1111,7 +1113,27 @@ bool AppInit2()
             RenameOver(pathBootstrap, pathBootstrapOld);
         };
     };
-
+    
+    if (mapArgs.count("-reindex"))
+    {
+        uiInterface.InitMessage(_("Reindexing from blk000?.dat files."));
+        
+        int nFile = 1;
+        while (true) 
+        {
+            FILE* file = OpenBlockFile(false, nFile, 0, "rb");
+            if (!file)
+                break;
+            printf("Reindexing block file blk%04u.dat...\n", (unsigned int)nFile);
+            LoadExternalBlockFile(file);
+            nFile++;
+        };
+        
+        printf("Terminating: reindex completed.\n");
+        Finalise();
+        exit(0);
+    };
+    
     // ********************************************************* Step 10: load peers
 
     uiInterface.InitMessage(_("Loading addresses..."));

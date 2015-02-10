@@ -494,6 +494,14 @@ bool CTxDB::LoadBlockIndex()
     BOOST_FOREACH(const PAIRTYPE(int, CBlockIndex*)& item, vSortedByHeight)
     {
         CBlockIndex* pindex = item.second;
+        
+        if (!pindex->pprev && pindex->GetBlockHash() != (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet))
+        {
+            if (fDebug)
+                printf("LoadBlockIndex(): Warning - Found orphaned block, height %d, hash %s. Suggest rewindchain, reindex.\n", pindex->nHeight, pindex->GetBlockHash().ToString().c_str());
+            continue;
+        };
+        
         pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + pindex->GetBlockTrust();
         // NovaCoin: calculate stake modifier checksum
         pindex->nStakeModifierChecksum = GetStakeModifierChecksum(pindex);

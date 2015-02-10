@@ -190,7 +190,11 @@ string CRPCTable::help(string strCommand) const
         
         if (fAllAnon)
         {
-                if(strMethod != "anonoutputs"
+            if (strMethod != "sendsdctoanon"
+                && strMethod != "sendanontoanon"
+                && strMethod != "sendanontosdc"
+                && strMethod != "estimateanonfee"
+                && strMethod != "anonoutputs"
                 && strMethod != "anoninfo"
                 && strMethod != "reloadanondata")
             continue;
@@ -341,6 +345,10 @@ static const CRPCCommand vRPCCommands[] =
     { "scanforalltxns",         &scanforalltxns,         false,  false},
     { "scanforstealthtxns",     &scanforstealthtxns,     false,  false},
     
+    { "sendsdctoanon",          &sendsdctoanon,          false,  false},
+    { "sendanontoanon",         &sendanontoanon,         false,  false},
+    { "sendanontosdc",          &sendanontosdc,          false,  false},
+    { "estimateanonfee",        &estimateanonfee,        false,  false},
     { "anonoutputs",            &anonoutputs,            false,  false},
     { "anoninfo",               &anoninfo,               false,  false},
     { "reloadanondata",         &reloadanondata,         false,  false},
@@ -1272,6 +1280,9 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "getblocktemplate"       && n > 0) ConvertTo<Object>(params[0]);
     if (strMethod == "listsinceblock"         && n > 1) ConvertTo<int64_t>(params[1]);
 
+    if (strMethod == "scanforalltxns"         && n > 0) ConvertTo<int64_t>(params[0]);
+    if (strMethod == "scanforstealthtxns"     && n > 0) ConvertTo<int64_t>(params[0]);
+
     if (strMethod == "sendalert"              && n > 2) ConvertTo<int64_t>(params[2]);
     if (strMethod == "sendalert"              && n > 3) ConvertTo<int64_t>(params[3]);
     if (strMethod == "sendalert"              && n > 4) ConvertTo<int64_t>(params[4]);
@@ -1295,6 +1306,14 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "keypoolrefill"          && n > 0) ConvertTo<int64_t>(params[0]);
     
     if (strMethod == "sendtostealthaddress"   && n > 1) ConvertTo<double>(params[1]);
+    
+    if (strMethod == "sendsdctoanon"          && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "sendanontoanon"         && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "sendanontoanon"         && n > 2) ConvertTo<int>(params[2]);
+    if (strMethod == "sendanontosdc"          && n > 1) ConvertTo<double>(params[1]);
+    if (strMethod == "sendanontosdc"          && n > 2) ConvertTo<int>(params[2]);
+    if (strMethod == "estimateanonfee"        && n > 0) ConvertTo<double>(params[0]);
+    if (strMethod == "estimateanonfee"        && n > 1) ConvertTo<int>(params[1]);
     
     
     if (strMethod == "thinscanmerkleblocks"   && n > 0) ConvertTo<int64_t>(params[0]);
