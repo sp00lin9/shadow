@@ -1118,6 +1118,7 @@ bool AppInit2()
     {
         uiInterface.InitMessage(_("Reindexing from blk000?.dat files."));
         
+        fReindexing = true;
         int nFile = 1;
         while (true) 
         {

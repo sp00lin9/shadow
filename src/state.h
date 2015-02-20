@@ -96,6 +96,7 @@ extern bool fNoListen;
 extern bool fLogTimestamps;
 extern bool fReopenDebugLog;
 extern bool fThinFullIndex;
+extern bool fReindexing;
 
 extern CCriticalSection cs_threadCount;
 extern int nThreadCount;

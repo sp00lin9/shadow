@@ -40,6 +40,7 @@ bool fNoListen = false;
 bool fLogTimestamps = false;
 bool fReopenDebugLog = false;
 bool fThinFullIndex = false; // when in thin mode don't keep all headers in memory
+bool fReindexing = false;
 
 CCriticalSection cs_threadCount;
 int nThreadCount = 0;
