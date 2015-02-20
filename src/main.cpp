@@ -326,7 +326,7 @@ bool ChangeNodeState(int newState, bool fProcess)
 
 bool AddDataToMerkleFilters(const std::vector<unsigned char>& vData)
 {
-    LOCK2(cs_main, pwalletMain->cs_wallet);
+    LOCK(pwalletMain->cs_wallet);
 
     if (!pwalletMain->pBloomFilter)
     {
@@ -456,7 +456,7 @@ bool GetCoinAgeThin(CTransaction txCoinStake, uint64_t& nCoinAge, std::vector<co
 
 bool Finalise()
 {
-    printf("Finalise()");
+    printf("Finalise()\n");
 
     LOCK(cs_main);
 
@@ -4072,10 +4072,8 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
     if (nSearchTime > nLastCoinStakeSearchTime)
     {
-
         if (wallet.CreateCoinStake(wallet, nBits, nSearchTime-nLastCoinStakeSearchTime, nFees, txCoinStake, key))
         {
-
             if (txCoinStake.nTime >= max(pindexBest->GetPastTimeLimit()+1, PastDrift(pindexBest->GetBlockTime())))
             {
 
@@ -6150,6 +6148,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (nNodeMode != NT_FULL
             && pwalletMain->pBloomFilter)
         {
+            LOCK(pwalletMain->cs_wallet);
             pfrom->PushMessage("filterload", *pwalletMain->pBloomFilter);
         };
 

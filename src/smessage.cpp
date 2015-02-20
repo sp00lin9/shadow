@@ -627,8 +627,10 @@ void ThreadSecureMsg(void* parg)
                             printf("Error removing bucket file %s.\n", ex.what());
                         };
                     } else
+                    {
                         printf("Path %s does not exist \n", fullPath.string().c_str());
-
+                    };
+                    
                     // -- look for a wl file, it stores incoming messages when wallet is locked
                     fullPath = GetDataDir() / "smsgStore" / (fileName + "_01_wl.dat");
                     if (fs::exists(fullPath))
@@ -642,8 +644,7 @@ void ThreadSecureMsg(void* parg)
                     };
 
                     smsgBuckets.erase(it);
-                }
-                else
+                } else
                 if (it->second.nLockCount > 0) // -- tick down nLockCount, so will eventually expire if peer never sends data
                 {
                     it->second.nLockCount--;

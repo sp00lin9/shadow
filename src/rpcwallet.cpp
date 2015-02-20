@@ -378,7 +378,6 @@ Value sendtoaddress(const Array& params, bool fHelp)
     if (sNarr.length() > 24)
         throw runtime_error("Narration must be 24 characters or less.");
 
-
     string strError = pwalletMain->SendMoneyToDestination(address.Get(), nAmount, sNarr, wtx);
 
     if (strError != "")
@@ -2346,6 +2345,194 @@ Value scanforstealthtxns(const Array& params, bool fHelp)
 
     result.push_back(Pair("result", "Scan complete."));
     result.push_back(Pair("found", std::string(cbuf)));
+
+    return result;
+}
+
+
+Value sendsdctoanon(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 5)
+        throw runtime_error(
+            "sendsdctoanon <stealth_address> <amount> [narration] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.000001"
+            "<ring_size> is a number of outputs of the same amount to include in the signature"
+            + HelpRequiringPassphrase());
+
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+    std::string sEncoded = params[0].get_str();
+
+    int64_t nAmount = AmountFromValue(params[1]);
+
+    std::string sNarr;
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
+        sNarr = params[2].get_str();
+
+    if (sNarr.length() > 24)
+        throw runtime_error("Narration must be 24 characters or less.");
+
+    CStealthAddress sxAddr;
+
+    if (!sxAddr.SetEncoded(sEncoded))
+        throw runtime_error("Invalid ShadowCoin stealth address.");
+
+    CWalletTx wtx;
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        wtx.mapValue["comment"] = params[3].get_str();
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["to"]      = params[4].get_str();
+
+    std::string sError;
+    if (!pwalletMain->SendSdcToAnon(sxAddr, nAmount, sNarr, wtx, sError))
+    {
+        printf("SendSdcToAnon failed %s\n", sError.c_str());
+        throw JSONRPCError(RPC_WALLET_ERROR, sError);
+    };
+    return wtx.GetHash().GetHex();
+}
+
+Value sendanontoanon(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.000001"
+            "<ring_size> is a number of outputs of the same amount to include in the signature"
+            + HelpRequiringPassphrase());
+
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+    std::string sEncoded = params[0].get_str();
+    int64_t nAmount = AmountFromValue(params[1]);
+
+    uint32_t nRingSize = (uint32_t)params[2].get_int();
+
+    std::ostringstream ssThrow;
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw runtime_error(ssThrow.str());
+
+
+    std::string sNarr;
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        sNarr = params[3].get_str();
+
+    if (sNarr.length() > 24)
+        throw runtime_error("Narration must be 24 characters or less.");
+
+    CStealthAddress sxAddr;
+
+    if (!sxAddr.SetEncoded(sEncoded))
+        throw runtime_error("Invalid ShadowCoin stealth address.");
+
+    CWalletTx wtx;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+
+    std::string sError;
+    if (!pwalletMain->SendAnonToAnon(sxAddr, nAmount, nRingSize, sNarr, wtx, sError))
+    {
+        printf("SendAnonToAnon failed %s\n", sError.c_str());
+        throw JSONRPCError(RPC_WALLET_ERROR, sError);
+    };
+    return wtx.GetHash().GetHex();
+}
+
+Value sendanontosdc(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendanontosdc <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.000001"
+            + HelpRequiringPassphrase());
+
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+    std::string sEncoded = params[0].get_str();
+    int64_t nAmount = AmountFromValue(params[1]);
+
+    uint32_t nRingSize = (uint32_t)params[2].get_int();
+
+    std::ostringstream ssThrow;
+    if (nRingSize < 1 || nRingSize > MAX_RING_SIZE)
+        ssThrow << "Ring size must be >= 1 and <= " << MAX_RING_SIZE << ".", throw runtime_error(ssThrow.str());
+
+
+    std::string sNarr;
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        sNarr = params[3].get_str();
+
+    if (sNarr.length() > 24)
+        throw runtime_error("Narration must be 24 characters or less.");
+
+    CStealthAddress sxAddr;
+
+    if (!sxAddr.SetEncoded(sEncoded))
+        throw runtime_error("Invalid ShadowCoin stealth address.");
+
+    CWalletTx wtx;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+
+    std::string sError;
+    if (!pwalletMain->SendAnonToSdc(sxAddr, nAmount, nRingSize, sNarr, wtx, sError))
+    {
+        printf("SendAnonToSdc failed %s\n", sError.c_str());
+        throw JSONRPCError(RPC_WALLET_ERROR, sError);
+    };
+    return wtx.GetHash().GetHex();
+}
+
+Value estimateanonfee(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 3)
+        throw runtime_error(
+            "estimateanonfee <amount> <ring_size> [narration]\n"
+            "<amount>is a real and is rounded to the nearest 0.000001");
+
+    int64_t nAmount = AmountFromValue(params[0]);
+
+    uint32_t nRingSize = (uint32_t)params[1].get_int();
+
+    std::ostringstream ssThrow;
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw runtime_error(ssThrow.str());
+
+
+    std::string sNarr;
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
+        sNarr = params[2].get_str();
+
+    if (sNarr.length() > 24)
+        throw runtime_error("Narration must be 24 characters or less.");
+
+
+    CWalletTx wtx;
+    int64_t nFee = 0;
+    std::string sError;
+    if (!pwalletMain->EstimateAnonFee(nAmount, nRingSize, sNarr, wtx, nFee, sError))
+    {
+        printf("EstimateAnonFee failed %s\n", sError.c_str());
+        throw JSONRPCError(RPC_WALLET_ERROR, sError);
+    };
+
+    uint32_t nBytes = ::GetSerializeSize(*(CTransaction*)&wtx, SER_NETWORK, PROTOCOL_VERSION);
+
+    Object result;
+
+    result.push_back(Pair("Estimated bytes", (int)nBytes));
+    result.push_back(Pair("Estimated inputs", (int)wtx.vin.size()));
+    result.push_back(Pair("Estimated outputs", (int)wtx.vout.size()));
+    result.push_back(Pair("Estimated fee", ValueFromAmount(nFee)));
 
     return result;
 }
