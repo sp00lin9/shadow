@@ -46,7 +46,7 @@ static const int MIN_THIN_VERSION = 60014;
 static const int MIN_MBLK_VERSION = 60015;
 
 // BIP 0031, pong message, is enabled for all versions AFTER this one
-static const int BIP0031_VERSION = 60015;
+static const int BIP0031_VERSION = 60000;
 
 // "mempool" command, enhanced "getdata" behavior starts with this version:
 static const int MEMPOOL_GD_VERSION = 60002;
