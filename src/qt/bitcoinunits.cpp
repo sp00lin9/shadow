@@ -11,9 +11,10 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(BTC);
-    unitlist.append(mBTC);
-    unitlist.append(uBTC);
+    unitlist.append(SDC);
+    unitlist.append(mSDC);
+    unitlist.append(uSDC);
+    unitlist.append(sSDC);
     return unitlist;
 }
 
@@ -21,9 +22,10 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
-    case BTC:
-    case mBTC:
-    case uBTC:
+    case SDC:
+    case mSDC:
+    case uSDC:
+    case sSDC:
         return true;
     default:
         return false;
@@ -34,9 +36,10 @@ QString BitcoinUnits::name(int unit)
 {
     switch(unit)
     {
-    case BTC: return QString("SDC");
-    case mBTC: return QString("mSDC");
-    case uBTC: return QString::fromUtf8("μSDC");
+    case SDC: return QString("SDC");
+    case mSDC: return QString("mSDC");
+    case uSDC: return QString::fromUtf8("μSDC");
+    case sSDC: return QString::fromUtf8("Shadowshi");
     default: return QString("???");
     }
 }
@@ -45,10 +48,11 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case BTC: return QString("ShadowCoins");
-    case mBTC: return QString("Milli-ShadowCoins (1 / 1,000)");
-    case uBTC: return QString("Micro-ShadowCoins (1 / 1,000,000)");
-    default: return QString("???");
+    case SDC:  return QString("ShadowCoins");
+    case mSDC: return QString("Milli-ShadowCoins (1 / 1,000)");
+    case uSDC: return QString("Micro-ShadowCoins (1 / 1,000,000)");
+    case sSDC: return QString("Shadowshi (1 / 100,000,000)");
+    default:   return QString("???");
     }
 }
 
@@ -56,9 +60,9 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case BTC:  return 100000000;
-    case mBTC: return 100000;
-    case uBTC: return 100;
+    case mSDC: return 100000;
+    case uSDC: return 100;
+    case sSDC: return 1;
     default:   return 100000000;
     }
 }
@@ -67,9 +71,10 @@ int BitcoinUnits::amountDigits(int unit)
 {
     switch(unit)
     {
-    case BTC: return 8; // 21,000,000 (# digits, without commas)
-    case mBTC: return 11; // 21,000,000,000
-    case uBTC: return 14; // 21,000,000,000,000
+    case SDC: return 8; // 21,000,000 (# digits, without commas)
+    case mSDC: return 11; // 21,000,000,000
+    case uSDC: return 14; // 21,000,000,000,000
+    case sSDC: return 16; // 2,100,000,000,000,000
     default: return 0;
     }
 }
@@ -78,9 +83,9 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
-    case BTC: return 8;
-    case mBTC: return 5;
-    case uBTC: return 2;
+    case SDC: return 8;
+    case mSDC: return 5;
+    case uSDC: return 2;
     default: return 0;
     }
 }

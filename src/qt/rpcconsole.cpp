@@ -261,10 +261,11 @@ void RPCConsole::setClientModel(ClientModel *model)
 {
     this->clientModel = model;
     ui->trafficGraph->setClientModel(model);
-    if(model)
+    if (model)
     {
         // Subscribe to information, replies, messages, errors
         connect(model, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+        
         connect(model, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
         updateTrafficStats(model->getTotalBytesRecv(), model->getTotalBytesSent());
@@ -448,14 +449,7 @@ void RPCConsole::on_sldGraphRange_valueChanged(int value)
 
 QString RPCConsole::FormatBytes(quint64 bytes)
 {
-    if(bytes < 1024)
-        return QString(tr("%1 B")).arg(bytes);
-    if(bytes < 1024 * 1024)
-        return QString(tr("%1 KB")).arg(bytes / 1024);
-    if(bytes < 1024 * 1024 * 1024)
-        return QString(tr("%1 MB")).arg(bytes / 1024 / 1024);
-
-    return QString(tr("%1 GB")).arg(bytes / 1024 / 1024 / 1024);
+    return QString::fromStdString(bytesReadable(bytes));
 }
 
 void RPCConsole::setTrafficGraphRange(int mins)

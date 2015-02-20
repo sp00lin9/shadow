@@ -413,16 +413,24 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message numerus="yes">
         <location line="+250"/>
-        <source>~%n block(s) remaining</source>
+        <source>~%n %s remaining</source>
         <translation>
             <numerusform>~%n block remaining</numerusform>
             <numerusform>~%n blocks remaining</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location line="+251"/>
+        <source>~%n filtered %s remaining</source>
+        <translation>
+            <numerusform>~%n filtered block remaining</numerusform>
+            <numerusform>~%n filtered blocks remaining</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+6"/>
-        <source>Downloaded %1 of %2 blocks of transaction history (%3% done).</source>
-        <translation>Downloaded %1 of %2 blocks of transaction history (%3% done).</translation>
+        <source>Downloaded %1 of %2 %3 of transaction history (%4% done).</source>
+        <translation>Downloaded %1 of %2 %3 of transaction history (%4% done).</translation>
     </message>
     <message>
         <location line="-247"/>
@@ -556,8 +564,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+40"/>
-        <source>Downloaded %1 blocks of transaction history.</source>
-        <translation>Downloaded %1 blocks of transaction history.</translation>
+        <source>Downloaded %1 %2 of transaction history.</source>
+        <translation>Downloaded %1 %2 of transaction history.</translation>
     </message>
     <message>
         <location line="+428"/>
@@ -633,8 +641,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+10"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Last received block was generated %1.</translation>
+        <source>Last received %1 was generated %2.</source>
+        <translation>Last received %1 was generated %2.</translation>
     </message>
     <message>
         <location line="+59"/>

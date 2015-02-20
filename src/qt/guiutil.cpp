@@ -107,7 +107,7 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
         {
             if(!i->second.isEmpty())
             {
-                if(!BitcoinUnits::parse(BitcoinUnits::BTC, i->second, &rv.amount))
+                if(!BitcoinUnits::parse(BitcoinUnits::SDC, i->second, &rv.amount))
                 {
                     return false;
                 }
@@ -398,12 +398,16 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         if (!optionFile.good())
             return false;
         // Write a bitcoin.desktop file to the autostart directory:
-        optionFile << "[Desktop Entry]\n";
-        optionFile << "Type=Application\n";
-        optionFile << "Name=ShadowCoin\n";
-        optionFile << "Exec=" << pszExePath << " -min\n";
-        optionFile << "Terminal=false\n";
-        optionFile << "Hidden=false\n";
+        optionFile << "[Desktop Entry]\n" \
+                   << "Version=" << FormatFullVersion() << "\n" \
+                   << "Type=Application\n" \
+                   << "Name=ShadowCoin\n" \
+                   << "Exec=" << pszExePath << "%u -min\n" \
+                   << "Icon=" <<  QFileInfo(":/icons/bitcoin").absoluteFilePath().toStdString() << "\n" \
+                   << "Terminal=false\n" \
+                   << "Hidden=false\n" \
+                   << "Categories=Application;Network;\n" \
+                   << "MimeType=x-scheme-handler/shadowcoin;\n";
         optionFile.close();
     }
     return true;
@@ -424,7 +428,7 @@ HelpMessageBox::HelpMessageBox(QWidget *parent) :
     header = tr("ShadowCoin-Qt") + " " + tr("version") + " " +
         QString::fromStdString(FormatFullVersion()) + "\n\n" +
         tr("Usage:") + "\n" +
-        "  shadowcoin-qt [" + tr("command-line options") + "]                     " + "\n";
+        "  shadow [" + tr("command-line options") + "]                     " + "\n";
 
     coreOptions = QString::fromStdString(HelpMessage());
 
