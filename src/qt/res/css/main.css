@@ -578,6 +578,7 @@ article {
 #navpanel [href='#addressbook']:before,
 #navpanel [href='#messages']:before,
 #navpanel [href='#chaindata']:before,
+#navpanel [href='#blockdata']:before,
 #navpanel [href='#news']:before {
     height: 20px;
     width: 20px;
@@ -599,6 +600,7 @@ article {
 #navpanel .selected [href='#addressbook']:before,
 #navpanel .selected [href='#messages']:before,
 #navpanel .selected [href='#chaindata']:before,
+#navpanel .selected [href='#blockdata']:before,
 #navpanel .selected [href='#news']:before {
     background: #e5203d;
 }
@@ -631,9 +633,15 @@ article {
     -webkit-mask-position-y: -274px;
 }
 
-#navpanel [href='#news']:before {
+#navpanel [href='#blockdata']:before {
     -webkit-mask-position-y: -319px;
 }
+
+#navpanel [href='#news']:before {
+    -webkit-mask-position-y: -364px;
+}
+
+
 /* End - Navigation panel items */
 
 
@@ -745,7 +753,6 @@ small screens.
 #chaindata .footable {
     table-layout: initial;
 }
-
 
 .footable > thead > tr > th > span.footable-sort-indicator:before {
     content: "\f0dc";
@@ -2178,10 +2185,35 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     margin: auto;
 }
 
+#blkexp-txn-modal {
+    margin: auto;
+    padding: 20px;
+    width: 900px;
+    height: 480px;
+    background: #fff;
+    border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+    box-shadow: 0px 0px 4px rgba(0,0,0,0.7); -webkit-box-shadow: 0 0 4px rgba(0,0,0,0.7); -moz-box-shadow: 0 0px 4px rgba(0,0,0,0.7);
+    display: none;
+    overflow: auto;
+}
+
 #transaction-info-modal {
     margin: auto;
     padding: 20px;
-    width: 640px;
+    width: 900px;
+    height: 480px;
+    background: #fff;
+    border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+    box-shadow: 0px 0px 4px rgba(0,0,0,0.7); -webkit-box-shadow: 0 0 4px rgba(0,0,0,0.7); -moz-box-shadow: 0 0px 4px rgba(0,0,0,0.7);
+    display: none;
+    overflow: auto;
+}
+
+
+#block-info-modal {
+    margin: auto;
+    padding: 20px;
+    width: 900px;
     height: 480px;
     background: #fff;
     border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
@@ -2342,4 +2374,20 @@ input[type=checkbox]:checked + label:before {
     opacity: 0.7;
     pointer-events: none;
     cursor: default;
+}
+
+ {
+    color:#999
+}
+
+.text-muted {
+    color:#999
+}
+
+.modal-tr
+ {
+    padding:8px;
+    line-height:1.42857143;
+    vertical-align:top;
+    border-bottom:1px solid #ddd
 }

@@ -98,7 +98,6 @@ namespace fs = boost::filesystem;
 
 bool SecMsgCrypter::SetKey(const std::vector<unsigned char>& vchNewKey, unsigned char* chNewIV)
 {
-
     if (vchNewKey.size() < sizeof(chKey))
         return false;
 
@@ -3185,9 +3184,6 @@ int SecureMsgSetHash(unsigned char *pHeader, unsigned char *pPayload, uint32_t n
     unsigned char civ[32];
     unsigned char sha256Hash[32];
 
-    //std::vector<unsigned char> vchHash;
-    //vchHash.resize(32);
-
     bool found = false;
     HMAC_CTX ctx;
     HMAC_CTX_init(&ctx);
@@ -3483,6 +3479,7 @@ int SecureMsgEncrypt(SecureMessage& smsg, std::string& addressFrom, std::string&
             printf("vchPayload.resize %u threw: %s.\n", SMSG_PL_HDR_LEN + lenMsgData, e.what());
             return 8;
         };
+        
         memcpy(&vchPayload[SMSG_PL_HDR_LEN], pMsgData, lenMsgData);
         // -- compact signature proves ownership of from address and allows the public key to be recovered, recipient can always reply.
         if (!pwalletMain->GetKey(ckidFrom, keyFrom))

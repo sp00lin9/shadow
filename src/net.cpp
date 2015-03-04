@@ -1229,7 +1229,7 @@ void ThreadSocketHandler2(void* parg)
                 pnode->Release();
         }
 
-        MilliSleep(10);
+        MilliSleep(100);
     }; // main loop
 }
 

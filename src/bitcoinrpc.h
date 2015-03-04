@@ -243,7 +243,7 @@ extern json_spirit::Value anoninfo(const json_spirit::Array& params, bool fHelp)
 extern json_spirit::Value reloadanondata(const json_spirit::Array& params, bool fHelp);
 
 
-
+extern json_spirit::Value txnreport(const json_spirit::Array& params, bool fHelp);
 
 
 extern json_spirit::Value smsgenable(const json_spirit::Array& params, bool fHelp);

@@ -126,6 +126,7 @@ $(function() {
     addressBookInit();
     shadowChatInit();
     chainDataPage.init();
+    blockExplorerPage.init();
 
     // Tooltip
     $('[title]').on('mouseenter', tooltip);
@@ -2092,5 +2093,193 @@ var chainDataPage = {
         }
 
         $('#chaindata .footable').trigger('footable_initialize');
+    }
+}
+var blockExplorerPage = 
+{
+    blockHeader: {},
+    findBlock: function(searchID) {
+
+        if(searchID == "" || searchID == null)
+        {
+            blockExplorerPage.updateLatestBlocks();
+        }
+        else
+        {
+            blockExplorerPage.foundBlock = bridge.findBlock(searchID);
+
+            if(blockExplorerPage.foundBlock.error_msg != '' )
+            { 
+                $('#latest-blocks-table  > tbody').html('');
+                $("#block-txs-table > tbody").html('');
+                $("#block-txs-table").addClass("none");
+                alert(blockExplorerPage.foundBlock.error_msg);
+                return false;
+            } 
+
+            var tbody = $('#latest-blocks-table  > tbody');
+            tbody.html('');
+            var txnTable = $('#block-txs-table  > tbody');
+            txnTable.html('');
+            $("#block-txs-table").addClass("none");
+
+            tbody.append('<tr data-value='+blockExplorerPage.foundBlock.block_hash+'>\
+                                     <td>'+blockExplorerPage.foundBlock.block_hash+'</td>\
+                                     <td>'+blockExplorerPage.foundBlock.block_height+'</td>\
+                                     <td>'+blockExplorerPage.foundBlock.block_timestamp+'</td>\
+                                     <td>'+blockExplorerPage.foundBlock.block_transactions+'</td>\
+                        </tr>'); 
+            blockExplorerPage.prepareBlockTable();
+        }
+        // Keeping this just in case - Will remove if not used 
+    },
+    updateLatestBlocks: function() 
+    {
+        blockExplorerPage.latestBlocks = bridge.listLatestBlocks();
+        var txnTable = $('#block-txs-table  > tbody');
+        txnTable.html('');
+        $("#block-txs-table").addClass("none");
+        var tbody = $('#latest-blocks-table  > tbody');
+        tbody.html('');
+        for (value in blockExplorerPage.latestBlocks) {
+
+            var latestBlock = blockExplorerPage.latestBlocks[value];
+
+            tbody.append('<tr data-value='+latestBlock.block_hash+'>\
+                         <td>' +  latestBlock.block_hash   + '</td>\
+                         <td>' +  latestBlock.block_height + '</td>\
+                         <td>' +  latestBlock.block_timestamp   + '</td>\
+                         <td>' +  latestBlock.block_transactions+ '</td>\
+                         </tr>'); 
+        }
+        blockExplorerPage.prepareBlockTable();
+    },
+    prepareBlockTable: function()
+    {
+        $("#latest-blocks-table  > tbody tr")
+            .on('click', function()
+                { 
+                    $(this).addClass("selected").siblings("tr").removeClass("selected"); 
+                    var blkHash = $(this).attr("data-value").trim();
+                    blockExplorerPage.blkTxns = bridge.listTransactionsForBlock(blkHash);
+                    var txnTable = $('#block-txs-table  > tbody');
+                    txnTable.html('');
+                    for (value in blockExplorerPage.blkTxns)
+                    {
+                        var blkTx = blockExplorerPage.blkTxns[value];
+
+                        txnTable.append('<tr data-value='+blkTx.transaction_hash+'>\
+                                    <td>' +  blkTx.transaction_hash  + '</td>\
+                                    <td>' +  blkTx.transaction_value + '</td>\
+                                    </tr>'); 
+                    }
+                    $("#block-txs-table").removeClass("none");
+
+                    $("#block-txs-table > tbody tr")
+                        .on('click', function() {
+                            $(this).addClass("selected").siblings("tr").removeClass("selected");
+                        })
+
+                        .on("dblclick", function(e) {
+                            $(this).attr("href", "#blkexp-txn-modal");
+
+                            $(this).leanModal({ top : 10, overlay : 0.5, closeButton: "#blkexp-txn-modal .modal_close" });
+
+                            selectedTxn = bridge.txnDetails(blkHash , $(this).attr("data-value").trim());
+
+                            if(selectedTxn.error_msg == '')
+                            {
+                                $("#txn-hash").html(selectedTxn.transaction_hash);
+                                $("#txn-size").html(selectedTxn.transaction_size);
+                                $("#txn-rcvtime").html(selectedTxn.transaction_rcv_time);
+                                $("#txn-minetime").html(selectedTxn.transaction_mined_time);
+                                $("#txn-blkhash").html(selectedTxn.transaction_block_hash);
+                                $("#txn-reward").html(selectedTxn.transaction_reward);
+                                $("#txn-confirmations").html(selectedTxn.transaction_confirmations);
+                                $("#txn-value").html(selectedTxn.transaction_value);            
+                                $("#error-msg").html(selectedTxn.error_msg);
+
+                                if(selectedTxn.transaction_reward > 0)
+                                {
+                                    $("#lbl-reward-or-fee").html('<strong>Reward</strong>');
+                                    $("#txn-reward").html(selectedTxn.transaction_reward);
+                                }
+                                else
+                                {
+                                    $("#lbl-reward-or-fee").html('<strong>Fee</strong>');
+                                    $("#txn-reward").html(selectedTxn.transaction_reward * -1);
+                                }
+                            }
+                            
+                            var txnInputs = $('#txn-detail-inputs > tbody');
+                            txnInputs.html('');
+                            for (value in selectedTxn.transaction_inputs) {
+
+                              
+                              
+                              var txnInput = selectedTxn.transaction_inputs[value];
+
+                              txnInputs.append('<tr data-value='+ txnInput.input_source_address+'>\
+                                                           <td>' + txnInput.input_source_address  + '</td>\
+                                                           <td>' + txnInput.input_value + '</td>\
+                                                </tr>'); 
+                            }
+
+                            var txnOutputs = $('#txn-detail-outputs > tbody');
+                            txnOutputs.html('');
+
+                            for (value in selectedTxn.transaction_outputs) {
+
+                              var txnOutput = selectedTxn.transaction_outputs[value];
+
+                              txnOutputs.append('<tr data-value='+ txnOutput.output_source_address+'>\
+                                                 <td>' +  txnOutput.output_source_address  + '</td>\
+                                                 <td>' +  txnOutput.output_value + '</td>\
+                                            </tr>'); 
+                            }
+
+
+                           
+                            $(this).click();
+                            $(this).off('click');
+                            $(this).on('click', function() {
+                                    $(this).addClass("selected").siblings("tr").removeClass("selected");
+                            })
+                        }).find(".editable")
+                })
+            .on("dblclick", function(e) 
+            {
+                $(this).attr("href", "#block-info-modal");
+
+                $(this).leanModal({ top : 10, overlay : 0.5, closeButton: "#block-info-modal .modal_close" });
+                
+                selectedBlock = bridge.blockDetails($(this).attr("data-value").trim()) ; 
+
+                if(selectedBlock)
+                {
+                     $("#blk-hash").html(selectedBlock.block_hash);
+                     $("#blk-numtx").html(selectedBlock.block_transactions);
+                     $("#blk-height").html(selectedBlock.block_height);
+                     $("#blk-type").html(selectedBlock.block_type);
+                     $("#blk-reward").html(selectedBlock.block_reward);
+                     $("#blk-timestamp").html(selectedBlock.block_timestamp);
+                     $("#blk-merkleroot").html(selectedBlock.block_merkle_root);
+                     $("#blk-prevblock").html(selectedBlock.block_prev_block);
+                     $("#blk-nextblock").html(selectedBlock.block_next_block);
+                     $("#blk-difficulty").html(selectedBlock.block_difficulty);
+                     $("#blk-bits").html(selectedBlock.block_bits);
+                     $("#blk-size").html(selectedBlock.block_size);
+                     $("#blk-version").html(selectedBlock.block_version);
+                     $("#blk-nonce").html(selectedBlock.block_nonce);
+                }
+
+                // $("#block-info").html();
+                $(this).click();
+
+                $(this).off('click');
+                $(this).on('click', function() {
+                $(this).addClass("selected").siblings("tr").removeClass("selected");
+                })
+            }).find(".editable")
     }
 }

@@ -38,6 +38,7 @@
         <file alias="qrcode">src/qt/res/icons/qrcode.png</file>
         <file alias="history">src/qt/res/icons/history.png</file>
         <file alias="syncing">src/qt/res/icons/syncing.gif</file>
+        <file alias="syncing_static">src/qt/res/icons/syncing_static.gif</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="about">src/qt/res/images/about.png</file>

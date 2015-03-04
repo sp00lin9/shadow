@@ -947,14 +947,12 @@ int64_t CWallet::GetShadowCredit(const CTxOut& txout) const
 
     // TODO: store links in memory
 
-    const CScript &s = txout.scriptPubKey;
-
     {
         LOCK(cs_wallet);
 
         CWalletDB walletdb(strWalletFile, "r");
 
-        CPubKey pkCoin    = CPubKey(&s[2+1], ec_compressed_size);
+        CPubKey pkCoin    = txout.ExtractAnonPk();
 
         std::vector<uint8_t> vchImage;
         if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
@@ -3058,7 +3056,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             
             if (fDebugRingSig)
                 printf("Input %d keyimage %s matches unknown txn %s, continuing.\n", i, HexStr(vchImage).c_str(), spentKeyImage.txnHash.ToString().c_str());
-                    
+            
             // -- keyimage is in db, but invalid as does not point to a known transaction
             //    could be an old mempool keyimage
             //    continue
@@ -3329,9 +3327,9 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
         {
             if (it->spend_secret.size() != ec_secret_size)
                 continue;
+            
             memcpy(&sSpend.e[0], &it->spend_secret[0], ec_secret_size);
-
-
+            
             if (StealthSharedToSecretSpend(sShared, sSpend, sSpendR) != 0)
             {
                 printf("StealthSharedToSecretSpend() failed.\n");
@@ -4740,7 +4738,6 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
     
     {
         // -- check if this output is already spent
-        LOCK(cs_main);
         CTxDB txdb;
         
         CKeyImageSpent kis;

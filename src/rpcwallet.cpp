@@ -8,6 +8,7 @@
 #include "bitcoinrpc.h"
 #include "init.h"
 #include "base58.h"
+#include "txdb.h"
 #include "stealth.h"
 #include "ringsig.h"
 #include "smessage.h"
@@ -2574,7 +2575,7 @@ Value anonoutputs(const Array& params, bool fHelp)
     {
         result.push_back(Pair("No. of coins", "amount"));
 
-        // -- mAvailableCoins is ordered bt value
+        // -- mAvailableCoins is ordered by value
         char cbuf[256];
         int64_t nTotal = 0;
         int64_t nLast = 0;
@@ -2690,7 +2691,7 @@ Value anoninfo(const Array& params, bool fHelp)
             if (!fProcessed)
                 lOutputCounts.push_back(aoc);
         };
-    }
+    };
 
     result.push_back(Pair("No. Exists, No. Spends, Least Depth", "value"));
 
@@ -2732,6 +2733,7 @@ Value reloadanondata(const Array& params, bool fHelp)
 
 
     CBlockIndex *pindex = pindexGenesisBlock;
+    
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -2744,8 +2746,285 @@ Value reloadanondata(const Array& params, bool fHelp)
 
         pwalletMain->CacheAnonStats();
     }
-
+    
     Object result;
     result.push_back(Pair("result", "reloadanondata complete."));
     return result;
 }
+
+
+static bool compareTxnTime(const CWalletTx* pa, const CWalletTx* pb)
+{
+    return pa->nTime < pb->nTime;
+};
+
+Value txnreport(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 2)
+        throw runtime_error(
+            "txnreport [collate_amounts] [show_key_images]\n"
+            "List transactions at output level.\n");
+    
+    bool fCollateAmounts = false;
+    bool fShowKeyImage = false;
+    
+    // TODO: trust CWalletTx::vfSpent?
+    
+    if (params.size() > 0)
+    {
+        std::string value = params[0].get_str();
+        if (IsStringBoolPositive(value))
+            fCollateAmounts = true;
+    };
+    
+    if (params.size() > 1)
+    {
+        std::string value = params[1].get_str();
+        if (IsStringBoolPositive(value))
+            fShowKeyImage = true;
+    };
+    
+    int64_t nWalletIn = 0;      // total inputs from owned addresses
+    int64_t nWalletOut = 0;     // total outputs from owned addresses
+    
+    Object result;
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+        
+        std::list<CWalletTx*> listOrdered;
+        for (std::map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
+        {
+            if (it->second.GetDepthInMainChain() > 0) // exclude txns not in the chain
+                listOrdered.push_back(&it->second);
+        };
+        
+        listOrdered.sort(compareTxnTime);
+        
+        std::list<CWalletTx*>::iterator it;
+        
+        Array headings;
+        headings.push_back("When");
+        headings.push_back("Txn Hash");
+        headings.push_back("In/Output type");
+        
+        headings.push_back("Address");
+        headings.push_back("Ring Size");
+        
+        if (fShowKeyImage)
+            headings.push_back("Key Image");
+        
+        headings.push_back("Owned");
+        headings.push_back("Spent");
+        
+        headings.push_back("Value In");
+        headings.push_back("Value Out");
+        
+        if (fCollateAmounts)
+        {
+            headings.push_back("Wallet In");
+            headings.push_back("Wallet Out");
+        };
+        
+        result.push_back(Pair("headings", headings));
+        
+        if (pwalletMain->IsLocked())
+        {
+            result.push_back(Pair("warning", "Wallet is locked - owned inputs may not be detected correctly."));
+        };
+        
+        Array lines;
+        
+        CTxDB txdb("r");
+        CWalletDB walletdb(pwalletMain->strWalletFile, "r");
+        
+        char cbuf[256];
+        for (it = listOrdered.begin(); it != listOrdered.end(); ++it)
+        {
+            CWalletTx* pwtx = (*it);
+            
+            Array entryTxn;
+            entryTxn.push_back(getTimeString(pwtx->nTime, cbuf, sizeof(cbuf)));
+            entryTxn.push_back(pwtx->GetHash().GetHex());
+            
+            for (uint32_t i = 0; i < pwtx->vin.size(); ++i)
+            {
+                const CTxIn& txin = pwtx->vin[i];
+                
+                int64_t nInputValue = 0;
+                
+                Array entry = entryTxn;
+                
+                std::string sAddr = "";
+                std::string sKeyImage = "";
+                bool fOwnCoin = false;
+                int nRingSize = 0;
+                if (pwtx->nVersion == ANON_TXN_VERSION
+                    && txin.IsAnonInput())
+                {
+                    entry.push_back("shadow in");
+                    std::vector<uint8_t> vchImage;
+                    txin.ExtractKeyImage(vchImage);
+                    nRingSize = txin.ExtractRingSize();
+                    
+                    sKeyImage = HexStr(vchImage);
+                    
+                    CKeyImageSpent ski;
+                    bool fInMemPool;
+                    if (GetKeyImage(&txdb, vchImage, ski, fInMemPool))
+                        nInputValue = ski.nValue;
+                    
+                    COwnedAnonOutput oao;
+                    if (walletdb.ReadOwnedAnonOutput(vchImage, oao))
+                    {
+                        fOwnCoin = true;
+                    } else
+                    if (pwalletMain->IsCrypted())
+                    {
+                        // - tokens received with locked wallet won't have oao until wallet unlocked
+                        //   No way to tell if locked input is owned
+                        //   need vchImage
+                        
+                        // TODO, closest would be to tell if it's possible for the input to be owned
+                        sKeyImage = "locked?";
+                    };
+                    
+                } else
+                {
+                    entry.push_back("sdc in");
+                    
+                    if (pwalletMain->IsMine(txin))
+                        fOwnCoin = true;
+                    
+                    CTransaction prevTx;
+                    if (txdb.ReadDiskTx(txin.prevout.hash, prevTx))
+                    {
+                        if (txin.prevout.n < prevTx.vout.size())
+                        {
+                            const CTxOut &vout = prevTx.vout[txin.prevout.n];
+                            nInputValue = vout.nValue;
+                            
+                            CTxDestination address;
+                            if (ExtractDestination(vout.scriptPubKey, address))
+                                sAddr = CBitcoinAddress(address).ToString();
+                        } else
+                        {
+                            nInputValue = 0;
+                        };
+                    };
+                };
+                
+                if (fOwnCoin)
+                    nWalletIn += nInputValue;
+                
+                
+                entry.push_back(sAddr);
+                entry.push_back(nRingSize == 0 ? "" : strprintf("%d", nRingSize));
+                
+                if (fShowKeyImage)
+                    entry.push_back(sKeyImage);
+                
+                entry.push_back(fOwnCoin);
+                entry.push_back(""); // spent
+                entry.push_back(strprintf("%f", (double)nInputValue / (double)COIN));
+                entry.push_back(""); // out
+                
+                if (fCollateAmounts)
+                {
+                    entry.push_back(strprintf("%f", (double)nWalletIn / (double)COIN));
+                    entry.push_back(strprintf("%f", (double)nWalletOut / (double)COIN));
+                };
+                
+                lines.push_back(entry);
+            };
+            
+            for (unsigned int i = 0; i < pwtx->vout.size(); i++)
+            {
+                const CTxOut& txout = pwtx->vout[i];
+                
+                if (txout.nValue < 1) // metadata output, narration or stealth
+                    continue;
+                
+                Array entry = entryTxn;
+                
+                
+                std::string sAddr = "";
+                std::string sKeyImage = "";
+                bool fOwnCoin = false;
+                bool fSpent = false;
+                
+                if (pwtx->nVersion == ANON_TXN_VERSION
+                    && txout.IsAnonOutput())
+                {
+                    entry.push_back("shadow out");
+                    
+                    CPubKey pkCoin    = txout.ExtractAnonPk();
+                    
+                    std::vector<uint8_t> vchImage;
+                    COwnedAnonOutput oao;
+                    
+                    if (walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage)
+                        && walletdb.ReadOwnedAnonOutput(vchImage, oao))
+                    {
+                        sKeyImage = HexStr(vchImage);
+                        fOwnCoin = true;
+                    } else
+                    if (pwalletMain->IsCrypted())
+                    {
+                        // - tokens received with locked wallet won't have oao until wallet unlocked
+                        CKeyID ckCoinId = pkCoin.GetID();
+                        
+                        CLockedAnonOutput lockedAo;
+                        if (walletdb.ReadLockedAnonOutput(ckCoinId, lockedAo))
+                            fOwnCoin = true;
+                        
+                        sKeyImage = "locked?";
+                    };
+                } else
+                {
+                    entry.push_back("sdc out");
+                    
+                    CTxDestination address;
+                    if (ExtractDestination(txout.scriptPubKey, address))
+                        sAddr = CBitcoinAddress(address).ToString();
+                    
+                    if (pwalletMain->IsMine(txout))
+                        fOwnCoin = true;
+                };
+                
+                if (fOwnCoin)
+                {
+                    nWalletOut += txout.nValue;
+                    fSpent = pwtx->IsSpent(i);
+                };
+                
+                entry.push_back(sAddr);
+                
+                entry.push_back(""); // ring size (only for inputs)
+                
+                if (fShowKeyImage)
+                    entry.push_back(sKeyImage);
+                
+                entry.push_back(fOwnCoin);
+                entry.push_back(fSpent);
+                
+                entry.push_back(""); // in
+                entry.push_back(ValueFromAmount(txout.nValue));
+                
+                if (fCollateAmounts)
+                {
+                    entry.push_back(strprintf("%f", (double)nWalletIn / (double)COIN));
+                    entry.push_back(strprintf("%f", (double)nWalletOut / (double)COIN));
+                };
+                
+                lines.push_back(entry);
+            };
+        };
+        result.push_back(Pair("data", lines));
+    }
+    
+    
+    result.push_back(Pair("result", "txnreport complete."));
+    return result;
+}
+
+

@@ -12,7 +12,6 @@
 #include "addressbookpage.h"
 #include "addresstablemodel.h"
 
-
 #include "messagemodel.h"
 
 #include "clientmodel.h"
@@ -27,6 +26,8 @@
 
 #include "askpassphrasedialog.h"
 
+#include "txdb.h"
+
 #include <QApplication>
 #include <QThread>
 #include <QWebFrame>
@@ -37,11 +38,16 @@
 #include <QVariantList>
 #include <QVariantMap>
 
+#include <QDebug>
 #include <QDir>
-
+#include <list>
 #define ROWS_TO_REFRESH 200
 
 extern CWallet* pwalletMain;
+extern CBlockIndex* pindexBest;
+extern CBlockIndex* FindBlockByHeight(int nHeight);
+extern CBlockIndex *InsertBlockIndex(uint256 hash);
+extern double GetDifficulty(const CBlockIndex* blockindex);
 
 class TransactionModel : public QObject
 {
@@ -74,6 +80,7 @@ public:
         QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
         QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
         QModelIndex amount   = status.sibling(row, TransactionTableModel::Amount);
+        
         QVariantMap transaction;
 
         transaction.insert("id",   status.data(TransactionTableModel::TxIDRole).toString());
@@ -143,8 +150,8 @@ public:
             emitTransactions(transactions);
 
         running = false;
-    }
 
+    }
     QSortFilterProxyModel * getModel()
     {
         return ttm;
@@ -249,7 +256,6 @@ signals:
 private:
     bool running;
 };
-
 
 class MessageThread : public QThread
 {
@@ -1000,4 +1006,368 @@ QVariantMap ShadowBridge::userAction(QVariantMap action)
     }
 
     return QVariantMap();
+}
+
+// Blocks
+QVariantMap ShadowBridge::listLatestBlocks()
+{
+    CBlockIndex* recentBlock = pindexBest;
+    CBlock block;
+    QVariantMap latestBlocks;
+
+
+    for (int x = 0; x < 5 && recentBlock; x++)
+    {
+
+        block.ReadFromDisk(recentBlock, true);
+
+        if (block.IsNull() || block.vtx.size() < 1)
+        {
+            latestBlocks.insert("error_msg", "Block not found.");
+            return latestBlocks;
+        };
+
+        QVariantMap latestBlock;
+        latestBlock.insert("block_hash"         , QString::fromStdString(recentBlock->GetBlockHash().ToString()));
+        latestBlock.insert("block_height"       , recentBlock->nHeight);
+        latestBlock.insert("block_timestamp"    , DateTimeStrFormat("%x %H:%M:%S", recentBlock->GetBlockTime()).c_str());
+        latestBlock.insert("block_transactions" , QString::number(block.vtx.size() - 1));
+        latestBlock.insert("block_size"         , recentBlock->nBits);
+        latestBlocks.insert(QString::number(x)  , latestBlock);
+        recentBlock = recentBlock->pprev;
+    }
+    return latestBlocks;
+}
+
+QVariantMap ShadowBridge::findBlock(QString searchID)
+{
+    CBlockIndex* findBlock;
+    
+    int blkHeight = searchID.toInt();
+    
+    QVariantMap foundBlock;
+    
+    if (blkHeight != 0 || searchID == "0")
+    {
+        findBlock = FindBlockByHeight(blkHeight);
+    } else
+    {
+        uint256 hash, hashBlock;
+        hash.SetHex(searchID.toStdString());
+        
+        // -- look for a block or transaction
+        //    Note: only finds transactions in the block chain
+        std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
+        if (mi != mapBlockIndex.end()
+            || (GetTransactionBlockHash(hash, hashBlock)
+                && (mi = mapBlockIndex.find(hashBlock)) != mapBlockIndex.end()))
+        {
+            findBlock = mi->second;
+        } else
+        {
+            findBlock = NULL;
+        };
+    };
+    
+    if (!findBlock)
+    {
+        foundBlock.insert("error_msg", "Block / transaction not found.");
+        return foundBlock;
+    };
+
+    CBlock block;
+    block.ReadFromDisk(findBlock, true);
+
+    if (block.IsNull() || block.vtx.size() < 1)
+    {
+        foundBlock.insert("error_msg", "Block not found.");
+        return foundBlock;
+    };
+
+    foundBlock.insert("block_hash"         , QString::fromStdString(findBlock->GetBlockHash().ToString()));
+    foundBlock.insert("block_height"       , findBlock->nHeight);
+    foundBlock.insert("block_timestamp"    , DateTimeStrFormat("%x %H:%M:%S", findBlock->GetBlockTime()).c_str());
+    foundBlock.insert("block_transactions" , QString::number(block.vtx.size() - 1));
+    foundBlock.insert("block_size"         , findBlock->nBits);
+    foundBlock.insert("error_msg"          , "");
+
+    return foundBlock;
+}
+
+QVariantMap ShadowBridge::blockDetails(QString blkHash)
+{
+    QVariantMap blockDetail;
+    
+    uint256 hash;
+    hash.SetHex(blkHash.toStdString());
+    
+    CBlockIndex* blkIndex;
+    CBlock block;
+    
+    std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
+    if (mi == mapBlockIndex.end())
+    {
+        blockDetail.insert("error_msg", "Block not found.");
+        return blockDetail;
+    };
+    
+    blkIndex  = mi->second;
+    block.ReadFromDisk(blkIndex, true);
+    
+    if (block.IsNull() || block.vtx.size() < 1)
+    {
+        blockDetail.insert("error_msg", "Block not found.");
+        return blockDetail;
+    };
+    
+    CTxDB txdb("r");
+    MapPrevTx mapInputs;
+    std::map<uint256, CTxIndex> mapUnused;
+    bool fInvalid = false;
+    int64_t nTxValueIn = 0, nTxValueOut = 0;
+    std::string sBlockType = "";
+    if (block.IsProofOfStake())
+    {
+        sBlockType = "PoS";
+        
+        CTransaction& coinstake = block.vtx[1]; // IsProofOfStake checks vtx > 1
+        
+        if (coinstake.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
+            nTxValueIn = coinstake.GetValueIn(mapInputs);
+        // else error
+        
+        nTxValueOut = coinstake.GetValueOut();
+    } else
+    {
+        sBlockType = "PoW";
+        
+        CTransaction& coinbase = block.vtx[0]; // check vtx.size() above
+        
+        if (coinbase.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
+            nTxValueIn = coinbase.GetValueIn(mapInputs);
+        // else error
+        
+        nTxValueOut = coinbase.GetValueOut();
+    };
+    
+    double nBlockReward = (double)(nTxValueOut - nTxValueIn) / (double)COIN;
+    
+
+    std::string sHashPrev = blkIndex->pprev ? blkIndex->pprev->GetBlockHash().ToString() : "None";
+    std::string sHashNext = blkIndex->pnext ? blkIndex->pnext->GetBlockHash().ToString() : "None";
+    
+    blockDetail.insert("block_hash"             , QString::fromStdString(blkIndex->GetBlockHash().ToString()));
+    blockDetail.insert("block_transactions"     , QString::number(block.vtx.size() - 1));
+    blockDetail.insert("block_height"           , blkIndex->nHeight);
+    blockDetail.insert("block_type"             , QString::fromStdString(sBlockType));
+    blockDetail.insert("block_reward"           , QString::number(nBlockReward));
+    blockDetail.insert("block_timestamp"        , DateTimeStrFormat("%x %H:%M:%S", blkIndex->GetBlockTime()).c_str());
+    blockDetail.insert("block_merkle_root"      , QString::fromStdString(blkIndex->hashMerkleRoot.ToString()));
+    blockDetail.insert("block_prev_block"       , QString::fromStdString(sHashPrev));
+    blockDetail.insert("block_next_block"       , QString::fromStdString(sHashNext));
+    blockDetail.insert("block_difficulty"       , GetDifficulty(blkIndex));
+    blockDetail.insert("block_bits"             , blkIndex->nBits);
+    blockDetail.insert("block_size"             , (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION));
+    blockDetail.insert("block_version"          , blkIndex->nVersion);
+    blockDetail.insert("block_nonce"            , blkIndex->nNonce);
+    blockDetail.insert("error_msg"              , "");
+    
+    return blockDetail;
+}
+
+QVariantMap ShadowBridge::listTransactionsForBlock(QString blkHash)
+{
+    QVariantMap blkTransactions;
+
+    uint256 hash;
+    hash.SetHex(blkHash.toStdString());
+
+    CBlockIndex* selectedBlkIndex;
+    CBlock block;
+
+    std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
+    if (mi == mapBlockIndex.end())
+    {
+        blkTransactions.insert("error_msg", "Block not found.");
+        return blkTransactions;
+    };
+
+    selectedBlkIndex  = mi->second;
+    block.ReadFromDisk(selectedBlkIndex, true);
+
+    if (block.IsNull() || block.vtx.size() < 1)
+    {
+        blkTransactions.insert("error_msg", "Block not found.");
+        return blkTransactions;
+    };
+
+    for (uint x = 0; x < block.vtx.size(); x++)
+    {
+        if(block.vtx[x].GetValueOut() == 0)
+            continue;
+
+        QVariantMap blockTxn;
+        CTransaction txn;
+        txn = block.vtx[x];
+
+        blockTxn.insert("transaction_hash"        , QString::fromStdString(txn.GetHash().ToString()));
+        blockTxn.insert("transaction_value"       , QString::number(txn.GetValueOut() / (double)COIN));
+        blkTransactions.insert(QString::number(x) , blockTxn);
+
+    }
+
+    return blkTransactions;
+}
+
+QVariantMap ShadowBridge::txnDetails(QString blkHash, QString txnHash)
+{
+    QVariantMap txnDetail;
+
+    uint256 hash;
+    hash.SetHex(blkHash.toStdString());
+
+    uint256 thash;
+    thash.SetHex(txnHash.toStdString());
+
+    CBlockIndex* selectedBlkIndex;
+    CBlock block;
+
+    std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
+    if (mi == mapBlockIndex.end())
+    {
+        txnDetail.insert("error_msg", "Block not found.");
+        return txnDetail;
+    };
+    selectedBlkIndex  = mi->second;
+    block.ReadFromDisk(selectedBlkIndex, true);
+
+    if (block.IsNull() || block.vtx.size() < 1)
+    {
+        txnDetail.insert("error_msg", "Block not found.");
+        return txnDetail;
+    };
+
+    for (uint x = 0; x < block.vtx.size(); x++)
+    {
+
+        if(block.vtx[x].GetHash() != thash)
+            continue;
+
+        CTransaction txn;
+        CTxIndex txIdx;
+        CTxDB txdb("r");
+        MapPrevTx mapInputs;
+        std::map<uint256, CTxIndex> mapUnused;
+        txdb.ReadDiskTx(thash, txn, txIdx);
+
+        bool fInvalid = false;
+        int64_t nTxValueIn = 0, nTxValueOut = 0;
+
+        if (txn.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
+            nTxValueIn = txn.GetValueIn(mapInputs);
+        else continue;
+
+        nTxValueOut = txn.GetValueOut();
+        double nTxnRewardOrFee = (double)(nTxValueOut - nTxValueIn) / (double)COIN;
+
+        // Lets start collecting the INPUTS
+        QVariantMap inputDetails;
+
+        for (uint32_t i = 0; i < txn.vin.size(); ++i)
+        {
+            QVariantMap inputDetail;
+            const CTxIn& txin = txn.vin[i];
+
+            std::string sAddr = "";
+            std::string sCoinValue;
+
+            if (txn.nVersion == ANON_TXN_VERSION
+                && txin.IsAnonInput())
+            {
+                sAddr = "Shadow";
+                std::vector<uint8_t> vchImage;
+                txin.ExtractKeyImage(vchImage);
+
+                CKeyImageSpent ski;
+                bool fInMemPool;
+                if (GetKeyImage(&txdb, vchImage, ski, fInMemPool))
+                {
+                    sCoinValue = strprintf("%f", (double)ski.nValue / (double)COIN);
+                } else
+                {
+                    sCoinValue = "spend not in chain!";
+                };
+
+            } else
+            {
+                CTransaction prevTx;
+                if (txdb.ReadDiskTx(txin.prevout.hash, prevTx))
+                {
+                    if (txin.prevout.n < prevTx.vout.size())
+                    {
+                        const CTxOut &vout = prevTx.vout[txin.prevout.n];
+                        sCoinValue = strprintf("%f", (double)vout.nValue / (double)COIN);
+
+
+                        CTxDestination address;
+                        if (ExtractDestination(vout.scriptPubKey, address))
+                            sAddr = CBitcoinAddress(address).ToString();
+                    } else
+                    {
+                        sCoinValue = "out of range";
+                    };
+                };
+            };
+
+            inputDetail.insert("input_source_address", QString::fromStdString(sAddr));
+            inputDetail.insert("input_value"         , QString::fromStdString(sCoinValue));
+            inputDetails.insert(QString::number(i)   , inputDetail);
+
+        };
+
+        // Lets start collecting the OUTPUTS
+        QVariantMap outputDetails;
+
+        for (unsigned int i = 0; i < txn.vout.size(); i++)
+        {
+            QVariantMap outputDetail;
+            const CTxOut& txout = txn.vout[i];
+
+             if (txout.nValue < 1) // metadata output, narration or stealth
+                 continue;
+
+             std::string sAddr = "";
+
+
+             if( txn.nVersion == ANON_TXN_VERSION
+                 && txout.IsAnonOutput() )
+                 sAddr = "Shadow";
+             else
+             {
+                 CTxDestination address;
+                 if (ExtractDestination(txout.scriptPubKey, address))
+                    sAddr = CBitcoinAddress(address).ToString();
+             }
+
+             outputDetail.insert("output_source_address", QString::fromStdString(sAddr));
+             outputDetail.insert("output_value"         , QString::number((double)txout.nValue / (double)COIN ));
+             outputDetails.insert(QString::number(i)    , outputDetail);
+        };
+
+        txnDetail.insert("transaction_hash"         , QString::fromStdString(txn.GetHash().ToString()));
+        txnDetail.insert("transaction_value"        , QString::number(txn.GetValueOut() / (double)COIN));
+        txnDetail.insert("transaction_size"         , (int)::GetSerializeSize(txn, SER_NETWORK, PROTOCOL_VERSION));
+        txnDetail.insert("transaction_rcv_time"     , DateTimeStrFormat("%x %H:%M:%S", txn.nTime ).c_str());
+        txnDetail.insert("transaction_mined_time"   , DateTimeStrFormat("%x %H:%M:%S", block.GetBlockTime()).c_str());
+        txnDetail.insert("transaction_block_hash"   , QString::fromStdString(block.GetHash().ToString()));
+        txnDetail.insert("transaction_reward"       , QString::number(nTxnRewardOrFee));
+        txnDetail.insert("transaction_confirmations", QString::number( txIdx.GetDepthInMainChainFromIndex() ));
+        txnDetail.insert("transaction_inputs"       , inputDetails);
+        txnDetail.insert("transaction_outputs"      , outputDetails);
+        txnDetail.insert("error_msg"                , "");
+
+        break;
+    }
+
+    return txnDetail;
 }

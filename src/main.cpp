@@ -1354,6 +1354,25 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
     return false;
 }
 
+bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock)
+{
+    {
+        LOCK(cs_main);
+        CTxDB txdb("r");
+        CTxIndex txindex;
+        if (txdb.ReadTxIndex(hash, txindex))
+        {
+            CBlock block;
+            if (block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
+            {
+                hashBlock = block.GetHash();
+                return true;
+            };
+        };
+    }
+    return false;
+}
+
 bool GetKeyImage(CTxDB* ptxdb, ec_point& keyImage, CKeyImageSpent& keyImageSpent, bool& fInMempool)
 {
     AssertLockHeld(cs_main);
@@ -1998,7 +2017,6 @@ bool CBlockThin::SetBestThinChain(CTxDB& txdb, CBlockThinIndex* pindexNew)
 //
 // CBlock and CBlockIndex
 //
-
 static CBlockIndex* pblockindexFBBHLast;
 CBlockIndex* FindBlockByHeight(int nHeight)
 {
@@ -2009,10 +2027,16 @@ CBlockIndex* FindBlockByHeight(int nHeight)
         pblockindex = pindexBest;
     if (pblockindexFBBHLast && abs(nHeight - pblockindex->nHeight) > abs(nHeight - pblockindexFBBHLast->nHeight))
         pblockindex = pblockindexFBBHLast;
-    while (pblockindex->nHeight > nHeight)
+
+    while (pblockindex->pprev && pblockindex->nHeight > nHeight)
         pblockindex = pblockindex->pprev;
-    while (pblockindex->nHeight < nHeight)
+
+    while (pblockindex->pnext && pblockindex->nHeight < nHeight)
         pblockindex = pblockindex->pnext;
+
+    if (pblockindex->nHeight != nHeight)
+        return NULL;
+
     pblockindexFBBHLast = pblockindex;
     return pblockindex;
 }
@@ -2865,7 +2889,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
     if (!txdb.WriteBlockIndex(CDiskBlockIndex(pindex)))
-        return error("Connect() : WriteBlockIndex for pindex failed");
+        return error("ConnectBlock() : WriteBlockIndex for pindex failed");
 
     if (fJustCheck)
         return true;

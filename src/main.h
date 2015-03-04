@@ -152,6 +152,7 @@ int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
 std::string GetWarnings(std::string strFor);
 bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock);
+bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock);
 
 bool GetKeyImage(CTxDB* ptxdb, ec_point& keyImage, CKeyImageSpent& keyImageSpent, bool& fInMempool);
 bool TxnHashInSystem(CTxDB* ptxdb, uint256& txnHash);
@@ -434,6 +435,12 @@ public:
     {
         printf("%s\n", ToString().c_str());
     }
+    
+    CPubKey ExtractAnonPk() const
+    {
+        // always use IsAnonOutput to check length
+        return CPubKey(&scriptPubKey[2+1], ec_compressed_size);
+    };
 };
 
 

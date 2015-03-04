@@ -9,12 +9,15 @@ src/build.h
 *.rej
 *.orig
 *.o
+*.P
 *.patch
-.sdcoin
+*.dat
+*.autosave
+.shadowcoin
 #compilation and Qt preprocessor part
 *.qm
 Makefile
-shadowcoin-qt
+shadow
 #resources cpp
 qrc_*.cpp
 #qt creator
