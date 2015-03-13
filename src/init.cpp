@@ -53,7 +53,7 @@ enum Checkpoints::CPMode CheckpointsMode;
 void ExitTimeout(void* parg)
 {
 #ifdef WIN32
-    sleep(5);
+    MilliSleep(5000);
     ExitProcess(0);
 #endif
 }
@@ -1190,7 +1190,7 @@ bool AppInit2()
     // Loop until process is exit()ed from shutdown() function,
     // called from ThreadRPCServer thread when a "stop" command is received.
     while (1)
-        sleep(5);
+        MilliSleep(5000);
 #endif
 
     return true;

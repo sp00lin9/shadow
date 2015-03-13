@@ -6666,7 +6666,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (fSecMsgEnabled)
                 SecureMsgScanBlock(block);
             
-            usleep(100);
+            MilliSleep(100);
         };
 
 

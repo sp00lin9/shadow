@@ -680,7 +680,7 @@ void ThreadSecureMsg(void* parg)
             };
         }; // LOCK(cs_smsg);
 
-        sleep(SMSG_THREAD_DELAY); //  // check every SMSG_THREAD_DELAY seconds
+        MilliSleep(SMSG_THREAD_DELAY * 1000); //  // check every SMSG_THREAD_DELAY seconds
     };
 
     printf("ThreadSecureMsg exited.\n");
@@ -775,7 +775,7 @@ void ThreadSecureMsgPow(void* parg)
         }
 
         // -- shutdown thread waits 5 seconds, this should be less
-        sleep(2); // seconds
+        MilliSleep(2000); // seconds
     };
 
     printf("ThreadSecureMsgPow exited.\n");
@@ -1284,7 +1284,7 @@ bool SecureMsgDisable()
     }; // LOCK(cs_smsg);
 
     // -- allow time for threads to stop
-    sleep(3); // seconds
+    MilliSleep(3000); // seconds
     // TODO be certain that threads have stopped
 
     if (smsgDB)
