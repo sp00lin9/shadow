@@ -68,7 +68,6 @@ namespace Checkpoints
     void AskForPendingSyncCheckpoint(CNode* pfrom);
     bool SetCheckpointPrivKey(std::string strPrivKey);
     bool SendSyncCheckpoint(uint256 hashCheckpoint);
-    bool IsMatureSyncCheckpoint();
 }
 
 // ppcoin: synchronized checkpoint
@@ -104,7 +103,7 @@ public:
 
     void print() const
     {
-        printf("%s", ToString().c_str());
+        LogPrintf("%s", ToString().c_str());
     }
 };
 
@@ -161,5 +160,7 @@ public:
     bool ProcessSyncCheckpoint(CNode* pfrom);
     bool ProcessSyncCheckpointHeaders(CNode* pfrom);
 };
+
+extern enum Checkpoints::CPMode CheckpointsMode;
 
 #endif

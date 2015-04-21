@@ -106,7 +106,7 @@ public:
         case CT_NEW:
             if(inModel)
             {
-                OutputDebugStringF("Warning: AddressTablePriv::updateEntry: Got CT_NEW, but entry is already in model\n");
+                LogPrintf("Warning: AddressTablePriv::updateEntry: Got CT_NEW, but entry is already in model\n");
                 break;
             }
             parent->beginInsertRows(QModelIndex(), lowerIndex, lowerIndex);
@@ -116,7 +116,7 @@ public:
         case CT_UPDATED:
             if(!inModel)
             {
-                OutputDebugStringF("Warning: AddressTablePriv::updateEntry: Got CT_UPDATED, but entry is not in model\n");
+                LogPrintf("Warning: AddressTablePriv::updateEntry: Got CT_UPDATED, but entry is not in model\n");
                 break;
             }
             lower->type = newEntryType;
@@ -126,7 +126,7 @@ public:
         case CT_DELETED:
             if(!inModel)
             {
-                OutputDebugStringF("Warning: AddressTablePriv::updateEntry: Got CT_DELETED, but entry is not in model\n");
+                LogPrintf("Warning: AddressTablePriv::updateEntry: Got CT_DELETED, but entry is not in model\n");
                 break;
             }
             parent->beginRemoveRows(QModelIndex(), lowerIndex, upperIndex-1);
@@ -260,7 +260,7 @@ bool AddressTableModel::setData(const QModelIndex &index, const QVariant &value,
             std::string sTemp = value.toString().toStdString();
             if (IsStealthAddress(sTemp))
             {
-                printf("TODO\n");
+                LogPrintf("TODO\n");
                 editStatus = INVALID_ADDRESS;
                 return false;
             }
@@ -535,7 +535,7 @@ QString AddressTableModel::pubkeyForAddress(const QString &address, const bool l
 
             if (SecureMsgGetLocalKey (destinationAddress, destinationKey) == 0 // test if it's a local key
              || SecureMsgGetStoredKey(destinationAddress, destinationKey) == 0)
-                return QString::fromStdString(EncodeBase58(destinationKey.Raw()).c_str());
+                return QString::fromStdString(EncodeBase58(destinationKey.begin(), destinationKey.end()).c_str());
         }
 
         return "";

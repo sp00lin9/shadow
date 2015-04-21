@@ -21,6 +21,7 @@
 #include "guiutil.h"
 #include "wallet.h"
 #include "util.h"
+#include "init.h"
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -35,6 +36,7 @@
 #include <QMenu>
 #include <QVBoxLayout>
 #include <QIcon>
+#include <QTimer>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -50,6 +52,7 @@
 #include <QUrl>
 #include <QTextStream>
 #include <QTextDocument>
+
 
 #include <iostream>
 
@@ -112,6 +115,9 @@ ShadowGUI::ShadowGUI(QWidget *parent):
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
+    
+    // prevents an oben debug window from becoming stuck/unusable on client shutdown
+    connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
     documentFrame = webView->page()->mainFrame();
 
@@ -944,8 +950,7 @@ void ShadowGUI::updateWeight()
     if (!lockWallet)
         return;
 
-    uint64_t nMinWeight = 0, nMaxWeight = 0;
-    pwalletMain->GetStakeWeight(*pwalletMain, nMinWeight, nMaxWeight, nWeight);
+    nWeight = pwalletMain->GetStakeWeight();
 }
 
 void ShadowGUI::updateStakingIcon()
@@ -957,9 +962,10 @@ void ShadowGUI::updateStakingIcon()
 
     if (nLastCoinStakeSearchInterval && nWeight)
     {
+        uint64_t nWeight = this->nWeight;
         uint64_t nNetworkWeight = GetPoSKernelPS();
-        unsigned nEstimateTime = nTargetSpacing * nNetworkWeight / nWeight;
-
+        unsigned nEstimateTime = GetTargetSpacing(nBestHeight) * nNetworkWeight / nWeight;
+        
         QString text;
 
         text = (nEstimateTime < 60)           ? tr("%n second(s)", "", nEstimateTime) : \
@@ -970,20 +976,29 @@ void ShadowGUI::updateStakingIcon()
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
+        
+        nWeight /= COIN;
+        nNetworkWeight /= COIN;
 
         stakingIcon.setAttribute("title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
-    }
-    else
+    } else
     {
         stakingIcon.   addClass("not-staking");
         stakingIcon.removeClass("staking");
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         stakingIcon.setAttribute("title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
+                                          (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
                                           (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
                                           (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
                                           (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
                                           (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
                                                                                      tr("Not staking"));
     }
+}
+
+void ShadowGUI::detectShutdown()
+{
+    if (ShutdownRequested())
+        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 }

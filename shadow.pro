@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = shadow
 VERSION = 1.3.1.0
 INCLUDEPATH += src src/json src/qt
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
+DEFINES += BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
 CONFIG += thread
 
@@ -66,7 +66,6 @@ build_macosx64 {
     MINIUPNPC_INCLUDE_PATH=/usr/local/opt/miniupnpc/include
     MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/1.8.20131007/lib
 
-    DEFINES += IS_ARCH_64
     QMAKE_CXXFLAGS += -arch x86_64 -stdlib=libc++
     QMAKE_CFLAGS += -arch x86_64
     QMAKE_LFLAGS += -arch x86_64 -stdlib=libc++
@@ -197,23 +196,27 @@ QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wno-ignored-qu
 # Input
 DEPENDPATH += src src/json src/qt
 HEADERS += \
-    src/qt/transactiontablemodel.h \
-    src/qt/addresstablemodel.h \
-    src/qt/coincontroldialog.h \
-    src/qt/coincontroltreewidget.h \
-    src/qt/signverifymessagedialog.h \
-    src/qt/aboutdialog.h \
-    src/qt/editaddressdialog.h \
-    src/qt/bitcoinaddressvalidator.h \
     src/alert.h \
+    src/allocators.h \
+    src/wallet.h \
+    src/keystore.h \
+    src/version.h \
+    src/netbase.h \
+    src/clientversion.h \
+    src/threadsafety.h \
+    src/protocol.h \
+    src/ui_interface.h \
+    src/crypter.h \
     src/addrman.h \
     src/base58.h \
     src/bignum.h \
+    src/chainparams.h \
     src/checkpoints.h \
     src/compat.h \
     src/coincontrol.h \
     src/sync.h \
     src/util.h \
+    src/hash.h \
     src/uint256.h \
     src/kernel.h \
     src/scrypt.h \
@@ -225,6 +228,7 @@ HEADERS += \
     src/miner.h \
     src/net.h \
     src/key.h \
+    src/eckey.h \
     src/db.h \
     src/txdb.h \
     src/walletdb.h \
@@ -232,11 +236,15 @@ HEADERS += \
     src/stealth.h \
     src/ringsig.h  \
     src/core.h  \
+    src/txmempool.h  \
     src/state.h \
     src/bloom.h \
     src/init.h \
     src/irc.h \
     src/mruset.h \
+    src/rpcprotocol.h \
+    src/rpcserver.h \
+    src/rpcclient.h \
     src/json/json_spirit_writer_template.h \
     src/json/json_spirit_writer.h \
     src/json/json_spirit_value.h \
@@ -246,6 +254,14 @@ HEADERS += \
     src/json/json_spirit_reader.h \
     src/json/json_spirit_error_position.h \
     src/json/json_spirit.h \
+    src/qt/transactiontablemodel.h \
+    src/qt/addresstablemodel.h \
+    src/qt/coincontroldialog.h \
+    src/qt/coincontroltreewidget.h \
+    src/qt/signverifymessagedialog.h \
+    src/qt/aboutdialog.h \
+    src/qt/editaddressdialog.h \
+    src/qt/bitcoinaddressvalidator.h \
     src/qt/clientmodel.h \
     src/qt/guiutil.h \
     src/qt/transactionrecord.h \
@@ -254,48 +270,34 @@ HEADERS += \
     src/qt/monitoreddatamapper.h \
     src/qt/transactiondesc.h \
     src/qt/bitcoinamountfield.h \
-    src/wallet.h \
-    src/keystore.h \
     src/qt/walletmodel.h \
-    src/bitcoinrpc.h \
     src/qt/csvmodelwriter.h \
-    src/crypter.h \
     src/qt/qvalidatedlineedit.h \
     src/qt/bitcoinunits.h \
     src/qt/qvaluecombobox.h \
     src/qt/askpassphrasedialog.h \
-    src/protocol.h \
     src/qt/notificator.h \
-    src/qt/qtipcserver.h \
-    src/allocators.h \
-    src/ui_interface.h \
     src/qt/rpcconsole.h \
+    src/qt/paymentserver.h \
+    src/qt/peertablemodel.h \
+    src/qt/scicon.h \
     src/qt/trafficgraphwidget.h \
-    src/version.h \
-    src/netbase.h \
-    src/clientversion.h \
-    src/threadsafety.h \
     src/qt/messagemodel.h \
     src/qt/shadowgui.h \
     src/qt/shadowbridge.h \
     src/qt/addressbookpage.h
 
 SOURCES += \
-    src/qt/transactiontablemodel.cpp \
-    src/qt/addresstablemodel.cpp \
-    src/qt/coincontroldialog.cpp \
-    src/qt/coincontroltreewidget.cpp \
-    src/qt/signverifymessagedialog.cpp \
-    src/qt/aboutdialog.cpp \
-    src/qt/editaddressdialog.cpp \
-    src/qt/bitcoinaddressvalidator.cpp \
     src/alert.cpp \
     src/version.cpp \
+    src/chainparams.cpp \
     src/sync.cpp \
     src/smessage.cpp \
     src/util.cpp \
+    src/hash.cpp \
     src/netbase.cpp \
     src/key.cpp \
+    src/eckey.cpp \
     src/script.cpp \
     src/main.cpp \
     src/miner.cpp \
@@ -306,37 +308,6 @@ SOURCES += \
     src/addrman.cpp \
     src/db.cpp \
     src/walletdb.cpp \
-    src/qt/clientmodel.cpp \
-    src/qt/guiutil.cpp \
-    src/qt/transactionrecord.cpp \
-    src/qt/optionsmodel.cpp \
-    src/qt/monitoreddatamapper.cpp \
-    src/qt/transactiondesc.cpp \
-    src/qt/bitcoinstrings.cpp \
-    src/qt/bitcoinamountfield.cpp \
-    src/wallet.cpp \
-    src/keystore.cpp \
-    src/qt/walletmodel.cpp \
-    src/bitcoinrpc.cpp \
-    src/rpcdump.cpp \
-    src/rpcnet.cpp \
-    src/rpcmining.cpp \
-    src/rpcwallet.cpp \
-    src/rpcblockchain.cpp \
-    src/rpcrawtransaction.cpp \
-    src/rpcsmessage.cpp \
-    src/qt/csvmodelwriter.cpp \
-    src/crypter.cpp \
-    src/qt/qvalidatedlineedit.cpp \
-    src/qt/bitcoinunits.cpp \
-    src/qt/qvaluecombobox.cpp \
-    src/qt/askpassphrasedialog.cpp \
-    src/protocol.cpp \
-    src/qt/notificator.cpp \
-    src/qt/qtipcserver.cpp \
-    src/qt/rpcconsole.cpp \
-    src/qt/trafficgraphwidget.cpp \
-    src/qt/messagemodel.cpp \
     src/noui.cpp \
     src/kernel.cpp \
     src/scrypt-arm.S \
@@ -347,12 +318,57 @@ SOURCES += \
     src/stealth.cpp  \
     src/ringsig.cpp  \
     src/core.cpp  \
+    src/txmempool.cpp  \
+    src/wallet.cpp \
+    src/keystore.cpp \
+    src/state.cpp \
+    src/bloom.cpp \
+    src/crypter.cpp \
+    src/protocol.cpp \
+    src/rpcprotocol.cpp \
+    src/rpcserver.cpp \
+    src/rpcclient.cpp \
+    src/rpcdump.cpp \
+    src/rpcnet.cpp \
+    src/rpcmining.cpp \
+    src/rpcwallet.cpp \
+    src/rpcblockchain.cpp \
+    src/rpcrawtransaction.cpp \
+    src/rpcsmessage.cpp \
+    src/qt/transactiontablemodel.cpp \
+    src/qt/addresstablemodel.cpp \
+    src/qt/coincontroldialog.cpp \
+    src/qt/coincontroltreewidget.cpp \
+    src/qt/signverifymessagedialog.cpp \
+    src/qt/aboutdialog.cpp \
+    src/qt/editaddressdialog.cpp \
+    src/qt/bitcoinaddressvalidator.cpp \
+    src/qt/clientmodel.cpp \
+    src/qt/guiutil.cpp \
+    src/qt/transactionrecord.cpp \
+    src/qt/optionsmodel.cpp \
+    src/qt/monitoreddatamapper.cpp \
+    src/qt/transactiondesc.cpp \
+    src/qt/bitcoinstrings.cpp \
+    src/qt/bitcoinamountfield.cpp \
+    src/qt/walletmodel.cpp \
+    src/qt/csvmodelwriter.cpp \
+    src/qt/qvalidatedlineedit.cpp \
+    src/qt/bitcoinunits.cpp \
+    src/qt/qvaluecombobox.cpp \
+    src/qt/askpassphrasedialog.cpp \
+    src/qt/notificator.cpp \
+    src/qt/rpcconsole.cpp \
+    src/qt/paymentserver.cpp \
+    src/qt/peertablemodel.cpp \
+    src/qt/scicon.cpp \
+    src/qt/trafficgraphwidget.cpp \
+    src/qt/messagemodel.cpp \
     src/qt/shadowgui.cpp \
     src/qt/shadow.cpp \
     src/qt/shadowbridge.cpp \
-    src/qt/addressbookpage.cpp \
-    src/state.cpp \
-    src/bloom.cpp
+    src/qt/addressbookpage.cpp 
+    
 
 FORMS += \
     src/qt/forms/coincontroldialog.ui \

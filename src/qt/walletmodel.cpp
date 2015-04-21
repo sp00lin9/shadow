@@ -223,20 +223,20 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                     if (GenerateRandomSecret(ephem_secret) != 0)
                     {
-                        printf("GenerateRandomSecret failed.\n");
+                        LogPrintf("GenerateRandomSecret failed.\n");
                         return Aborted;
                     };
 
                     if (StealthSecret(ephem_secret, sxAddr.scan_pubkey, sxAddr.spend_pubkey, secretShared, pkSendTo) != 0)
                     {
-                        printf("Could not generate receiving public key.\n");
+                        LogPrintf("Could not generate receiving public key.\n");
                         return Aborted;
                     };
 
                     CPubKey cpkTo(pkSendTo);
                     if (!cpkTo.IsValid())
                     {
-                        printf("Invalid public key generated.\n");
+                        LogPrintf("Invalid public key generated.\n");
                         return Aborted;
                     };
 
@@ -244,15 +244,15 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                     if (SecretToPublicKey(ephem_secret, ephem_pubkey) != 0)
                     {
-                        printf("Could not generate ephem public key.\n");
+                        LogPrintf("Could not generate ephem public key.\n");
                         return Aborted;
                     };
 
                     if (fDebug)
                     {
-                        printf("Stealth send to generated pubkey %"PRIszu": %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
-                        printf("hash %s\n", addrTo.ToString().c_str());
-                        printf("ephem_pubkey %"PRIszu": %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
+                        LogPrintf("Stealth send to generated pubkey %u: %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
+                        LogPrintf("hash %s\n", addrTo.ToString().c_str());
+                        LogPrintf("ephem_pubkey %u: %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
                     };
 
                     CScript scriptPubKey;
@@ -268,7 +268,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                         if (sNarr.length() > 24)
                         {
-                            printf("Narration is too long.\n");
+                            LogPrintf("Narration is too long.\n");
                             return NarrationTooLong;
                         };
 
@@ -279,13 +279,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                         if (!crypter.Encrypt((uint8_t*)&sNarr[0], sNarr.length(), vchNarr))
                         {
-                            printf("Narration encryption failed.\n");
+                            LogPrintf("Narration encryption failed.\n");
                             return Aborted;
                         };
 
                         if (vchNarr.size() > 48)
                         {
-                            printf("Encrypted narration is too long.\n");
+                            LogPrintf("Encrypted narration is too long.\n");
                             return Aborted;
                         };
 
@@ -312,7 +312,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                 if (sNarr.length() > 24)
                 {
-                    printf("Narration is too long.\n");
+                    LogPrintf("Narration is too long.\n");
                     return NarrationTooLong;
                 };
 
@@ -345,7 +345,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
             char key[64];
             if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
             {
-                printf("CreateStealthTransaction(): Error creating narration key.");
+                LogPrintf("CreateStealthTransaction(): Error creating narration key.");
                 continue;
             };
             wtx.mapValue[key] = it->second;
@@ -400,7 +400,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl)
 {
     if (fDebugRingSig)
-        printf("sendCoinsAnon()\n");
+        LogPrintf("sendCoinsAnon()\n");
 
     int64_t nTotalOut = 0;
     int64_t nBalance = 0;
@@ -502,7 +502,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 std::string sError;
                 if (!wallet->CreateStealthOutput(&sxAddrTo, nValue, sNarr, vecSend, mapStealthNarr, sError))
                 {
-                    printf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
+                    LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
                     return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
                 };
 
@@ -512,7 +512,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 CScript scriptNarration; // needed to match output id of narr
                 if (!wallet->CreateAnonOutputs(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration))
                 {
-                    printf("SendCoinsAnon() CreateAnonOutputs failed.\n");
+                    LogPrintf("SendCoinsAnon() CreateAnonOutputs failed.\n");
                     return SCR_Error;
                 };
 
@@ -561,7 +561,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 char key[64];
                 if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
                 {
-                    printf("SendCoinsAnon(): Error creating narration key.");
+                    LogPrintf("SendCoinsAnon(): Error creating narration key.");
                     continue;
                 };
                 wtxNew.mapValue[key] = it->second;
@@ -577,7 +577,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
 
-                printf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
+                LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
                 return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
 
@@ -588,7 +588,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 char key[64];
                 if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
                 {
-                    printf("SendCoinsAnon(): Error creating narration key.");
+                    LogPrintf("SendCoinsAnon(): Error creating narration key.");
                     continue;
                 };
                 wtxNew.mapValue[key] = it->second;
@@ -604,7 +604,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
         if (!wallet->CommitTransaction(wtxNew, keyChange))
         {
-            printf("Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.\n");
+            LogPrintf("Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.\n");
             wallet->UndoAnonTransaction(wtxNew);
             return TransactionCommitFailed;
 
@@ -721,7 +721,7 @@ bool WalletModel::backupWallet(const QString &filename)
 // Handlers for core signals
 static void NotifyKeyStoreStatusChanged(WalletModel *walletModel, CCryptoKeyStore *wallet)
 {
-    OutputDebugStringF("NotifyKeyStoreStatusChanged\n");
+    LogPrintf("NotifyKeyStoreStatusChanged\n");
     QMetaObject::invokeMethod(walletModel, "updateStatus", Qt::QueuedConnection);
 }
 
@@ -731,7 +731,7 @@ static void NotifyAddressBookChanged(WalletModel *walletModel, CWallet *wallet, 
     {
         CStealthAddress sxAddr = boost::get<CStealthAddress>(address);
         std::string enc = sxAddr.Encoded();
-        OutputDebugStringF("NotifyAddressBookChanged %s %s isMine=%i status=%i\n", enc.c_str(), label.c_str(), isMine, status);
+        LogPrintf("NotifyAddressBookChanged %s %s isMine=%i status=%i\n", enc.c_str(), label.c_str(), isMine, status);
         QMetaObject::invokeMethod(walletModel, "updateAddressBook", Qt::QueuedConnection,
                                   Q_ARG(QString, QString::fromStdString(enc)),
                                   Q_ARG(QString, QString::fromStdString(label)),
@@ -739,7 +739,7 @@ static void NotifyAddressBookChanged(WalletModel *walletModel, CWallet *wallet, 
                                   Q_ARG(int, status));
     } else
     {
-        OutputDebugStringF("NotifyAddressBookChanged %s %s isMine=%i status=%i\n", CBitcoinAddress(address).ToString().c_str(), label.c_str(), isMine, status);
+        LogPrintf("NotifyAddressBookChanged %s %s isMine=%i status=%i\n", CBitcoinAddress(address).ToString().c_str(), label.c_str(), isMine, status);
         QMetaObject::invokeMethod(walletModel, "updateAddressBook", Qt::QueuedConnection,
                                   Q_ARG(QString, QString::fromStdString(CBitcoinAddress(address).ToString())),
                                   Q_ARG(QString, QString::fromStdString(label)),
@@ -750,7 +750,7 @@ static void NotifyAddressBookChanged(WalletModel *walletModel, CWallet *wallet, 
 
 static void NotifyTransactionChanged(WalletModel *walletModel, CWallet *wallet, const uint256 &hash, ChangeType status)
 {
-    OutputDebugStringF("NotifyTransactionChanged %s status=%i\n", hash.GetHex().c_str(), status);
+    LogPrintf("NotifyTransactionChanged %s status=%i\n", hash.GetHex().c_str(), status);
     QMetaObject::invokeMethod(walletModel, "updateTransaction", Qt::QueuedConnection,
                               Q_ARG(QString, QString::fromStdString(hash.GetHex())),
                               Q_ARG(int, status));

@@ -1,7 +1,7 @@
 src/*.exe
 src/shadowcoin
 src/shadowcoind
-src/test_shadowcoin
+src/test_shadow
 src/build.h
 .*.swp
 *.*~*

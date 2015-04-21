@@ -55,9 +55,9 @@ class TransactionModel : public QObject
 
 public:
     TransactionModel(QObject *parent = 0) :
+        QObject(parent),
         ttm(new QSortFilterProxyModel()),
-        running(false),
-        QObject(parent)
+        running(false)
     { }
 
     ~TransactionModel()
@@ -174,7 +174,7 @@ private:
 
     bool prepare(bool running=true)
     {
-        if(this->running || (running && clientModel->inInitialBlockDownload()))
+        if (this->running || (running && clientModel->inInitialBlockDownload()))
             return false;
 
         numRows = ttm->rowCount();
@@ -298,13 +298,13 @@ protected:
 #include "shadowbridge.moc"
 
 ShadowBridge::ShadowBridge(ShadowGUI *window, QObject *parent) :
+    QObject         (parent),
     window          (window),
     transactionModel(new TransactionModel()),
     addressModel    (new AddressModel()),
     thMessage       (new MessageThread()),
     info            (new QVariantMap()),
-    async           (new QThread()),
-    QObject         (parent)
+    async           (new QThread())
 {
     async->start();
 }
@@ -709,7 +709,7 @@ QVariantMap ShadowBridge::listAnonOutputs()
     if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  false) != 0
      || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, true)  != 0)
     {
-        printf("Error: CountOwnedAnonOutputs failed.\n");
+        LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
         return anonOutputs;
     };
 
@@ -718,7 +718,7 @@ QVariantMap ShadowBridge::listAnonOutputs()
 
     if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, true) != 0)
     {
-        printf("Error: CountAnonOutputs failed.\n");
+        LogPrintf("Error: CountAnonOutputs failed.\n");
         return anonOutputs;
     };
 

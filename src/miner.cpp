@@ -9,6 +9,7 @@
 #include "kernel.h"
 #include "core.h"
 
+
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -21,7 +22,7 @@ extern unsigned int nBlockMaxSize;
 extern unsigned int nBlockPrioritySize;
 extern unsigned int nBlockMinSize;
 
-extern int64_t nMinTxFee;
+//extern int64_t nMinTxFee;
 
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
@@ -86,10 +87,10 @@ public:
 
     void print() const
     {
-        printf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
-               ptx->GetHash().ToString().substr(0,10).c_str(), dPriority, dFeePerKb);
+        LogPrintf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
+            ptx->GetHash().ToString().substr(0,10).c_str(), dPriority, dFeePerKb);
         BOOST_FOREACH(uint256 hash, setDependsOn)
-            printf("   setDependsOn %s\n", hash.ToString().substr(0,10).c_str());
+            LogPrintf("   setDependsOn %s\n", hash.ToString().substr(0,10).c_str());
     }
 };
 
@@ -128,6 +129,9 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
     auto_ptr<CBlock> pblock(new CBlock());
     if (!pblock.get())
         return NULL;
+    
+    
+    
 
     CBlockIndex* pindexPrev = pindexBest;
 
@@ -139,6 +143,10 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
 
 
     int nHeight = pindexPrev->nHeight+1; // height of new block
+    
+    if (!Params().IsProtocolV2(nHeight)) // generate old version until protocolV2
+        pblock->nVersion = 6;
+    
 
     if (!fProofOfStake)
     {
@@ -199,8 +207,9 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                     // or other transactions in the memory pool.
                     if (!mempool.mapTx.count(txin.prevout.hash))
                     {
-                        printf("ERROR: mempool transaction missing input\n");
-                        if (fDebug) assert("mempool transaction missing input" == 0);
+                        LogPrintf("ERROR: mempool transaction missing input\n");
+                        if (fDebug)
+                            assert("mempool transaction missing input" == 0);
                         fMissingInputs = true;
                         if (porphan)
                             vOrphan.pop_back();
@@ -236,7 +245,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, false))
                 {
                     if (fInvalid)
-                        printf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
+                        LogPrintf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
                     fMissingInputs = true;
                     continue;
                 };
@@ -341,7 +350,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                     if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, false))
                     {
                         if (fInvalid)
-                            printf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
+                            LogPrintf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
                         continue;
                     };
 
@@ -362,7 +371,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
                 continue;
 
-            if (!tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true))
+            if (!tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true, MANDATORY_SCRIPT_VERIFY_FLAGS))
                 continue;
 
             mapTestPoolTmp[tx.GetHash()] = CTxIndex(CDiskTxPos(1,1,1), tx.vout.size());
@@ -377,8 +386,8 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
 
             if (fDebug && GetBoolArg("-printpriority"))
             {
-                printf("priority %.1f feeperkb %.1f txid %s\n",
-                       dPriority, dFeePerKb, tx.GetHash().ToString().c_str());
+                LogPrintf("priority %.1f feeperkb %.1f txid %s\n",
+                    dPriority, dFeePerKb, tx.GetHash().ToString().c_str());
             };
 
             // Add transactions that depend on this one to the priority queue
@@ -404,10 +413,10 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         nLastBlockSize = nBlockSize;
 
         if (fDebug && GetBoolArg("-printpriority"))
-            printf("CreateNewBlock(): total size %"PRIu64"\n", nBlockSize);
+            LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         if (!fProofOfStake)
-            pblock->vtx[0].vout[0].nValue = GetProofOfWorkReward(nHeight, nFees);
+            pblock->vtx[0].vout[0].nValue = Params().GetProofOfWorkReward(nHeight, nFees);
 
         if (pFees)
             *pFees = nFees;
@@ -415,7 +424,6 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
         pblock->nTime          = max(pindexPrev->GetPastTimeLimit()+1, pblock->GetMaxTransactionTime());
-        pblock->nTime          = max(pblock->GetBlockTime(), PastDrift(pindexPrev->GetBlockTime()));
         if (!fProofOfStake)
             pblock->UpdateTime(pindexPrev);
         pblock->nNonce         = 0;
@@ -503,9 +511,9 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         return error("CheckWork() : proof-of-work not meeting target");
 
     //// debug print
-    printf("CheckWork() : new proof-of-work block found  \n  hash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), hashTarget.GetHex().c_str());
+    LogPrintf("CheckWork() : new proof-of-work block found  \n  hash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
-    printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
+    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
 
     // Found a solution
     {
@@ -537,15 +545,18 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
 
     if (!pblock->IsProofOfStake())
         return error("CheckStake() : %s is not a proof-of-stake block", hashBlock.GetHex().c_str());
-
+    
+    std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
+    if (mi == mapBlockIndex.end())
+        return error("CheckStake() : %s prev block not found: %s.", hashBlock.GetHex().c_str(), pblock->hashPrevBlock.GetHex().c_str());
     // verify hash target and signature of coinstake tx
-    if (!CheckProofOfStake(pblock->vtx[1], pblock->nBits, proofHash, hashTarget))
+    if (!CheckProofOfStake(mi->second, pblock->vtx[1], pblock->nBits, proofHash, hashTarget))
         return error("CheckStake() : proof-of-stake checking failed");
 
     //// debug print
-    printf("CheckStake() : new proof-of-stake block found  \n  hash: %s \nproofhash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), proofHash.GetHex().c_str(), hashTarget.GetHex().c_str());
+    LogPrintf("CheckStake() : new proof-of-stake block found  \n  hash: %s \nproofhash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), proofHash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
-    printf("out %s\n", FormatMoney(pblock->vtx[1].GetValueOut()).c_str());
+    LogPrintf("out %s\n", FormatMoney(pblock->vtx[1].GetValueOut()).c_str());
 
     // Found a solution
     {
@@ -567,38 +578,32 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
     return true;
 }
 
-void StakeMiner(CWallet *pwallet)
+void ThreadStakeMiner(CWallet *pwallet)
 {
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-
-    // Make this thread recognisable as the mining thread
-    RenameThread("shadowcoin-miner");
 
     bool fTryToSync = true;
     int64_t nTimeLastStake = 0;
 
     while (true)
     {
-        if (fShutdown)
-            return;
-
+        boost::this_thread::interruption_point();
+        
         while (pwallet->IsLocked())
         {
             nLastCoinStakeSearchInterval = 0;
             MilliSleep(2000);
-            if (fShutdown)
-                return;
+            boost::this_thread::interruption_point();
         };
 
         while (vNodes.empty() || IsInitialBlockDownload())
         {
             nLastCoinStakeSearchInterval = 0;
             fTryToSync = true;
-            if (fDebug  && GetBoolArg("-printcoinstake"))
-                printf("StakeMiner() IsInitialBlockDownload\n");
+            if (fDebugPoS)
+                LogPrintf("StakeMiner() IsInitialBlockDownload\n");
             MilliSleep(2000);
-            if (fShutdown)
-                return;
+            boost::this_thread::interruption_point();
         };
 
         if (fTryToSync)
@@ -607,8 +612,8 @@ void StakeMiner(CWallet *pwallet)
 
             if (vNodes.size() < 3 || nBestHeight < GetNumBlocksOfPeers())
             {
-                if (fDebug  && GetBoolArg("-printcoinstake"))
-                    printf("StakeMiner() TryToSync\n");
+                if (fDebugPoS)
+                    LogPrintf("StakeMiner() TryToSync\n");
                 MilliSleep(60000);
                 continue;
             };
@@ -616,8 +621,8 @@ void StakeMiner(CWallet *pwallet)
 
         if (nBestHeight < GetNumBlocksOfPeers()-1)
         {
-            if (fDebug  && GetBoolArg("-printcoinstake"))
-                printf("StakeMiner() nBestHeight < GetNumBlocksOfPeers()\n");
+            if (fDebugPoS)
+                LogPrintf("StakeMiner() nBestHeight < GetNumBlocksOfPeers()\n");
             MilliSleep(nMinerSleep * 4);
             continue;
         };
@@ -625,7 +630,7 @@ void StakeMiner(CWallet *pwallet)
         if (nMinStakeInterval > 0 && nTimeLastStake + (int64_t)nMinStakeInterval > GetTime())
         {
             if (fDebug)
-                printf("StakeMiner() Rate limited to 1 / %d seconds.\n", nMinStakeInterval);
+                LogPrintf("StakeMiner() Rate limited to 1 / %d seconds.\n", nMinStakeInterval);
             MilliSleep(nMinStakeInterval * 500); // nMinStakeInterval / 2 seconds
             continue;
         };

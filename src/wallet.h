@@ -5,21 +5,22 @@
 #ifndef BITCOIN_WALLET_H
 #define BITCOIN_WALLET_H
 
+#include <stdlib.h>
 #include <string>
 #include <vector>
-
-#include <stdlib.h>
 
 
 #include "main.h"
 #include "key.h"
 #include "keystore.h"
+#include "crypter.h"
 #include "script.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "walletdb.h"
 #include "stealth.h"
 #include "smessage.h"
+
 
 extern bool fWalletUnlockStakingOnly;
 extern bool fConfChange;
@@ -113,6 +114,15 @@ public:
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
+    
+    std::map<uint256, CWalletTx> mapWallet;
+    int64_t nOrderPosNext;
+    std::map<uint256, int> mapRequestCount;
+
+    std::map<CTxDestination, std::string> mapAddressBook;
+
+    CPubKey vchDefaultKey;
+    int64_t nTimeFirstKey;
 
     CWallet()
     {
@@ -133,7 +143,7 @@ public:
         {
             delete pBloomFilter;
             if (fDebug)
-                printf("Freed bloom filter.\n");
+                LogPrintf("Bloom filter destructed.\n");
         };
     }
     
@@ -149,16 +159,7 @@ public:
         nTimeFirstKey = 0;
         nLastFilteredHeight = 0;
     }
-
-    std::map<uint256, CWalletTx> mapWallet;
-    int64_t nOrderPosNext;
-    std::map<uint256, int> mapRequestCount;
-
-    std::map<CTxDestination, std::string> mapAddressBook;
-
-    CPubKey vchDefaultKey;
-    int64_t nTimeFirstKey;
-
+    
     // check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf) { AssertLockHeld(cs_wallet); return nWalletMaxVersion >= wf; }
 
@@ -176,7 +177,7 @@ public:
     
     
     // Adds a key to the store, without saving it to disk (used by LoadWallet)
-    bool LoadKey(const CKey& key) { return CCryptoKeyStore::AddKey(key); }
+    bool LoadKey(const CKey& key, const CPubKey &pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
     // Load metadata (used by LoadWallet)
     bool LoadKeyMetadata(const CPubKey &pubkey, const CKeyMetadata &metadata);
 
@@ -232,7 +233,7 @@ public:
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     
 
-    bool GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, uint64_t& nMaxWeight, uint64_t& nWeight);
+    uint64_t GetStakeWeight() const;
     bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key);
 
     std::string SendMoney(CScript scriptPubKey, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee=false);
@@ -467,8 +468,7 @@ public:
 
     ~CReserveKey()
     {
-        if (!fShutdown)
-            ReturnKey();
+        ReturnKey();
     }
 
     void ReturnKey();
@@ -934,7 +934,7 @@ public:
 
     void print() const
     {
-        printf("%s\n", ToString().c_str());
+        LogPrintf("%s\n", ToString().c_str());
     }
 };
 

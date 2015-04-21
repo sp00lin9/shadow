@@ -5,7 +5,6 @@
 #ifndef SDC_RINGSIG_H
 #define SDC_RINGSIG_H
 
-#include "core.h"
 #include "stealth.h"
 #include "state.h"
 

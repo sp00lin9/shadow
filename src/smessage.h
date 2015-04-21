@@ -155,7 +155,7 @@ public:
     int64_t                     timeChanged;
     uint32_t                    hash;           // token set should get ordered the same on each node
     uint32_t                    nLockCount;     // set when smsgWant first sent, unset at end of smsgMsg, ticks down in ThreadSecureMsg()
-    uint32_t                    nLockPeerId;    // id of peer that bucket is locked for
+    NodeId                      nLockPeerId;    // id of peer that bucket is locked for
     std::set<SecMsgToken>       setTokens;
 
 };
@@ -167,7 +167,10 @@ class CBitcoinAddress_B : public CBitcoinAddress
 public:
     unsigned char getVersion()
     {
-        return nVersion;
+        // TODO: fix
+        if (vchVersion.size() > 0)
+            return vchVersion[0];
+        return 0;
     }
 };
 

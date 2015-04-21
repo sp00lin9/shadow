@@ -82,7 +82,7 @@ bool CWallet::AddKeyInDBTxn(CWalletDB* pdb, const CKey& key)
 
     if (!CCryptoKeyStore::AddKey(key))
     {
-        printf("CCryptoKeyStore::AddKey failed.\n");
+        LogPrintf("CCryptoKeyStore::AddKey failed.\n");
         return false;
     };
 
@@ -95,7 +95,7 @@ bool CWallet::AddKeyInDBTxn(CWalletDB* pdb, const CKey& key)
     {
         if (!pdb->WriteKey(pubkey, key.GetPrivKey(), mapKeyMetadata[pubkey.GetID()]))
         {
-            printf("WriteKey() failed.\n");
+            LogPrintf("WriteKey() failed.\n");
             return false;
         };
     };
@@ -158,7 +158,7 @@ bool CWallet::LoadCScript(const CScript& redeemScript)
     if (redeemScript.size() > MAX_SCRIPT_ELEMENT_SIZE)
     {
         std::string strAddr = CBitcoinAddress(redeemScript.GetID()).ToString();
-        printf("%s: Warning: This wallet contains a redeemScript of size %" PRIszu " which exceeds maximum size %i thus can never be redeemed. Do not use address %s.\n",
+        LogPrintf("%s: Warning: This wallet contains a redeemScript of size %u which exceeds maximum size %i thus can never be redeemed. Do not use address %s.\n",
             __func__, redeemScript.size(), MAX_SCRIPT_ELEMENT_SIZE, strAddr.c_str());
         return true;
     };
@@ -169,12 +169,12 @@ bool CWallet::LoadCScript(const CScript& redeemScript)
 bool CWallet::Lock()
 {
     if (fDebug)
-        printf("CWallet::Lock()\n");
+        LogPrintf("CWallet::Lock()\n");
     
     if (IsLocked())
         return true;
 
-    printf("Locking wallet.\n");
+    LogPrintf("Locking wallet.\n");
 
     {
         LOCK(cs_wallet);
@@ -190,12 +190,12 @@ bool CWallet::Lock()
             // -- CStealthAddress are only sorted on spend_pubkey
             CStealthAddress &sxAddr = const_cast<CStealthAddress&>(*it);
             if (fDebug)
-                printf("Recrypting stealth key %s\n", sxAddr.Encoded().c_str());
+                LogPrintf("Recrypting stealth key %s\n", sxAddr.Encoded().c_str());
 
             sxAddrTemp.scan_pubkey = sxAddr.scan_pubkey;
             if (!wdb.ReadStealthAddress(sxAddrTemp))
             {
-                printf("Error: Failed to read stealth key from db %s\n", sxAddr.Encoded().c_str());
+                LogPrintf("Error: Failed to read stealth key from db %s\n", sxAddr.Encoded().c_str());
                 continue;
             }
             sxAddr.spend_secret = sxAddrTemp.spend_secret;
@@ -207,7 +207,7 @@ bool CWallet::Lock()
 bool CWallet::Unlock(const SecureString& strWalletPassphrase)
 {
     if (fDebug)
-        printf("CWallet::Unlock()\n");
+        LogPrintf("CWallet::Unlock()\n");
 
     if (!IsLocked()
         || !IsCrypted())
@@ -216,7 +216,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
     CCrypter crypter;
     CKeyingMaterial vMasterKey;
 
-    printf("Unlocking wallet.\n");
+    LogPrintf("Unlocking wallet.\n");
 
     {
         LOCK2(cs_main, cs_wallet);
@@ -269,7 +269,7 @@ bool CWallet::ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase,
                 if (pMasterKey.second.nDeriveIterations < 25000)
                     pMasterKey.second.nDeriveIterations = 25000;
 
-                printf("Wallet passphrase changed to an nDeriveIterations of %i\n", pMasterKey.second.nDeriveIterations);
+                LogPrintf("Wallet passphrase changed to an nDeriveIterations of %i\n", pMasterKey.second.nDeriveIterations);
 
                 if (!crypter.SetKeyFromPassphrase(strNewWalletPassphrase, pMasterKey.second.vchSalt, pMasterKey.second.nDeriveIterations, pMasterKey.second.nDerivationMethod))
                     return false;
@@ -367,7 +367,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
     if (kMasterKey.nDeriveIterations < 25000)
         kMasterKey.nDeriveIterations = 25000;
 
-    printf("Encrypting Wallet with an nDeriveIterations of %i\n", kMasterKey.nDeriveIterations);
+    LogPrintf("Encrypting Wallet with an nDeriveIterations of %i\n", kMasterKey.nDeriveIterations);
 
     if (!crypter.SetKeyFromPassphrase(strWalletPassphrase, kMasterKey.vchSalt, kMasterKey.nDeriveIterations, kMasterKey.nDerivationMethod))
         return false;
@@ -401,7 +401,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             CStealthAddress &sxAddr = const_cast<CStealthAddress&>(*it);
 
             if (fDebug)
-                printf("Encrypting stealth key %s\n", sxAddr.Encoded().c_str());
+                LogPrintf("Encrypting stealth key %s\n", sxAddr.Encoded().c_str());
 
             std::vector<unsigned char> vchCryptedSecret;
 
@@ -412,7 +412,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             uint256 iv = Hash(sxAddr.spend_pubkey.begin(), sxAddr.spend_pubkey.end());
             if (!EncryptSecret(vMasterKey, vchSecret, iv, vchCryptedSecret))
             {
-                printf("Error: Failed encrypting stealth key %s\n", sxAddr.Encoded().c_str());
+                LogPrintf("Error: Failed encrypting stealth key %s\n", sxAddr.Encoded().c_str());
                 continue;
             };
 
@@ -516,11 +516,11 @@ void CWallet::WalletUpdateSpent(const CTransaction &tx, bool fBlock)
                 CWalletTx& wtx = (*mi).second;
                 if (txin.prevout.n >= wtx.vout.size())
                 {
-                    printf("WalletUpdateSpent: bad wtx %s\n", wtx.GetHash().ToString().c_str());
+                    LogPrintf("WalletUpdateSpent: bad wtx %s\n", wtx.GetHash().ToString().c_str());
                 } else
                 if (!wtx.IsSpent(txin.prevout.n) && IsMine(wtx.vout[txin.prevout.n]))
                 {
-                    printf("WalletUpdateSpent found spent coin %s SDC %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
+                    LogPrintf("WalletUpdateSpent found spent coin %s SDC %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkSpent(txin.prevout.n);
                     wtx.WriteToDisk();
                     NotifyTransactionChanged(this, txin.prevout.hash, CT_UPDATED);
@@ -656,9 +656,9 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
                     wtx.nTimeSmart = std::max(latestEntry, std::min(blocktime, latestNow));
                 } else
                 {
-                    printf("AddToWallet() : found %s in block %s not in index\n",
-                           hashIn.ToString().substr(0,10).c_str(),
-                           wtxIn.hashBlock.ToString().c_str());
+                    LogPrintf("AddToWallet() : found %s in block %s not in index\n",
+                        hashIn.ToString().substr(0,10).c_str(),
+                        wtxIn.hashBlock.ToString().c_str());
                 };
             };
         };
@@ -691,7 +691,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
         };
 
         //// debug print
-        printf("AddToWallet %s  %s%s\n", hashIn.ToString().substr(0,10).c_str(), (fInsertedNew ? "new" : ""), (fUpdated ? "update" : ""));
+        LogPrintf("AddToWallet %s  %s%s\n", hashIn.ToString().substr(0,10).c_str(), (fInsertedNew ? "new" : ""), (fUpdated ? "update" : ""));
 
         // Write to disk
         if (fInsertedNew || fUpdated)
@@ -700,26 +700,28 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
                 return false;
         };
 
-#ifndef QT_GUI
-        // If default receiving address gets used, replace it with a new one
-        if (vchDefaultKey.IsValid())
+        if (!fHaveGUI)
         {
-            CScript scriptDefaultKey;
-            scriptDefaultKey.SetDestination(vchDefaultKey.GetID());
-            BOOST_FOREACH(const CTxOut& txout, wtx.vout)
+            // If default receiving address gets used, replace it with a new one
+            if (vchDefaultKey.IsValid())
             {
-                if (txout.scriptPubKey == scriptDefaultKey)
+                CScript scriptDefaultKey;
+                scriptDefaultKey.SetDestination(vchDefaultKey.GetID());
+                BOOST_FOREACH(const CTxOut& txout, wtx.vout)
                 {
-                    CPubKey newDefaultKey;
-                    if (GetKeyFromPool(newDefaultKey, false))
+                    if (txout.scriptPubKey == scriptDefaultKey)
                     {
-                        SetDefaultKey(newDefaultKey);
-                        SetAddressBookName(vchDefaultKey.GetID(), "");
+                        CPubKey newDefaultKey;
+                        if (GetKeyFromPool(newDefaultKey, false))
+                        {
+                            SetDefaultKey(newDefaultKey);
+                            SetAddressBookName(vchDefaultKey.GetID(), "");
+                        };
                     };
                 };
             };
         };
-#endif
+        
         // since AddToWallet is called directly for self-originating transactions, check for consumption of own coins
         WalletUpdateSpent(wtx, (wtxIn.hashBlock != 0));
 
@@ -748,7 +750,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
 
                 if (txin.prevout.n >= wtxPrev.vout.size())
                 {
-                    printf("AddToWallet: bad wtx %s\n", wtxPrev.GetHash().ToString().c_str());
+                    LogPrintf("AddToWallet: bad wtx %s\n", wtxPrev.GetHash().ToString().c_str());
                 } else
                 if (!wtxPrev.IsSpent(txin.prevout.n) && IsMine(wtxPrev.vout[txin.prevout.n]))
                 {
@@ -762,7 +764,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
             };
 
             if (fDebug)
-                printf("AddToWallet() Added %u outputs to bloom filters.\n", nAdded);
+                LogPrintf("AddToWallet() Added %u outputs to bloom filters.\n", nAdded);
         }
 
         // notify an external script when a wallet transaction comes in or is updated
@@ -783,7 +785,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
 // If fUpdate is true, existing transactions will be updated.
 bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& hash, const void* pblock, bool fUpdate, bool fFindBlock)
 {
-    //printf("AddToWalletIfInvolvingMe() %s\n", hash.ToString().c_str()); // happens often
+    //LogPrintf("AddToWalletIfInvolvingMe() %s\n", hash.ToString().c_str()); // happens often
 
     //uint256 hash = tx.GetHash();
     {
@@ -816,7 +818,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
             std::vector<std::map<uint256, CWalletTx>::iterator> vUpdatedTxns;
             if (!ProcessAnonTransaction(&walletdb, &txdb, tx, blockHash, fIsMine, mapNarr, vUpdatedTxns))
             {
-                printf("ProcessAnonTransaction failed %s\n", hash.ToString().c_str());
+                LogPrintf("ProcessAnonTransaction failed %s\n", hash.ToString().c_str());
                 walletdb.TxnAbort();
                 txdb.TxnAbort();
                 return false;
@@ -1116,8 +1118,8 @@ void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address))
         {
-            printf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
-                   this->GetHash().ToString().c_str());
+            LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
+                this->GetHash().ToString().c_str());
             address = CNoDestination();
         };
 
@@ -1208,7 +1210,7 @@ void CWalletTx::AddSupportingTransactions(CTxDB& txdb)
                     ;
                 } else
                 {
-                    printf("ERROR: AddSupportingTransactions() : unsupported transaction\n");
+                    LogPrintf("ERROR: AddSupportingTransactions() : unsupported transaction\n");
                     continue;
                 };
 
@@ -1238,11 +1240,11 @@ bool CWalletTx::WriteToDisk()
 int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 {
     if (fDebug)
-        printf("ScanForWalletTransactions()\n");
+        LogPrintf("ScanForWalletTransactions()\n");
     
     if (nNodeMode != NT_FULL)
     {
-        printf("Error: CWallet::ScanForWalletTransactions() must be run in full mode.\n");
+        LogPrintf("Error: CWallet::ScanForWalletTransactions() must be run in full mode.\n");
         return 0;
     };
 
@@ -1278,7 +1280,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 void CWallet::ReacceptWalletTransactions()
 {
     if (fDebug)
-        printf("ReacceptWalletTransactions()\n");
+        LogPrintf("ReacceptWalletTransactions()\n");
 
     CTxDB txdb("r");
 
@@ -1335,7 +1337,7 @@ void CWallet::ReacceptWalletTransactions()
                 // Update fSpent if a tx got spent somewhere else by a copy of wallet.dat
                 if (txindex.vSpent.size() != wtx.vout.size())
                 {
-                    printf("ERROR: ReacceptWalletTransactions() : txindex.vSpent.size() %"PRIszu" != wtx.vout.size() %"PRIszu"\n", txindex.vSpent.size(), wtx.vout.size());
+                    LogPrintf("ERROR: ReacceptWalletTransactions() : txindex.vSpent.size() %u != wtx.vout.size() %u\n", txindex.vSpent.size(), wtx.vout.size());
                     continue;
                 };
 
@@ -1354,7 +1356,7 @@ void CWallet::ReacceptWalletTransactions()
 
                 if (fUpdated)
                 {
-                    printf("ReacceptWalletTransactions found spent coin %s SDC %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
+                    LogPrintf("ReacceptWalletTransactions found spent coin %s SDC %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkDirty();
                     wtx.WriteToDisk();
                 };
@@ -1392,7 +1394,7 @@ void CWalletTx::RelayWalletTransaction(CTxDB& txdb)
         uint256 hash = GetHash();
         if (!txdb.ContainsTx(hash))
         {
-            printf("Relaying wtx %s\n", hash.ToString().substr(0,10).c_str());
+            LogPrintf("Relaying wtx %s\n", hash.ToString().substr(0,10).c_str());
             RelayTransaction((CTransaction)*this, hash);
         };
     };
@@ -1426,7 +1428,7 @@ void CWallet::ResendWalletTransactions(bool fForce)
     };
 
     // Rebroadcast any of our txes that aren't in a block yet
-    printf("ResendWalletTransactions()\n");
+    LogPrintf("ResendWalletTransactions()\n");
     CTxDB txdb("r");
 
     {
@@ -1448,7 +1450,7 @@ void CWallet::ResendWalletTransactions(bool fForce)
             if (wtx.CheckTransaction())
                 wtx.RelayWalletTransaction(txdb);
             else
-                printf("ResendWalletTransactions() : CheckTransaction failed for transaction %s\n", wtx.GetHash().ToString().c_str());
+                LogPrintf("ResendWalletTransactions() : CheckTransaction failed for transaction %s\n", wtx.GetHash().ToString().c_str());
         };
     }
 }
@@ -1755,11 +1757,11 @@ bool CWallet::SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, 
         if (fDebug && GetBoolArg("-printpriority"))
         {
             //// debug print
-            printf("SelectCoins() best subset: ");
+            LogPrintf("SelectCoins() best subset: ");
             for (unsigned int i = 0; i < vValue.size(); i++)
                 if (vfBest[i])
-                    printf("%s ", FormatMoney(vValue[i].first).c_str());
-            printf("total %s\n", FormatMoney(nBest).c_str());
+                    LogPrintf("%s ", FormatMoney(vValue[i].first).c_str());
+            LogPrintf("total %s\n", FormatMoney(nBest).c_str());
         }
     }
 
@@ -2017,7 +2019,7 @@ bool CWallet::NewStealthAddress(std::string& sError, std::string& sLabel, CSteal
         || GenerateRandomSecret(spend_secret) != 0)
     {
         sError = "GenerateRandomSecret failed.";
-        printf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
+        LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
         return false;
     };
 
@@ -2025,29 +2027,29 @@ bool CWallet::NewStealthAddress(std::string& sError, std::string& sLabel, CSteal
     if (SecretToPublicKey(scan_secret, scan_pubkey) != 0)
     {
         sError = "Could not get scan public key.";
-        printf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
+        LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
         return false;
     };
-
+    
     if (SecretToPublicKey(spend_secret, spend_pubkey) != 0)
     {
         sError = "Could not get spend public key.";
-        printf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
+        LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
         return false;
     };
-
+    
     if (fDebug)
     {
-        printf("getnewstealthaddress: ");
-        printf("scan_pubkey ");
+        LogPrintf("getnewstealthaddress: ");
+        LogPrintf("scan_pubkey ");
         for (uint32_t i = 0; i < scan_pubkey.size(); ++i)
-            printf("%02x", scan_pubkey[i]);
-        printf("\n");
-
-        printf("spend_pubkey ");
+            LogPrintf("%02x", scan_pubkey[i]);
+        LogPrintf("\n");
+        
+        LogPrintf("spend_pubkey ");
         for (uint32_t i = 0; i < spend_pubkey.size(); ++i)
-            printf("%02x", spend_pubkey[i]);
-        printf("\n");
+            LogPrintf("%02x", spend_pubkey[i]);
+        LogPrintf("\n");
     };
 
 
@@ -2079,7 +2081,7 @@ bool CWallet::AddStealthAddress(CStealthAddress& sxAddr)
         // -- owned addresses can only be added when wallet is unlocked
         if (IsLocked())
         {
-            printf("Error: CWallet::AddStealthAddress wallet must be unlocked.\n");
+            LogPrintf("Error: CWallet::AddStealthAddress wallet must be unlocked.\n");
             stealthAddresses.erase(sxAddr);
             return false;
         };
@@ -2094,7 +2096,7 @@ bool CWallet::AddStealthAddress(CStealthAddress& sxAddr)
             uint256 iv = Hash(sxAddr.spend_pubkey.begin(), sxAddr.spend_pubkey.end());
             if (!EncryptSecret(vMasterKey, vchSecret, iv, vchCryptedSecret))
             {
-                printf("Error: Failed encrypting stealth key %s\n", sxAddr.Encoded().c_str());
+                LogPrintf("Error: Failed encrypting stealth key %s\n", sxAddr.Encoded().c_str());
                 stealthAddresses.erase(sxAddr);
                 return false;
             };
@@ -2124,14 +2126,14 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
         CStealthAddress &sxAddr = const_cast<CStealthAddress&>(*it);
 
         if (fDebug)
-            printf("Decrypting stealth key %s\n", sxAddr.Encoded().c_str());
+            LogPrintf("Decrypting stealth key %s\n", sxAddr.Encoded().c_str());
 
         CSecret vchSecret;
         uint256 iv = Hash(sxAddr.spend_pubkey.begin(), sxAddr.spend_pubkey.end());
         if(!DecryptSecret(vMasterKeyIn, sxAddr.spend_secret, iv, vchSecret)
             || vchSecret.size() != 32)
         {
-            printf("Error: Failed decrypting stealth key %s\n", sxAddr.Encoded().c_str());
+            LogPrintf("Error: Failed decrypting stealth key %s\n", sxAddr.Encoded().c_str());
             continue;
         };
 
@@ -2142,7 +2144,7 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
         if (SecretToPublicKey(testSecret, pkSpendTest) != 0
             || pkSpendTest != sxAddr.spend_pubkey)
         {
-            printf("Error: Failed decrypting stealth key, public key mismatch %s\n", sxAddr.Encoded().c_str());
+            LogPrintf("Error: Failed decrypting stealth key, public key mismatch %s\n", sxAddr.Encoded().c_str());
             continue;
         };
 
@@ -2166,24 +2168,24 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
         {
             // -- could be an anon output
             if (fDebug)
-                printf("Warning: No metadata found to add secret for %s\n", addr.ToString().c_str());
+                LogPrintf("Warning: No metadata found to add secret for %s\n", addr.ToString().c_str());
             continue;
         };
 
         CStealthKeyMetadata& sxKeyMeta = mi->second;
 
         CStealthAddress sxFind;
-        sxFind.scan_pubkey = sxKeyMeta.pkScan.Raw();
+        sxFind.SetScanPubKey(sxKeyMeta.pkScan);
 
         std::set<CStealthAddress>::iterator si = stealthAddresses.find(sxFind);
         if (si == stealthAddresses.end())
         {
-            printf("No stealth key found to add secret for %s\n", addr.ToString().c_str());
+            LogPrintf("No stealth key found to add secret for %s\n", addr.ToString().c_str());
             continue;
         };
 
         if (fDebug)
-            printf("Expanding secret for %s\n", addr.ToString().c_str());
+            LogPrintf("Expanding secret for %s\n", addr.ToString().c_str());
 
         ec_secret sSpendR;
         ec_secret sSpend;
@@ -2192,78 +2194,72 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
         if (si->spend_secret.size() != ec_secret_size
             || si->scan_secret.size() != ec_secret_size)
         {
-            printf("Stealth address has no secret key for %s\n", addr.ToString().c_str());
+            LogPrintf("Stealth address has no secret key for %s\n", addr.ToString().c_str());
             continue;
         };
         memcpy(&sScan.e[0], &si->scan_secret[0], ec_secret_size);
         memcpy(&sSpend.e[0], &si->spend_secret[0], ec_secret_size);
 
-        ec_point pkEphem = sxKeyMeta.pkEphem.Raw();
+        ec_point pkEphem;;
+        pkEphem.resize(sxKeyMeta.pkEphem.size());
+        memcpy(&pkEphem[0], sxKeyMeta.pkEphem.begin(), sxKeyMeta.pkEphem.size());
+        
         if (StealthSecretSpend(sScan, pkEphem, sSpend, sSpendR) != 0)
         {
-            printf("StealthSecretSpend() failed.\n");
+            LogPrintf("StealthSecretSpend() failed.\n");
             continue;
         };
 
         ec_point pkTestSpendR;
         if (SecretToPublicKey(sSpendR, pkTestSpendR) != 0)
         {
-            printf("SecretToPublicKey() failed.\n");
+            LogPrintf("SecretToPublicKey() failed.\n");
             continue;
         };
-
-        CSecret vchSecret;
-        vchSecret.resize(ec_secret_size);
-
-        memcpy(&vchSecret[0], &sSpendR.e[0], ec_secret_size);
+        
         CKey ckey;
-
-        try { ckey.SetSecret(vchSecret, true); } catch (std::exception& e)
+        ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
+        
+        if (!ckey.IsValid())
         {
-            printf("ckey.SetSecret() threw: %s.\n", e.what());
+            LogPrintf("Reconstructed key is invalid.\n");
             continue;
         };
-
-        CPubKey cpkT = ckey.GetPubKey();
-
+        
+        CPubKey cpkT = ckey.GetPubKey(true);
+        
         if (!cpkT.IsValid())
         {
-            printf("cpkT is invalid.\n");
+            LogPrintf("cpkT is invalid.\n");
             continue;
         };
 
         if (cpkT != pubKey)
         {
-            printf("Error: Generated secret does not match.\n");
+            LogPrintf("Error: Generated secret does not match.\n");
             if (fDebug)
             {
-                printf("cpkT   %s\n", HexStr(cpkT.Raw()).c_str());
-                printf("pubKey %s\n", HexStr(pubKey.Raw()).c_str());
+                LogPrintf("cpkT   %s\n", HexStr(cpkT).c_str());
+                LogPrintf("pubKey %s\n", HexStr(pubKey).c_str());
             };
             continue;
         };
-
-        if (!ckey.IsValid())
-        {
-            printf("Reconstructed key is invalid.\n");
-            continue;
-        };
-
+        
         if (fDebug)
         {
             CKeyID keyID = cpkT.GetID();
             CBitcoinAddress coinAddress(keyID);
-            printf("Adding secret to key %s.\n", coinAddress.ToString().c_str());
+            LogPrintf("Adding secret to key %s.\n", coinAddress.ToString().c_str());
         };
 
         if (!AddKey(ckey))
         {
-            printf("AddKey failed.\n");
+            LogPrintf("AddKey failed.\n");
             continue;
         };
 
         if (!CWalletDB(strWalletFile).EraseStealthKeyMeta(ckid))
-            printf("EraseStealthKeyMeta failed for %s\n", addr.ToString().c_str());
+            LogPrintf("EraseStealthKeyMeta failed for %s\n", addr.ToString().c_str());
     };
     return true;
 }
@@ -2271,7 +2267,7 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
 bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool addIfNotExist)
 {
     if (fDebug)
-        printf("UpdateStealthAddress %s\n", addr.c_str());
+        LogPrintf("UpdateStealthAddress %s\n", addr.c_str());
 
 
     CStealthAddress sxAddr;
@@ -2294,7 +2290,7 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
             nMode = CT_NEW;
         } else
         {
-            printf("UpdateStealthAddress %s, not in set\n", addr.c_str());
+            LogPrintf("UpdateStealthAddress %s, not in set\n", addr.c_str());
             return false;
         };
     } else
@@ -2316,7 +2312,7 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
 
             if (!CWalletDB(strWalletFile).ReadStealthAddress(sxFound))
             {
-                printf("UpdateStealthAddress: error - sxFound not in db.\n");
+                LogPrintf("UpdateStealthAddress: error - sxFound not in db.\n");
                 return false;
             };
         };
@@ -2326,7 +2322,7 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
 
     if (!CWalletDB(strWalletFile).WriteStealthAddress(sxFound))
     {
-        printf("UpdateStealthAddress(%s) Write to db failed.\n", addr.c_str());
+        LogPrintf("UpdateStealthAddress(%s) Write to db failed.\n", addr.c_str());
         return false;
     };
 
@@ -2365,7 +2361,7 @@ bool CWallet::CreateStealthTransaction(CScript scriptPubKey, int64_t nValue, std
             char key[64];
             if (snprintf(key, sizeof(key), "n_%u", k) < 1)
             {
-                printf("CreateStealthTransaction(): Error creating narration key.");
+                LogPrintf("CreateStealthTransaction(): Error creating narration key.");
                 break;
             };
             wtxNew.mapValue[key] = sNarr;
@@ -2384,14 +2380,14 @@ string CWallet::SendStealthMoney(CScript scriptPubKey, int64_t nValue, std::vect
     if (IsLocked())
     {
         string strError = _("Error: Wallet locked, unable to create transaction  ");
-        printf("SendStealthMoney() : %s", strError.c_str());
+        LogPrintf("SendStealthMoney() : %s", strError.c_str());
         return strError;
     };
 
     if (fWalletUnlockStakingOnly)
     {
         string strError = _("Error: Wallet unlocked for staking only, unable to create transaction.");
-        printf("SendStealthMoney() : %s", strError.c_str());
+        LogPrintf("SendStealthMoney() : %s", strError.c_str());
         return strError;
     };
 
@@ -2402,7 +2398,7 @@ string CWallet::SendStealthMoney(CScript scriptPubKey, int64_t nValue, std::vect
             strError = strprintf(_("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  "), FormatMoney(nFeeRequired).c_str());
         else
             strError = _("Error: Transaction creation failed  ");
-        printf("SendStealthMoney() : %s", strError.c_str());
+        LogPrintf("SendStealthMoney() : %s", strError.c_str());
         return strError;
     };
 
@@ -2428,8 +2424,7 @@ bool CWallet::SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64_t 
         sError = "Insufficient funds";
         return false;
     };
-
-
+    
     ec_secret ephem_secret;
     ec_secret secretShared;
     ec_point pkSendTo;
@@ -2466,9 +2461,9 @@ bool CWallet::SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64_t 
 
     if (fDebug)
     {
-        printf("Stealth send to generated pubkey %"PRIszu": %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
-        printf("hash %s\n", addrTo.ToString().c_str());
-        printf("ephem_pubkey %"PRIszu": %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
+        LogPrintf("Stealth send to generated pubkey %u: %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
+        LogPrintf("hash %s\n", addrTo.ToString().c_str());
+        LogPrintf("ephem_pubkey %u: %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
     };
 
     std::vector<unsigned char> vchNarr;
@@ -2504,7 +2499,7 @@ bool CWallet::SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64_t 
 bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr)
 {
     if (fDebug)
-        printf("FindStealthTransactions() tx: %s\n", tx.GetHash().GetHex().c_str());
+        LogPrintf("FindStealthTransactions() tx: %s\n", tx.GetHash().GetHex().c_str());
 
     mapNarr.clear();
 
@@ -2558,7 +2553,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     mapNarr[cbuf] = sNarr;
                 } else
                 {
-                    printf("Warning: FindStealthTransactions() tx: %s, Could not extract plaintext narration.\n", tx.GetHash().GetHex().c_str());
+                    LogPrintf("Warning: FindStealthTransactions() tx: %s, Could not extract plaintext narration.\n", tx.GetHash().GetHex().c_str());
                 };
             };
             continue;
@@ -2602,7 +2597,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
 
                 if (StealthSecret(sScan, vchEphemPK, it->spend_pubkey, sShared, pkExtracted) != 0)
                 {
-                    printf("StealthSecret failed.\n");
+                    LogPrintf("StealthSecret failed.\n");
                     continue;
                 };
 
@@ -2616,12 +2611,12 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     continue;
 
                 if (fDebug)
-                    printf("Found stealth txn to address %s\n", it->Encoded().c_str());
+                    LogPrintf("Found stealth txn to address %s\n", it->Encoded().c_str());
 
                 if (IsLocked())
                 {
                     if (fDebug)
-                        printf("Wallet locked, adding key without secret.\n");
+                        LogPrintf("Wallet locked, adding key without secret.\n");
 
                     // -- add key without secret
                     std::vector<uint8_t> vchEmpty;
@@ -2636,7 +2631,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     CStealthKeyMetadata lockedSkMeta(cpkEphem, cpkScan);
 
                     if (!CWalletDB(strWalletFile).WriteStealthKeyMeta(keyId, lockedSkMeta))
-                        printf("WriteStealthKeyMeta failed for %s\n", coinAddress.ToString().c_str());
+                        LogPrintf("WriteStealthKeyMeta failed for %s\n", coinAddress.ToString().c_str());
 
                     mapStealthKeyMeta[keyId] = lockedSkMeta;
                     nFoundStealth++;
@@ -2649,39 +2644,30 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
 
                     if (StealthSharedToSecretSpend(sShared, sSpend, sSpendR) != 0)
                     {
-                        printf("StealthSharedToSecretSpend() failed.\n");
+                        LogPrintf("StealthSharedToSecretSpend() failed.\n");
                         continue;
                     };
 
                     ec_point pkTestSpendR;
                     if (SecretToPublicKey(sSpendR, pkTestSpendR) != 0)
                     {
-                        printf("SecretToPublicKey() failed.\n");
+                        LogPrintf("SecretToPublicKey() failed.\n");
                         continue;
                     };
 
-                    CSecret vchSecret;
-                    vchSecret.resize(ec_secret_size);
-
-                    memcpy(&vchSecret[0], &sSpendR.e[0], ec_secret_size);
                     CKey ckey;
-
-                    try { ckey.SetSecret(vchSecret, true); } catch (std::exception& e)
-                    {
-                        printf("ckey.SetSecret() threw: %s.\n", e.what());
-                        continue;
-                    };
+                    ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
 
                     if (!ckey.IsValid())
                     {
-                        printf("Reconstructed key is invalid.\n");
+                        LogPrintf("Reconstructed key is invalid.\n");
                         continue;
                     };
 
                     CPubKey cpkT = ckey.GetPubKey();
                     if (!cpkT.IsValid())
                     {
-                        printf("cpkT is invalid.\n");
+                        LogPrintf("cpkT is invalid.\n");
                         continue;
                     };
 
@@ -2689,12 +2675,12 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     if (fDebug)
                     {
                         CBitcoinAddress coinAddress(keyID);
-                        printf("Adding key %s.\n", coinAddress.ToString().c_str());
+                        LogPrintf("Adding key %s.\n", coinAddress.ToString().c_str());
                     };
 
                     if (!AddKey(ckey))
                     {
-                        printf("AddKey failed.\n");
+                        LogPrintf("AddKey failed.\n");
                         continue;
                     };
 
@@ -2713,7 +2699,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     std::vector<uint8_t> vchNarr;
                     if (!crypter.Decrypt(&vchENarr[0], vchENarr.size(), vchNarr))
                     {
-                        printf("Decrypt narration failed.\n");
+                        LogPrintf("Decrypt narration failed.\n");
                         continue;
                     };
                     std::string sNarr = std::string(vchNarr.begin(), vchNarr.end());
@@ -2771,7 +2757,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB* ptxdb, const CTransaction& tx, const 
 {
     uint256 txnHash = tx.GetHash();
     if (fDebugRingSig)
-        printf("UpdateAnonTransaction() tx: %s\n", txnHash.GetHex().c_str());
+        LogPrintf("UpdateAnonTransaction() tx: %s\n", txnHash.GetHex().c_str());
     
     // -- update txns not received in a block
 
@@ -2800,7 +2786,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB* ptxdb, const CTransaction& tx, const 
         pkRingCoin = CPubKey(&pPubkeys[0 * ec_compressed_size], ec_compressed_size);
         if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
         {
-            printf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, HexStr(pkRingCoin.Raw()).c_str());
+            LogPrintf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, HexStr(pkRingCoin).c_str());
             return false;
         };
         
@@ -2813,7 +2799,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB* ptxdb, const CTransaction& tx, const 
         
         if (!ptxdb->WriteKeyImage(vchImage, spentKeyImage))
         {
-            printf("UpdateAnonTransaction(): Error input %d WriteKeyImage failed %s .\n", i, HexStr(vchImage).c_str());
+            LogPrintf("UpdateAnonTransaction(): Error input %d WriteKeyImage failed %s .\n", i, HexStr(vchImage).c_str());
             return false;
         };
         
@@ -2832,7 +2818,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB* ptxdb, const CTransaction& tx, const 
         CAnonOutput ao;
         if (!ptxdb->ReadAnonOutput(pkCoin, ao))
         {
-            printf("ReadAnonOutput %d failed.\n", i);
+            LogPrintf("ReadAnonOutput %d failed.\n", i);
             return false;
         };
 
@@ -2840,7 +2826,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB* ptxdb, const CTransaction& tx, const 
 
         if (!ptxdb->WriteAnonOutput(pkCoin, ao))
         {
-            printf("ReadAnonOutput %d failed.\n", i);
+            LogPrintf("ReadAnonOutput %d failed.\n", i);
             return false;
         };
 
@@ -2854,7 +2840,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB* ptxdb, const CTransaction& tx, const 
 bool CWallet::UndoAnonTransaction(const CTransaction& tx)
 {
     if (fDebugRingSig)
-        printf("UndoAnonTransaction() tx: %s\n", tx.GetHash().GetHex().c_str());
+        LogPrintf("UndoAnonTransaction() tx: %s\n", tx.GetHash().GetHex().c_str());
     // -- undo transaction - used if block is unlinked / txn didn't commit
 
     LOCK2(cs_main, cs_wallet);
@@ -2880,20 +2866,20 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
         if (!GetKeyImage(&txdb, vchImage, spentKeyImage, fInMempool))
         {
             if (fDebugRingSig)
-                printf("Error: keyImage for input %d not found.\n", i);
+                LogPrintf("Error: keyImage for input %d not found.\n", i);
             continue;
         };
 
         // Possible?
         if (spentKeyImage.txnHash != txnHash)
         {
-            printf("Error: spentKeyImage for %s does not match txn %s.\n", HexStr(vchImage).c_str(), txnHash.ToString().c_str());
+            LogPrintf("Error: spentKeyImage for %s does not match txn %s.\n", HexStr(vchImage).c_str(), txnHash.ToString().c_str());
             continue;
         };
 
         if (!txdb.EraseKeyImage(vchImage))
         {
-            printf("EraseKeyImage %d failed.\n", i);
+            LogPrintf("EraseKeyImage %d failed.\n", i);
             continue;
         };
 
@@ -2904,30 +2890,30 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
         if (walletdb.ReadOwnedAnonOutput(vchImage, oao))
         {
             if (fDebugRingSig)
-                printf("UndoAnonTransaction(): input %d keyimage %s found in wallet (owned).\n", i, HexStr(vchImage).c_str());
+                LogPrintf("UndoAnonTransaction(): input %d keyimage %s found in wallet (owned).\n", i, HexStr(vchImage).c_str());
 
             std::map<uint256, CWalletTx>::iterator mi = mapWallet.find(oao.outpoint.hash);
             if (mi == mapWallet.end())
             {
-                printf("UndoAnonTransaction(): Error input %d prev txn not in mapwallet %s .\n", i, oao.outpoint.hash.ToString().c_str());
+                LogPrintf("UndoAnonTransaction(): Error input %d prev txn not in mapwallet %s .\n", i, oao.outpoint.hash.ToString().c_str());
                 return false;
             };
 
             CWalletTx& inTx = (*mi).second;
             if (oao.outpoint.n >= inTx.vout.size())
             {
-                printf("UndoAnonTransaction(): bad wtx %s\n", oao.outpoint.hash.ToString().c_str());
+                LogPrintf("UndoAnonTransaction(): bad wtx %s\n", oao.outpoint.hash.ToString().c_str());
                 return false;
             } else
             if (inTx.IsSpent(oao.outpoint.n))
             {
-                printf("UndoAnonTransaction(): found spent coin %s\n", oao.outpoint.hash.ToString().c_str());
+                LogPrintf("UndoAnonTransaction(): found spent coin %s\n", oao.outpoint.hash.ToString().c_str());
 
 
                 inTx.MarkUnspent(oao.outpoint.n);
                 if (!walletdb.WriteTx(oao.outpoint.hash, inTx))
                 {
-                    printf("UndoAnonTransaction(): input %d WriteTx failed %s.\n", i, HexStr(vchImage).c_str());
+                    LogPrintf("UndoAnonTransaction(): input %d WriteTx failed %s.\n", i, HexStr(vchImage).c_str());
                     return false;
                 };
                 inTx.MarkDirty(); // recalc balances
@@ -2937,7 +2923,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
             oao.fSpent = false;
             if (!walletdb.WriteOwnedAnonOutput(vchImage, oao))
             {
-                printf("UndoAnonTransaction(): input %d WriteOwnedAnonOutput failed %s.\n", i, HexStr(vchImage).c_str());
+                LogPrintf("UndoAnonTransaction(): input %d WriteOwnedAnonOutput failed %s.\n", i, HexStr(vchImage).c_str());
                 return false;
             };
         };
@@ -2959,7 +2945,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
         CAnonOutput ao;
         if (!txdb.ReadAnonOutput(pkCoin, ao)) // read only to update mapAnonOutputStats
         {
-            printf("ReadAnonOutput(): %u failed.\n", i);
+            LogPrintf("ReadAnonOutput(): %u failed.\n", i);
             return false;
         };
 
@@ -2967,7 +2953,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
 
         if (!txdb.EraseAnonOutput(pkCoin))
         {
-            printf("EraseAnonOutput(): %u failed.\n", i);
+            LogPrintf("EraseAnonOutput(): %u failed.\n", i);
             continue;
         };
 
@@ -2978,19 +2964,19 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
 
         if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
         {
-            printf("ReadOwnedAnonOutputLink(): %u failed - output wasn't owned.\n", i);
+            LogPrintf("ReadOwnedAnonOutputLink(): %u failed - output wasn't owned.\n", i);
             continue;
         };
 
         if (!walletdb.EraseOwnedAnonOutput(vchImage))
         {
-            printf("EraseOwnedAnonOutput(): %u failed.\n", i);
+            LogPrintf("EraseOwnedAnonOutput(): %u failed.\n", i);
             continue;
         };
 
         if (!walletdb.EraseOwnedAnonOutputLink(pkCoin))
         {
-            printf("EraseOwnedAnonOutputLink(): %u failed.\n", i);
+            LogPrintf("EraseOwnedAnonOutputLink(): %u failed.\n", i);
             continue;
         };
     };
@@ -2998,7 +2984,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
 
     if (!walletdb.EraseTx(txnHash))
     {
-        printf("UndoAnonTransaction() EraseTx %s failed.\n", txnHash.ToString().c_str());
+        LogPrintf("UndoAnonTransaction() EraseTx %s failed.\n", txnHash.ToString().c_str());
         return false;
     };
 
@@ -3012,11 +2998,11 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
     uint256 txnHash = tx.GetHash();
     
     if (fDebugRingSig)
-        printf("ProcessAnonTransaction() tx: %s\n", txnHash.GetHex().c_str());
+        LogPrintf("ProcessAnonTransaction() tx: %s\n", txnHash.GetHex().c_str());
     
     if (nNodeMode != NT_FULL)
     {
-        printf("ProcessAnonTransaction() skipped - must run in full mode.\n");
+        LogPrintf("ProcessAnonTransaction() skipped - must run in full mode.\n");
         return true;
     };
     
@@ -3044,18 +3030,18 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
                 && spentKeyImage.inputNo == i)
             {
                 if (fDebugRingSig)
-                    printf("found matching spent key image - txn has been processed before\n");
+                    LogPrintf("found matching spent key image - txn has been processed before\n");
                 return UpdateAnonTransaction(ptxdb, tx, blockHash);
             };
             
             if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
             {
-                printf("ProcessAnonTransaction(): Error input %d keyimage %s already spent.\n", i, HexStr(vchImage).c_str());
+                LogPrintf("ProcessAnonTransaction(): Error input %d keyimage %s already spent.\n", i, HexStr(vchImage).c_str());
                 return false;
             };
             
             if (fDebugRingSig)
-                printf("Input %d keyimage %s matches unknown txn %s, continuing.\n", i, HexStr(vchImage).c_str(), spentKeyImage.txnHash.ToString().c_str());
+                LogPrintf("Input %d keyimage %s matches unknown txn %s, continuing.\n", i, HexStr(vchImage).c_str(), spentKeyImage.txnHash.ToString().c_str());
             
             // -- keyimage is in db, but invalid as does not point to a known transaction
             //    could be an old mempool keyimage
@@ -3067,29 +3053,29 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
         if (pwdb->ReadOwnedAnonOutput(vchImage, oao))
         {
             if (fDebugRingSig)
-                printf("ProcessAnonTransaction(): input %d keyimage %s found in wallet (owned).\n", i, HexStr(vchImage).c_str());
+                LogPrintf("ProcessAnonTransaction(): input %d keyimage %s found in wallet (owned).\n", i, HexStr(vchImage).c_str());
             
             std::map<uint256, CWalletTx>::iterator mi = mapWallet.find(oao.outpoint.hash);
             if (mi == mapWallet.end())
             {
-                printf("ProcessAnonTransaction(): Error input %d prev txn not in mapwallet %s .\n", i, oao.outpoint.hash.ToString().c_str());
+                LogPrintf("ProcessAnonTransaction(): Error input %d prev txn not in mapwallet %s .\n", i, oao.outpoint.hash.ToString().c_str());
                 return false;
             };
             
             CWalletTx& inTx = (*mi).second;
             if (oao.outpoint.n >= inTx.vout.size())
             {
-                printf("ProcessAnonTransaction(): bad wtx %s\n", oao.outpoint.hash.ToString().c_str());
+                LogPrintf("ProcessAnonTransaction(): bad wtx %s\n", oao.outpoint.hash.ToString().c_str());
                 return false;
             } else
             if (!inTx.IsSpent(oao.outpoint.n))
             {
-                printf("ProcessAnonTransaction(): found spent coin %s\n", oao.outpoint.hash.ToString().c_str());
+                LogPrintf("ProcessAnonTransaction(): found spent coin %s\n", oao.outpoint.hash.ToString().c_str());
                 
                 inTx.MarkSpent(oao.outpoint.n);
                 if (!pwdb->WriteTx(oao.outpoint.hash, inTx))
                 {
-                    printf("ProcessAnonTransaction(): input %d WriteTx failed %s.\n", i, HexStr(vchImage).c_str());
+                    LogPrintf("ProcessAnonTransaction(): input %d WriteTx failed %s.\n", i, HexStr(vchImage).c_str());
                     return false;
                 };
                 
@@ -3100,7 +3086,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             oao.fSpent = true;
             if (!pwdb->WriteOwnedAnonOutput(vchImage, oao))
             {
-                printf("ProcessAnonTransaction(): input %d WriteOwnedAnonOutput failed %s.\n", i, HexStr(vchImage).c_str());
+                LogPrintf("ProcessAnonTransaction(): input %d WriteOwnedAnonOutput failed %s.\n", i, HexStr(vchImage).c_str());
                 return false;
             };
         };
@@ -3109,13 +3095,13 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
         if (nRingSize < (int)MIN_RING_SIZE
             || nRingSize > (int)MAX_RING_SIZE)
         {
-            printf("ProcessAnonTransaction(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
+            LogPrintf("ProcessAnonTransaction(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
             return false;
         };
         
         if (s.size() < 2 + (ec_compressed_size + ec_secret_size + ec_secret_size) * nRingSize)
         {
-            printf("ProcessAnonTransaction(): Error input %d scriptSig too small.\n", i);
+            LogPrintf("ProcessAnonTransaction(): Error input %d scriptSig too small.\n", i);
             return false;
         };
         
@@ -3130,7 +3116,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             pkRingCoin = CPubKey(&pPubkeys[ri * ec_compressed_size], ec_compressed_size);
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
             {
-                printf("ProcessAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, HexStr(pkRingCoin.Raw()).c_str());
+                LogPrintf("ProcessAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, HexStr(pkRingCoin).c_str());
                 return false;
             };
             
@@ -3140,14 +3126,14 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             } else
             if (nCoinValue != ao.nValue)
             {
-                printf("ProcessAnonTransaction(): Error input %u ring amount mismatch %" PRId64 ", %" PRId64 ".\n", i, nCoinValue, ao.nValue);
+                LogPrintf("ProcessAnonTransaction(): Error input %u ring amount mismatch %d, %d.\n", i, nCoinValue, ao.nValue);
                 return false;
             };
             
             if (ao.nBlockHeight == 0
                 || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
             {
-                printf("ProcessAnonTransaction(): Error input %u ring coin %u depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+                LogPrintf("ProcessAnonTransaction(): Error input %u ring coin %u depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
                 return false;
             };
             
@@ -3162,7 +3148,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
         {
             if (!ptxdb->WriteKeyImage(vchImage, spentKeyImage))
             {
-                printf("ProcessAnonTransaction(): Error input %d WriteKeyImage failed %s .\n", i, HexStr(vchImage).c_str());
+                LogPrintf("ProcessAnonTransaction(): Error input %d WriteKeyImage failed %s .\n", i, HexStr(vchImage).c_str());
                 return false;
             };
         } else
@@ -3190,7 +3176,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
     
     try { vchEphemPK.resize(ec_compressed_size); } catch (std::exception& e)
     {
-        printf("Error: vchEphemPK.resize threw: %s.\n", e.what());
+        LogPrintf("Error: vchEphemPK.resize threw: %s.\n", e.what());
         return false;
     };
     
@@ -3218,10 +3204,10 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             if (blockHash != 0)
             {
                 if (fDebugRingSig)
-                    printf("Found existing anon output - assuming txn has been processed before.\n");
+                    LogPrintf("Found existing anon output - assuming txn has been processed before.\n");
                 return UpdateAnonTransaction(ptxdb, tx, blockHash);
             };
-            printf("Error: Found duplicate anon output.\n");
+            LogPrintf("Error: Found duplicate anon output.\n");
             return false;
         };
         
@@ -3229,7 +3215,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
         
         if (!ptxdb->WriteAnonOutput(pkCoin, ao))
         {
-            printf("WriteKeyImage failed.\n");
+            LogPrintf("WriteKeyImage failed.\n");
             continue;
         };
         
@@ -3249,7 +3235,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
 
             if (StealthSecret(sScan, vchEphemPK, it->spend_pubkey, sShared, pkExtracted) != 0)
             {
-                printf("StealthSecret failed.\n");
+                LogPrintf("StealthSecret failed.\n");
                 continue;
             };
 
@@ -3266,7 +3252,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             continue;
 
         if (fDebugRingSig)
-            printf("anon output match tx, no %s, %u\n", txnHash.GetHex().c_str(), i);
+            LogPrintf("anon output match tx, no %s, %u\n", txnHash.GetHex().c_str(), i);
 
         fIsMine = true; // mark tx to be added to wallet
 
@@ -3277,11 +3263,11 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
         if (lenENarr > 0)
         {
             if (fDebugRingSig)
-                printf("Processing encrypted narration of %d bytes\n", lenENarr);
+                LogPrintf("Processing encrypted narration of %d bytes\n", lenENarr);
             
             try { vchENarr.resize(lenENarr); } catch (std::exception& e)
             {
-                printf("Error: vchENarr.resize threw: %s.\n", e.what());
+                LogPrintf("Error: vchENarr.resize threw: %s.\n", e.what());
                 continue;
             };
             memcpy(&vchENarr[0], &s[2+ec_compressed_size+1+ec_compressed_size+2], lenENarr);
@@ -3291,7 +3277,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             std::vector<uint8_t> vchNarr;
             if (!crypter.Decrypt(&vchENarr[0], vchENarr.size(), vchNarr))
             {
-                printf("Decrypt narration failed.\n");
+                LogPrintf("Decrypt narration failed.\n");
                 continue;
             };
             std::string sNarr = std::string(vchNarr.begin(), vchNarr.end());
@@ -3309,7 +3295,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             pwalletdbEncryption = pwalletdbEncryptionOld;
 
             if (fDebugRingSig)
-                printf("Wallet locked, adding key without secret.\n");
+                LogPrintf("Wallet locked, adding key without secret.\n");
 
             std::string sSxAddr = it->Encoded();
             std::string sLabel = std::string("ao ") + sSxAddr.substr(0, 16) + "...";
@@ -3321,7 +3307,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             if (!pwdb->WriteLockedAnonOutput(ckCoinId, lockedAo))
             {
                 CBitcoinAddress coinAddress(ckCoinId);
-                printf("WriteLockedAnonOutput failed for %s\n", coinAddress.ToString().c_str());
+                LogPrintf("WriteLockedAnonOutput failed for %s\n", coinAddress.ToString().c_str());
             };
         } else
         {
@@ -3332,7 +3318,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             
             if (StealthSharedToSecretSpend(sShared, sSpend, sSpendR) != 0)
             {
-                printf("StealthSharedToSecretSpend() failed.\n");
+                LogPrintf("StealthSharedToSecretSpend() failed.\n");
                 continue;
             };
 
@@ -3340,25 +3326,16 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             ec_point pkTestSpendR;
             if (SecretToPublicKey(sSpendR, pkTestSpendR) != 0)
             {
-                printf("SecretToPublicKey() failed.\n");
+                LogPrintf("SecretToPublicKey() failed.\n");
                 continue;
             };
 
-            CSecret vchSecret;
-            vchSecret.resize(ec_secret_size);
-
-            memcpy(&vchSecret[0], &sSpendR.e[0], ec_secret_size);
             CKey ckey;
-
-            try { ckey.SetSecret(vchSecret, true); } catch (std::exception& e)
-            {
-                printf("ckey.SetSecret() threw: %s.\n", e.what());
-                continue;
-            };
+            ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
 
             if (!ckey.IsValid())
             {
-                printf("Reconstructed key is invalid.\n");
+                LogPrintf("Reconstructed key is invalid.\n");
                 continue;
             };
 
@@ -3366,19 +3343,19 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             if (!cpkT.IsValid()
                 || cpkT != pkCoin)
             {
-                printf("cpkT is invalid.\n");
+                LogPrintf("cpkT is invalid.\n");
                 continue;
             };
 
             if (fDebugRingSig)
             {
                 CBitcoinAddress coinAddress(ckCoinId);
-                printf("Adding key %s.\n", coinAddress.ToString().c_str());
+                LogPrintf("Adding key %s.\n", coinAddress.ToString().c_str());
             };
 
             if (!AddKeyInDBTxn(pwdb, ckey))
             {
-                printf("AddKeyInDBTxn failed.\n");
+                LogPrintf("AddKeyInDBTxn failed.\n");
                 continue;
             };
 
@@ -3392,7 +3369,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             ec_point pkImage;
             if (generateKeyImage(pkTestSpendR, sSpendR, pkImage) != 0)
             {
-                printf("generateKeyImage() failed.\n");
+                LogPrintf("generateKeyImage() failed.\n");
                 continue;
             };
             
@@ -3410,12 +3387,12 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             if (!pwdb->WriteOwnedAnonOutput(pkImage, oao)
                 || !pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
             {
-                printf("WriteOwnedAnonOutput() failed.\n");
+                LogPrintf("WriteOwnedAnonOutput() failed.\n");
                 continue;
             };
             
             if (fDebugRingSig)
-                printf("Adding anon output to wallet: %s.\n", HexStr(pkImage).c_str());
+                LogPrintf("Adding anon output to wallet: %s.\n", HexStr(pkImage).c_str());
         };
     };
     
@@ -3444,7 +3421,7 @@ bool CWallet::GetAnonChangeAddress(CStealthAddress& sxAddress)
 bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, std::map<int, std::string>& mapNarr, std::string& sError)
 {
     if (fDebugRingSig)
-        printf("CreateAnonOutputs()\n");
+        LogPrintf("CreateAnonOutputs()\n");
 
     if (!sxAddress)
     {
@@ -3488,9 +3465,9 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
 
     if (fDebug)
     {
-        printf("CreateStealthOutput() to generated pubkey %"PRIszu": %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
-        printf("hash %s\n", addrTo.ToString().c_str());
-        printf("ephem_pubkey %"PRIszu": %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
+        LogPrintf("CreateStealthOutput() to generated pubkey %u: %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
+        LogPrintf("hash %s\n", addrTo.ToString().c_str());
+        LogPrintf("ephem_pubkey %u: %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
     };
 
     std::vector<unsigned char> vchENarr;
@@ -3544,7 +3521,7 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
 bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration)
 {
     if (fDebugRingSig)
-        printf("CreateAnonOutputs()\n");
+        LogPrintf("CreateAnonOutputs()\n");
 
     ec_secret scEphem;
     ec_secret scShared;
@@ -3561,7 +3538,7 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
     std::vector<int64_t> vOutAmounts;
     if (splitAmount(nValue, vOutAmounts) != 0)
     {
-        printf("splitAmount() failed.\n");
+        LogPrintf("splitAmount() failed.\n");
         return false;
     };
 
@@ -3569,7 +3546,7 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
     {
         if (GenerateRandomSecret(scEphem) != 0)
         {
-            printf("GenerateRandomSecret failed.\n");
+            LogPrintf("GenerateRandomSecret failed.\n");
             return false;
         };
 
@@ -3577,20 +3554,20 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
         {
             if (StealthSecret(scEphem, sxAddress->scan_pubkey, sxAddress->spend_pubkey, scShared, pkSendTo) != 0)
             {
-                printf("Could not generate receiving public key.\n");
+                LogPrintf("Could not generate receiving public key.\n");
                 return false;
             };
 
             cpkTo = CPubKey(pkSendTo);
             if (!cpkTo.IsValid())
             {
-                printf("Invalid public key generated.\n");
+                LogPrintf("Invalid public key generated.\n");
                 return false;
             };
 
             if (SecretToPublicKey(scEphem, pkEphem) != 0)
             {
-                printf("Could not generate ephem public key.\n");
+                LogPrintf("Could not generate ephem public key.\n");
                 return false;
             };
         };
@@ -3609,13 +3586,13 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
             if (!crypter.Encrypt((uint8_t*)&sNarr[0], sNarr.length(), vchNarr))
             {
-                printf("Narration encryption failed.\n");
+                LogPrintf("Narration encryption failed.\n");
                 return false;
             };
 
             if (vchNarr.size() > MAX_STEALTH_NARRATION_SIZE)
             {
-                printf("Encrypted narration is too long.\n");
+                LogPrintf("Encrypted narration is too long.\n");
                 return false;
             };
             scriptSendTo << vchNarr;
@@ -3627,13 +3604,13 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
             CKeyID ckidTo = cpkTo.GetID();
             CBitcoinAddress addrTo(ckidTo);
 
-            printf("CreateAnonOutput to generated pubkey %"PRIszu": %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
+            LogPrintf("CreateAnonOutput to generated pubkey %u: %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
             if (!sxAddress)
-                printf("Test Mode\n");
-            printf("hash %s\n", addrTo.ToString().c_str());
-            printf("ephemeral pubkey %" PRIszu ": %s\n", pkEphem.size(), HexStr(pkEphem).c_str());
+                LogPrintf("Test Mode\n");
+            LogPrintf("hash %s\n", addrTo.ToString().c_str());
+            LogPrintf("ephemeral pubkey %u: %s\n", pkEphem.size(), HexStr(pkEphem).c_str());
 
-            printf("scriptPubKey %s\n", scriptSendTo.ToString().c_str());
+            LogPrintf("scriptPubKey %s\n", scriptSendTo.ToString().c_str());
         };
         vecSend.push_back(make_pair(scriptSendTo, vOutAmounts[i]));
     };
@@ -3649,13 +3626,13 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     // -- m of n combinations, check smallest coins first
     
     if (fDebugRingSig)
-        printf("checkCombinations() %d, %" PRIszu "\n", m, vData.size());
+        LogPrintf("checkCombinations() %d, %u\n", m, vData.size());
     
     int n = vData.size();
     
     try { v.resize(m); } catch (std::exception& e)
     {
-        printf("Error: checkCombinations() v.resize(%d) threw: %s.\n", m, e.what());
+        LogPrintf("Error: checkCombinations() v.resize(%d) threw: %s.\n", m, e.what());
         return false;
     };
     
@@ -3664,7 +3641,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
      
     if (m > n) // ERROR
     {
-        printf("Error: checkCombinations() m > n\n");
+        LogPrintf("Error: checkCombinations() m > n\n");
         return false;
     };
     
@@ -3681,11 +3658,11 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     };
     
     if (fDebugRingSig)
-        printf("Starting at level %d\n", startL);
+        LogPrintf("Starting at level %d\n", startL);
     
     if (startL == 0)
     {
-        printf("checkCombinations() No possible combinations.\n");
+        LogPrintf("checkCombinations() No possible combinations.\n");
         return false;
     };
     
@@ -3716,8 +3693,8 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
             {
                 if (fDebugRingSig)
                 {
-                    printf("Found match of total %" PRId64 ", in %" PRId64 " tries\n", nTotal, nCount);
-                    for (i = m; i--;) printf("%d%c", v[i], i ? ' ': '\n');
+                    LogPrintf("Found match of total %d, in %d tries\n", nTotal, nCount);
+                    for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
                 };
                 return true;
             };
@@ -3728,8 +3705,8 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
                 
                 if (fDebugRingSig)
                 {
-                    printf("Found coarse match of total %" PRId64 ", in %" PRId64 " tries\n", nTotal, nCount);
-                    for (i = m; i--;) printf("%d%c", v[i], i ? ' ': '\n');
+                    LogPrintf("Found coarse match of total %d, in %d tries\n", nTotal, nCount);
+                    for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
                 };
                 fSeekFine = true;
             };
@@ -3755,16 +3732,16 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
                 {
                     if (fDebugRingSig)
                     {
-                        printf("Found match of total %" PRId64 ", in %" PRId64 " tries\n", nTotal, nCount);
-                        for (i = m; i--;) printf("%d%c", v[i], i ? ' ': '\n');
+                        LogPrintf("Found match of total %d, in %d tries\n", nTotal, nCount);
+                        for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
                     };
                     return true;
                 };
                 
                 if (fDebugRingSig && !(nCount % 500))
                 {
-                    printf("checkCombinations() nCount: %"PRId64" - l: %d, n: %d, m: %d, i: %d, nReq: %"PRId64", v[0]: %d, nTotal: %"PRId64" \n", nCount, l, n, m, i, nReq, v[0], nTotal);
-                    for (i = m; i--;) printf("%d%c", v[i], i ? ' ': '\n');
+                    LogPrintf("checkCombinations() nCount: %d - l: %d, n: %d, m: %d, i: %d, nReq: %d, v[0]: %d, nTotal: %d \n", nCount, l, n, m, i, nReq, v[0], nTotal);
+                    for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
                 };
             };
             
@@ -3789,7 +3766,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
 int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, vector<pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError)
 {
     if (fDebugRingSig)
-        printf("PickAnonInputs(), ChangeOuts %d\n", nExpectChangeOuts);
+        LogPrintf("PickAnonInputs(), ChangeOuts %d\n", nExpectChangeOuts);
     // - choose the smallest coin that can cover the amount + fee
     //   or least no. of smallest coins
 
@@ -3799,7 +3776,7 @@ int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalle
     std::vector<COwnedAnonOutput*> vData;
     try { vData.resize(lAvailableCoins.size()); } catch (std::exception& e)
     {
-        printf("Error: PickAnonInputs() vData.resize threw: %s.\n", e.what());
+        LogPrintf("Error: PickAnonInputs() vData.resize threw: %s.\n", e.what());
         return false;
     };
 
@@ -3819,7 +3796,7 @@ int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalle
     for (uint32_t i = 0; i < lAvailableCoins.size(); ++i)
     {
         if (fDebugRingSig)
-            printf("Input loop %u\n", i);
+            LogPrintf("Input loop %u\n", i);
 
         uint32_t nTotalBytes = (4 + 4 + 4) // Ctx: nVersion, nTime, nLockTime
             + GetSizeOfCompactSize(nOutputs + nExpectChangeOuts)
@@ -3844,12 +3821,12 @@ int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalle
         {
             if (fDebugRingSig)
             {
-                printf("Found combination %u, ", i+1);
+                LogPrintf("Found combination %u, ", i+1);
                 for (int ic = v.size(); ic--;)
-                    printf("%d%c", v[ic], ic ? ' ': '\n');
+                    LogPrintf("%d%c", v[ic], ic ? ' ': '\n');
 
-                printf("nTotalBytes %u\n", nTotalBytes);
-                printf("nFee %" PRId64 "\n", nFee);
+                LogPrintf("nTotalBytes %u\n", nTotalBytes);
+                LogPrintf("nFee %d\n", nFee);
             };
 
             int64_t nTotalIn = 0;
@@ -3892,7 +3869,7 @@ int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalle
             if (nTestFee > nFee)
             {
                 if (fDebugRingSig)
-                    printf("Try again - nTestFee > nFee %" PRId64 ", %" PRId64 ", nTotalBytes %u\n", nTestFee, nFee, nTotalBytes);
+                    LogPrintf("Try again - nTestFee > nFee %d, %d, nTotalBytes %u\n", nTestFee, nFee, nTotalBytes);
                 nExpectChangeOuts = vecChange.size();
                 return 2; // up changeOutSize
             };
@@ -3921,7 +3898,7 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
         // TODO: is it neccessary to include the ring members in the hash?
         if (txin.scriptSig.size() < 2 + ringSize * ec_compressed_size)
         {
-            printf("scriptSig is too small, input %u, ring size %d.\n", i, ringSize);
+            LogPrintf("scriptSig is too small, input %u, ring size %d.\n", i, ringSize);
             return 1;
         };
         ss.write((const char*)&txin.scriptSig[2], ringSize * ec_compressed_size);
@@ -3939,7 +3916,7 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
 int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, uint8_t* p)
 {
     if (fDebug)
-        printf("PickHidingOutputs() %" PRId64 ", %d\n", nValue, nRingSize);
+        LogPrintf("PickHidingOutputs() %d, %d\n", nValue, nRingSize);
 
     // TODO: process multiple inputs in 1 db loop?
 
@@ -3993,7 +3970,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
                 && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
                 {
-                    printf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
+                    LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
                     return 1;
                 };
 
@@ -4006,7 +3983,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
     if ((int)vHideKeys.size() < nRingSize-1)
     {
-        printf("Not enough keys found.\n");
+        LogPrintf("Not enough keys found.\n");
         return 1;
     };
 
@@ -4017,7 +3994,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
         if (vHideKeys.size() < 1)
         {
-            printf("vHideKeys.size() < 1\n");
+            LogPrintf("vHideKeys.size() < 1\n");
             return 1;
         };
 
@@ -4051,7 +4028,7 @@ bool CWallet::AreOutputsUnique(CWalletTx& wtxNew)
         
         if (txdb.ReadAnonOutput(pkCoin, ao))
         {
-            //printf("AreOutputsUnique() pk %s is not unique.\n", pkCoin);
+            //LogPrintf("AreOutputsUnique() pk %s is not unique.\n", pkCoin);
             return false;
         };
     };
@@ -4062,7 +4039,7 @@ bool CWallet::AreOutputsUnique(CWalletTx& wtxNew)
 bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
 {
     if (fDebugRingSig)
-        printf("AddAnonInputs() %" PRId64 ", %d\n", nTotalOut, nRingSize);
+        LogPrintf("AddAnonInputs() %d, %d\n", nTotalOut, nRingSize);
 
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
@@ -4084,7 +4061,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
     if (fDebugRingSig)
     {
         for (std::map<int64_t, int>::iterator it = mOutputCounts.begin(); it != mOutputCounts.end(); ++it)
-            printf("mOutputCounts %ld %d\n", it->first, it->second);
+            LogPrintf("mOutputCounts %ld %d\n", it->first, it->second);
     };
 
     int64_t nAmountCheck = 0;
@@ -4106,7 +4083,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
     };
 
     if (fDebugRingSig)
-        printf("%" PRIszu " coins available with ring size %d, total %" PRId64 "\n", lAvailableCoins.size(), nRingSize, nAmountCheck);
+        LogPrintf("%u coins available with ring size %d, total %d\n", lAvailableCoins.size(), nRingSize, nAmountCheck);
 
     // -- estimate fee
 
@@ -4154,7 +4131,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
     {
         CTxIn& txin = wtxNew.vin[ii];
         if (fDebugRingSig)
-            printf("pickedCoin %s %" PRId64 "\n", HexStr((*it)->vchImage).c_str(), (*it)->nValue);
+            LogPrintf("pickedCoin %s %d\n", HexStr((*it)->vchImage).c_str(), (*it)->nValue);
 
         // -- overload prevout to hold keyImage
         memcpy(txin.prevout.hash.begin(), &(*it)->vchImage[0], ec_secret_size);
@@ -4164,7 +4141,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
         // -- size for full signature, signature is added later after hash
         try { txin.scriptSig.resize(2 + (ec_compressed_size + ec_secret_size + ec_secret_size) * nRingSize); } catch (std::exception& e)
         {
-            printf("Error: SendAnonToAnon() txin.scriptSig.resize threw: %s.\n", e.what());
+            LogPrintf("Error: SendAnonToAnon() txin.scriptSig.resize threw: %s.\n", e.what());
             sError = "resize failed.\n";
             return false;
         };
@@ -4181,7 +4158,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
             || mi->second.nVersion != ANON_TXN_VERSION
             || (int)mi->second.vout.size() < nCoinOutId)
         {
-            printf("Error: SendAnonToAnon() picked coin not in wallet, %s version %d.\n", (*it)->outpoint.hash.ToString().c_str(), (*mi).second.nVersion);
+            LogPrintf("Error: SendAnonToAnon() picked coin not in wallet, %s version %d.\n", (*it)->outpoint.hash.ToString().c_str(), (*mi).second.nVersion);
             sError = "picked coin not in wallet.\n";
             return false;
         };
@@ -4270,18 +4247,14 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
             return false;
         };
         
-        bool IsCompressed = true;
-        CSecret secret = key.GetSecret(IsCompressed);
-
         ec_secret ecSecret;
-
-        if (secret.size() != ec_secret_size)
+        if (key.size() != ec_secret_size)
         {
-            sError = "Error: secret.size() != ec_secret_size.";
+            sError = "Error: key.size() != ec_secret_size.";
             return false;
         };
 
-        memcpy(&ecSecret.e[0], &secret[0], ec_secret_size);
+        memcpy(&ecSecret.e[0], key.begin(), key.size());
 
         unsigned char* pPubkeys = &txin.scriptSig[2];
         unsigned char* pSigc    = &txin.scriptSig[2 + ec_compressed_size * nRingSize];
@@ -4315,7 +4288,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
 bool CWallet::SendSdcToAnon(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee)
 {
     if (fDebugRingSig)
-        printf("SendSdcToAnon()\n");
+        LogPrintf("SendSdcToAnon()\n");
 
     if (IsLocked())
     {
@@ -4430,7 +4403,7 @@ bool CWallet::SendSdcToAnon(CStealthAddress& sxAddress, int64_t nValue, std::str
 bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee)
 {
     if (fDebugRingSig)
-        printf("SendAnonToAnon()\n");
+        LogPrintf("SendAnonToAnon()\n");
 
     if (IsLocked())
     {
@@ -4497,7 +4470,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
     std::string sError2;
     if (!AddAnonInputs(nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
-        printf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
+        LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed : " + sError2;
         return false;
     };
@@ -4534,7 +4507,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee)
 {
     if (fDebug)
-        printf("SendAnonToSdc()\n");
+        LogPrintf("SendAnonToSdc()\n");
 
     if (IsLocked())
     {
@@ -4586,7 +4559,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
     std::map<int, std::string> mapStealthNarr;
     if (!CreateStealthOutput(&sxAddress, nValue, sNarr, vecSend, mapStealthNarr, sError))
     {
-        printf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
+        LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
         return false;
     };
     std::map<int, std::string>::iterator itN;
@@ -4596,7 +4569,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
         char key[64];
         if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
         {
-            printf("SendCoinsAnon(): Error creating narration key.");
+            LogPrintf("SendCoinsAnon(): Error creating narration key.");
             continue;
         };
         wtxNew.mapValue[key] = itN->second;
@@ -4608,7 +4581,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
     std::string sError2;
     if (!AddAnonInputs(nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
-        printf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
+        LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed: " + sError2;
         return false;
     };
@@ -4631,19 +4604,20 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
     if (fDebugRingSig)
     {
         CBitcoinAddress addrTo(ckeyId);
-        printf("ExpandLockedAnonOutput() %s\n", addrTo.ToString().c_str());
+        LogPrintf("ExpandLockedAnonOutput() %s\n", addrTo.ToString().c_str());
     };
     
     AssertLockHeld(cs_main);
     AssertLockHeld(cs_wallet);
     
     CStealthAddress sxFind;
-    sxFind.scan_pubkey = lao.pkScan.Raw();
+    sxFind.SetScanPubKey(lao.pkScan);
+    
     
     std::set<CStealthAddress>::iterator si = stealthAddresses.find(sxFind);
     if (si == stealthAddresses.end())
     {
-        printf("ExpandLockedAnonOutput - No stealth key found.\n");
+        LogPrintf("ExpandLockedAnonOutput - No stealth key found.\n");
         return false;
     };
     
@@ -4654,75 +4628,75 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
     if (si->spend_secret.size() != ec_secret_size
         || si->scan_secret.size() != ec_secret_size)
     {
-        printf("Stealth address has no secret.\n");
+        LogPrintf("Stealth address has no secret.\n");
         return false;
     };
     
     memcpy(&sScan.e[0], &si->scan_secret[0], ec_secret_size);
     memcpy(&sSpend.e[0], &si->spend_secret[0], ec_secret_size);
     
-    ec_point pkEphem = lao.pkEphem.Raw();
+    ec_point pkEphem;
+    pkEphem.resize(lao.pkEphem.size());
+    memcpy(&pkEphem[0], lao.pkEphem.begin(), lao.pkEphem.size());
+    
     if (StealthSecretSpend(sScan, pkEphem, sSpend, sSpendR) != 0)
     {
-        printf("StealthSecretSpend() failed.\n");
+        LogPrintf("StealthSecretSpend() failed.\n");
         return false;
     };
     
     ec_point pkTestSpendR;
     if (SecretToPublicKey(sSpendR, pkTestSpendR) != 0)
     {
-        printf("SecretToPublicKey() failed.\n");
+        LogPrintf("SecretToPublicKey() failed.\n");
         return false;
     };
     
     
-    CSecret vchSecret;
-    vchSecret.resize(ec_secret_size);
-    
-    memcpy(&vchSecret[0], &sSpendR.e[0], ec_secret_size);
     CKey ckey;
+    ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
     
-    try { ckey.SetSecret(vchSecret, true); } catch (std::exception& e)
+    if (!ckey.IsValid())
     {
-        printf("ckey.SetSecret() threw: %s.\n", e.what());
+        LogPrintf("ckey is invalid.\n");
         return false;
     };
     
-    CPubKey pkCoin = ckey.GetPubKey();
+    CPubKey pkCoin = ckey.GetPubKey(true);
     
     CKeyID keyIDTest = pkCoin.GetID();
     if (!pkCoin.IsValid())
     {
-        printf("pkCoin is invalid.\n");
+        LogPrintf("pkCoin is invalid.\n");
         return false;
     };
     
     if (keyIDTest != ckeyId)
     {
-        printf("Error: Generated secret does not match.\n");
+        LogPrintf("Error: Generated secret does not match.\n");
         if (fDebugRingSig)
         {
-            printf("test   %s\n", keyIDTest.ToString().c_str());
-            printf("gen    %s\n", ckeyId.ToString().c_str());
+            LogPrintf("test   %s\n", keyIDTest.ToString().c_str());
+            LogPrintf("gen    %s\n", ckeyId.ToString().c_str());
         };
         return false;
     };
     
     if (!ckey.IsValid())
     {
-        printf("Reconstructed key is invalid.\n");
+        LogPrintf("Reconstructed key is invalid.\n");
         return false;
     };
     
     if (fDebugRingSig)
     {
         CBitcoinAddress coinAddress(keyIDTest);
-        printf("Adding secret to key %s.\n", coinAddress.ToString().c_str());
+        LogPrintf("Adding secret to key %s.\n", coinAddress.ToString().c_str());
     };
     
     if (!AddKeyInDBTxn(pwdb, ckey))
     {
-        printf("AddKeyInDBTxn failed.\n");
+        LogPrintf("AddKeyInDBTxn failed.\n");
         return false;
     };
     
@@ -4730,7 +4704,7 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
     ec_point pkImage;
     if (generateKeyImage(pkTestSpendR, sSpendR, pkImage) != 0)
     {
-        printf("generateKeyImage() failed.\n");
+        LogPrintf("generateKeyImage() failed.\n");
         return false;
     };
     
@@ -4755,7 +4729,7 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
                 
                 if (!pwdb->WriteTx(lao.outpoint.hash, wtx))
                 {
-                    printf("ExpandLockedAnonOutput(): WriteTx %s failed.\n", wtx.ToString().c_str());
+                    LogPrintf("ExpandLockedAnonOutput(): WriteTx %s failed.\n", wtx.ToString().c_str());
                     return false;
                 };
                 
@@ -4768,12 +4742,12 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
     if (!pwdb->WriteOwnedAnonOutput(pkImage, oao)
         || !pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
     {
-        printf("WriteOwnedAnonOutput() failed.\n");
+        LogPrintf("WriteOwnedAnonOutput() failed.\n");
         return false;
     };
     
     if (fDebugRingSig)
-        printf("Adding anon output to wallet: %s.\n", HexStr(pkImage).c_str());
+        LogPrintf("Adding anon output to wallet: %s.\n", HexStr(pkImage).c_str());
     
     return true;
 };
@@ -4781,7 +4755,7 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
 bool CWallet::ProcessLockedAnonOutputs()
 {
     if (fDebugRingSig)
-        printf("ProcessLockedAnonOutputs()\n");
+        LogPrintf("ProcessLockedAnonOutputs()\n");
     
     // -- process owned anon outputs received when wallet was locked.
     
@@ -4827,7 +4801,7 @@ bool CWallet::ProcessLockedAnonOutputs()
         if (ExpandLockedAnonOutput(&walletdb, ckeyId, lockedAnonOutput))
         {
             if ((ret = pcursor->del(0)) != 0)
-               printf("Delete failed %d, %s\n", ret, db_strerror(ret));
+               LogPrintf("Delete failed %d, %s\n", ret, db_strerror(ret));
         };
     };
 
@@ -4841,7 +4815,7 @@ bool CWallet::ProcessLockedAnonOutputs()
 bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, std::string& sError)
 {
     if (fDebugRingSig)
-        printf("EstimateAnonFee()\n");
+        LogPrintf("EstimateAnonFee()\n");
 
     if (nNodeMode != NT_FULL)
     {
@@ -4877,7 +4851,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     int64_t nFeeRequired;
     if (!AddAnonInputs(nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, true, sError))
     {
-        printf("EstimateAnonFee() AddAnonInputs failed %s.\n", sError.c_str());
+        LogPrintf("EstimateAnonFee() AddAnonInputs failed %s.\n", sError.c_str());
         sError = "AddAnonInputs() failed.";
         return false;
     };
@@ -5021,7 +4995,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
 int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, bool fMatureOnly)
 {
     if (fDebugRingSig)
-        printf("CountAllAnonOutputs()\n");
+        LogPrintf("CountAllAnonOutputs()\n");
 
     // TODO: there are few enough possible coin values to preinitialise a vector with all of them
 
@@ -5132,7 +5106,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
             break;
         };
         if (!fProcessed)
-            printf("WARNING: CountAllAnonOutputs found keyimage without matching anon output value.\n");
+            LogPrintf("WARNING: CountAllAnonOutputs found keyimage without matching anon output value.\n");
 
         iterator->Next();
     };
@@ -5145,7 +5119,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
 int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly)
 {
     if (fDebugRingSig)
-        printf("CountOwnedAnonOutputs()\n");
+        LogPrintf("CountOwnedAnonOutputs()\n");
 
     CWalletDB walletdb(strWalletFile, "r");
 
@@ -5192,8 +5166,8 @@ int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, b
             || mi->second.IsSpent(oao.outpoint.n))
             continue;
 
-        //printf("[rem] mi->second.GetDepthInMainChain() %d \n", mi->second.GetDepthInMainChain());
-        //printf("[rem] mi->second.hashBlock %s \n", mi->second.hashBlock.ToString().c_str());
+        //LogPrintf("[rem] mi->second.GetDepthInMainChain() %d \n", mi->second.GetDepthInMainChain());
+        //LogPrintf("[rem] mi->second.hashBlock %s \n", mi->second.hashBlock.ToString().c_str());
         // -- txn must be in MIN_ANON_SPEND_DEPTH deep in the blockchain to be spent
         if (fMatureOnly
             && mi->second.GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH)
@@ -5214,7 +5188,7 @@ int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, b
 
 bool CWallet::EraseAllAnonData()
 {
-    printf("EraseAllAnonData()\n");
+    LogPrintf("EraseAllAnonData()\n");
 
     LOCK2(cs_main, cs_wallet);
     CWalletDB walletdb(strWalletFile, "cr+");
@@ -5241,11 +5215,11 @@ bool CWallet::EraseAllAnonData()
         if (strType == "ao"
             || strType == "ki")
         {
-            printf("Erasing from txdb %s\n", strType.c_str());
+            LogPrintf("Erasing from txdb %s\n", strType.c_str());
             leveldb::Status s = pdb->Delete(writeOptions, iterator->key());
 
             if (!s.ok())
-                printf("EraseAllAnonData() erase failed: %s\n", s.ToString().c_str());
+                LogPrintf("EraseAllAnonData() erase failed: %s\n", s.ToString().c_str());
         };
 
         iterator->Next();
@@ -5283,10 +5257,10 @@ bool CWallet::EraseAllAnonData()
             || strType == "oao"
             || strType == "oal")
         {
-            printf("Erasing from walletdb %s\n", strType.c_str());
+            LogPrintf("Erasing from walletdb %s\n", strType.c_str());
             //continue;
             if ((ret = pcursor->del(0)) != 0)
-               printf("Delete failed %d, %s\n", ret, db_strerror(ret));
+               LogPrintf("Delete failed %d, %s\n", ret, db_strerror(ret));
         };
     };
 
@@ -5301,14 +5275,14 @@ bool CWallet::EraseAllAnonData()
 bool CWallet::CacheAnonStats()
 {
     if (fDebugRingSig)
-        printf("CacheAnonStats()\n");
+        LogPrintf("CacheAnonStats()\n");
 
     mapAnonOutputStats.clear();
 
     std::list<CAnonOutputCount> lOutputCounts;
     if (CountAllAnonOutputs(lOutputCounts, false) != 0)
     {
-        printf("Error: CountAllAnonOutputs() failed.\n");
+        LogPrintf("Error: CountAllAnonOutputs() failed.\n");
     } else
     {
         for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
@@ -5323,7 +5297,7 @@ bool CWallet::CacheAnonStats()
 bool CWallet::InitBloomFilter()
 {
     if (fDebug)
-        printf("Initialising bloom filter, max elements %d.\n", nBloomFilterElements);
+        LogPrintf("Initialising bloom filter, max elements %d.\n", nBloomFilterElements);
 
     LOCK(cs_wallet);
 
@@ -5365,7 +5339,7 @@ bool CWallet::InitBloomFilter()
             if (fDebugRingSig)
             {
                 CBitcoinAddress coinAddress(keyId);
-                printf("InitBloomFilter() - ignoring key for anon output %s.\n", coinAddress.ToString().c_str());
+                LogPrintf("InitBloomFilter() - ignoring key for anon output %s.\n", coinAddress.ToString().c_str());
             };
             continue;
         };
@@ -5374,7 +5348,7 @@ bool CWallet::InitBloomFilter()
         if (pBloomFilter->IsFull())
         {
             // TODO: try resize?
-            printf("Error: InitBloomFilter() - Filter is full.\n");
+            LogPrintf("Error: InitBloomFilter() - Filter is full.\n");
             continue; // continue so more messages show in log
         };
 
@@ -5382,7 +5356,7 @@ bool CWallet::InitBloomFilter()
         {
             CBitcoinAddress coinAddress(keyId);
             if (coinAddress.IsValid())
-                printf("Adding key: %s.\n", coinAddress.ToString().c_str());
+                LogPrintf("Adding key: %s.\n", coinAddress.ToString().c_str());
         };
 
         vector<unsigned char> vData(keyId.begin(), keyId.end());
@@ -5417,7 +5391,7 @@ bool CWallet::InitBloomFilter()
 
             if (txin.prevout.n >= wtxPrev.vout.size())
             {
-                printf("InitBloomFilter(): bad wtx %s\n", wtxPrev.GetHash().ToString().c_str());
+                LogPrintf("InitBloomFilter(): bad wtx %s\n", wtxPrev.GetHash().ToString().c_str());
             } else
             //if (!wtxPrev.IsSpent(txin.prevout.n) && IsMine(wtxPrev.vout[txin.prevout.n]))
             if (!wtxPrev.IsSpent(txin.prevout.n))
@@ -5434,10 +5408,10 @@ bool CWallet::InitBloomFilter()
 
     if (fDebug)
     {
-        printf("Added %u key%s, %u outpoint%s to filter.\n",
+        LogPrintf("Added %u key%s, %u outpoint%s to filter.\n",
             nKeysAdded, nKeysAdded != 1 ? "s": "",
             nOutPointsAdded, nOutPointsAdded != 1 ? "s": "");
-        printf("Filter bytes: %u.\n", pBloomFilter->GetSize());
+        LogPrintf("Filter bytes: %u.\n", pBloomFilter->GetSize());
     };
 
     return true;
@@ -5448,8 +5422,8 @@ bool CWallet::InitBloomFilter()
 
 
 
-// NovaCoin: get current stake weight
-bool CWallet::GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, uint64_t& nMaxWeight, uint64_t& nWeight)
+// NovaCoin: get current stake weight posv2
+uint64_t CWallet::GetStakeWeight() const
 {
     // Choose coins to use
     int64_t nBalance = GetBalance();
@@ -5467,8 +5441,9 @@ bool CWallet::GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, ui
       || setCoins.empty())
         return false;
 
-    nMinWeight = nMaxWeight = nWeight = 0;
-
+    uint64_t nWeight = 0;
+    int64_t nCurrentTime = GetTime();
+    
     CTxDB txdb("r");
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
@@ -5497,23 +5472,11 @@ bool CWallet::GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, ui
             }
         }
 
-        int64_t nTimeWeight = GetWeight((int64_t)pcoin.first->nTime, (int64_t)GetTime());
-        CBigNum bnCoinDayWeight = CBigNum(pcoin.first->vout[pcoin.second].nValue) * nTimeWeight / COIN / (24 * 60 * 60);
-
-        // Weight is greater than zero
-        if (nTimeWeight > 0)
-            nWeight += bnCoinDayWeight.getuint64();
-
-        // Weight is greater than zero, but the maximum value isn't reached yet
-        if (nTimeWeight > 0 && nTimeWeight < nStakeMaxAge)
-            nMinWeight += bnCoinDayWeight.getuint64();
-
-        // Maximum weight was reached
-        if (nTimeWeight == nStakeMaxAge)
-            nMaxWeight += bnCoinDayWeight.getuint64();
+        if (nCurrentTime - pcoin.first->nTime > nStakeMinAge)
+            nWeight += pcoin.first->vout[pcoin.second].nValue;
     };
 
-    return true;
+    return nWeight;
 }
 
 bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
@@ -5529,66 +5492,47 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CScript scriptEmpty;
     scriptEmpty.clear();
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
-
+    
     // Choose coins to use
     int64_t nBalance = GetBalance();
-
+    
     if (nBalance <= nReserveBalance)
         return false;
-
+    
     vector<const CWalletTx*> vwtxPrev;
-
+    
     set<pair<const CWalletTx*,unsigned int> > setCoins;
     int64_t nValueIn = 0;
 
     // Select coins with suitable depth
     if (!SelectCoinsForStaking(nBalance - nReserveBalance, txNew.nTime, setCoins, nValueIn))
         return false;
-
+    
     if (setCoins.empty())
         return false;
-
+    
     int64_t nCredit = 0;
     CScript scriptPubKeyKernel;
     CTxDB txdb("r");
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
-        CTxIndex txindex;
-
-        {
-            LOCK2(cs_main, cs_wallet);
-            if (!txdb.ReadTxIndex(pcoin.first->GetHash(), txindex))
-                continue;
-        }
-
-        // Read block header
-        CBlock block;
-
-        {
-            LOCK2(cs_main, cs_wallet);
-            if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
-                continue;
-        }
-
+        boost::this_thread::interruption_point();
         static int nMaxStakeSearchInterval = 60;
-        if (block.GetBlockTime() + nStakeMinAge > txNew.nTime - nMaxStakeSearchInterval)
-            continue; // only count coins meeting min age requirement
-
+        
         bool fKernelFound = false;
-        for (unsigned int n=0; n<min(nSearchInterval,(int64_t)nMaxStakeSearchInterval) && !fKernelFound && !fShutdown && pindexPrev == pindexBest; n++)
+        for (unsigned int n=0; n<min(nSearchInterval,(int64_t)nMaxStakeSearchInterval) && !fKernelFound && pindexPrev == pindexBest; n++)
         {
-
+            boost::this_thread::interruption_point();
             // Search backward in time from the given txNew timestamp
             // Search nSearchInterval seconds back up to nMaxStakeSearchInterval
-            uint256 hashProofOfStake = 0, targetProofOfStake = 0;
             COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
 
-            if (CheckStakeKernelHash(nBits, block, txindex.pos.nTxPos - txindex.pos.nBlockPos, *pcoin.first, prevoutStake, txNew.nTime - n, hashProofOfStake, targetProofOfStake, fDebug && GetBoolArg("-printcoinstake")))
+            int64_t nBlockTime;
+            if (CheckKernel(pindexPrev, nBits, txNew.nTime - n, prevoutStake, &nBlockTime))
             {
-
                 // Found a kernel
-                if (fDebug && GetBoolArg("-printcoinstake"))
-                    printf("CreateCoinStake : kernel found\n");
+                if (fDebugPoS)
+                    LogPrintf("CreateCoinStake : kernel found\n");
 
                 vector<valtype> vSolutions;
                 txnouttype whichType;
@@ -5597,18 +5541,18 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
                 if (!Solver(scriptPubKeyKernel, whichType, vSolutions))
                 {
-                    if (fDebug && GetBoolArg("-printcoinstake"))
-                        printf("CreateCoinStake : failed to parse kernel\n");
+                    if (fDebugPoS)
+                        LogPrintf("CreateCoinStake : failed to parse kernel\n");
                     break;
                 };
 
-                if (fDebug && GetBoolArg("-printcoinstake"))
-                    printf("CreateCoinStake : parsed kernel type=%d\n", whichType);
+                if (fDebugPoS)
+                    LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
 
                 if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
                 {
-                    if (fDebug && GetBoolArg("-printcoinstake"))
-                        printf("CreateCoinStake : no support for kernel type=%d\n", whichType);
+                    if (fDebugPoS)
+                        LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
                     break;  // only support pay to public key and pay to address
                 };
 
@@ -5617,8 +5561,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     // convert to pay to public key type
                     if (!keystore.GetKey(uint160(vSolutions[0]), key))
                     {
-                        if (fDebug && GetBoolArg("-printcoinstake"))
-                            printf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
+                        if (fDebugPoS)
+                            LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
                         break;  // unable to find corresponding public key
                     };
                     scriptPubKeyOut << key.GetPubKey() << OP_CHECKSIG;
@@ -5629,15 +5573,15 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     valtype& vchPubKey = vSolutions[0];
                     if (!keystore.GetKey(Hash160(vchPubKey), key))
                     {
-                        if (fDebug && GetBoolArg("-printcoinstake"))
-                            printf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
+                        if (fDebugPoS)
+                            LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
                         break;  // unable to find corresponding public key
                     };
 
                     if (key.GetPubKey() != vchPubKey)
                     {
-                        if (fDebug && GetBoolArg("-printcoinstake"))
-                            printf("CreateCoinStake : invalid key for kernel type=%d\n", whichType);
+                        if (fDebugPoS)
+                            LogPrintf("CreateCoinStake : invalid key for kernel type=%d\n", whichType);
                         break; // keys mismatch
                     };
 
@@ -5650,17 +5594,17 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 vwtxPrev.push_back(pcoin.first);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-                if (GetWeight(block.GetBlockTime(), (int64_t)txNew.nTime) < nStakeSplitAge)
+                if (GetWeight(nBlockTime, (int64_t)txNew.nTime) < nStakeSplitAge)
                     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
 
-                if (fDebug && GetBoolArg("-printcoinstake"))
-                    printf("CreateCoinStake : added kernel type=%d\n", whichType);
+                if (fDebugPoS)
+                    LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
                 fKernelFound = true;
                 break;
             };
         };
 
-        if (fKernelFound || fShutdown)
+        if (fKernelFound)
             break; // if kernel is found stop searching
     }
 
@@ -5705,7 +5649,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (!txNew.GetCoinAge(txdb, nCoinAge))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        int64_t nReward = GetProofOfStakeReward(nCoinAge, nFees);
+        int64_t nReward = Params().GetProofOfStakeReward(nCoinAge, nFees);
         if (nReward <= 0)
             return false;
 
@@ -5746,7 +5690,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
     
     if (!wtxNew.CheckTransaction())
     {
-        printf("CommitTransaction: CheckTransaction() failed %s\n", wtxNew.GetHash().ToString().c_str());
+        LogPrintf("CommitTransaction: CheckTransaction() failed %s\n", wtxNew.GetHash().ToString().c_str());
         return false;
     };
     
@@ -5765,7 +5709,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
         std::vector<std::map<uint256, CWalletTx>::iterator> vUpdatedTxns;
         if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns))
         {
-            printf("CommitTransaction: ProcessAnonTransaction() failed %s\n", wtxNew.GetHash().ToString().c_str());
+            LogPrintf("CommitTransaction: ProcessAnonTransaction() failed %s\n", wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();
             txdb.TxnAbort();
             return false;
@@ -5787,7 +5731,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 
     {
         LOCK2(cs_main, cs_wallet);
-        printf("CommitTransaction:\n%s", wtxNew.ToString().c_str());
+        LogPrintf("CommitTransaction:\n%s", wtxNew.ToString().c_str());
 
         {
             // This is only to keep the database open to defeat the auto-flush for the
@@ -5828,7 +5772,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
         if (!wtxNew.AcceptToMemoryPool())
         {
             // This must not fail. The transaction has already been signed and recorded.
-            printf("CommitTransaction() : Error: Transaction not valid\n");
+            LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
             return false;
         };
         wtxNew.RelayWalletTransaction();
@@ -5866,14 +5810,14 @@ string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, std::string& sNa
     if (IsLocked())
     {
         string strError = _("Error: Wallet locked, unable to create transaction  ");
-        printf("SendMoney() : %s", strError.c_str());
+        LogPrintf("SendMoney() : %s", strError.c_str());
         return strError;
     };
 
     if (fWalletUnlockStakingOnly)
     {
         string strError = _("Error: Wallet unlocked for staking only, unable to create transaction.");
-        printf("SendMoney() : %s", strError.c_str());
+        LogPrintf("SendMoney() : %s", strError.c_str());
         return strError;
     };
 
@@ -5884,7 +5828,7 @@ string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, std::string& sNa
             strError = strprintf(_("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  "), FormatMoney(nFeeRequired).c_str());
         else
             strError = _("Error: Transaction creation failed  ");
-        printf("SendMoney() : %s", strError.c_str());
+        LogPrintf("SendMoney() : %s", strError.c_str());
         return strError;
     };
 
@@ -5941,8 +5885,6 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
     if (nLoadWalletRet != DB_LOAD_OK)
         return nLoadWalletRet;
     fFirstRunRet = !vchDefaultKey.IsValid();
-
-    NewThread(ThreadFlushWalletDB, &strWalletFile);
     return DB_LOAD_OK;
 }
 
@@ -5998,7 +5940,7 @@ bool CWallet::DelAddressBookName(const CTxDestination& address)
             std::set<CStealthAddress>::iterator si = stealthAddresses.find(sxAddr);
             if (si == stealthAddresses.end())
             {
-                printf("Error: DelAddressBookName() stealth address not found in wallet.\n");
+                LogPrintf("Error: DelAddressBookName() stealth address not found in wallet.\n");
                 return false;
             };
 
@@ -6007,7 +5949,7 @@ bool CWallet::DelAddressBookName(const CTxDestination& address)
             if (stealthAddresses.erase(sxAddr) < 1
                 || !CWalletDB(strWalletFile).EraseStealthAddress(sxAddr))
             {
-                printf("Error: DelAddressBookName() remove stealthAddresses failed.\n");
+                LogPrintf("Error: DelAddressBookName() remove stealthAddresses failed.\n");
                 return false;
             };
         }
@@ -6047,17 +5989,17 @@ void CWallet::PrintWallet(const CBlock& block)
         if (block.IsProofOfWork() && mapWallet.count(block.vtx[0].GetHash()))
         {
             CWalletTx& wtx = mapWallet[block.vtx[0].GetHash()];
-            printf("    mine:  %d  %d  %"PRId64"", wtx.GetDepthInMainChain(), wtx.GetBlocksToMaturity(), wtx.GetCredit());
+            LogPrintf("    mine:  %d  %d  %d", wtx.GetDepthInMainChain(), wtx.GetBlocksToMaturity(), wtx.GetCredit());
         };
 
         if (block.IsProofOfStake() && mapWallet.count(block.vtx[1].GetHash()))
         {
             CWalletTx& wtx = mapWallet[block.vtx[1].GetHash()];
-            printf("    stake: %d  %d  %"PRId64"", wtx.GetDepthInMainChain(), wtx.GetBlocksToMaturity(), wtx.GetCredit());
+            LogPrintf("    stake: %d  %d  %d", wtx.GetDepthInMainChain(), wtx.GetBlocksToMaturity(), wtx.GetCredit());
         };
 
     }
-    printf("\n");
+    LogPrintf("\n");
 }
 
 bool CWallet::GetTransaction(const uint256 &hashTx, CWalletTx& wtx)
@@ -6116,7 +6058,7 @@ bool CWallet::NewKeyPool()
             walletdb.WritePool(nIndex, CKeyPool(GenerateNewKey()));
             setKeyPool.insert(nIndex);
         };
-        printf("CWallet::NewKeyPool wrote %"PRId64" new keys\n", nKeys);
+        LogPrintf("CWallet::NewKeyPool wrote %d new keys\n", nKeys);
     }
     return true;
 }
@@ -6146,7 +6088,7 @@ bool CWallet::TopUpKeyPool(unsigned int nSize)
             if (!walletdb.WritePool(nEnd, CKeyPool(GenerateNewKey())))
                 throw runtime_error("TopUpKeyPool() : writing generated key failed");
             setKeyPool.insert(nEnd);
-            printf("keypool added key %"PRId64", size=%"PRIszu"\n", nEnd, setKeyPool.size());
+            LogPrintf("keypool added key %d, size=%u\n", nEnd, setKeyPool.size());
         };
     }
     return true;
@@ -6176,7 +6118,7 @@ void CWallet::ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool)
             throw runtime_error("ReserveKeyFromKeyPool() : unknown key in key pool");
         assert(keypool.vchPubKey.IsValid());
         if (fDebug && GetBoolArg("-printkeypool"))
-            printf("keypool reserve %"PRId64"\n", nIndex);
+            LogPrintf("keypool reserve %d\n", nIndex);
     }
 }
 
@@ -6205,7 +6147,7 @@ void CWallet::KeepKey(int64_t nIndex)
     };
 
     if(fDebug)
-        printf("keypool keep %"PRId64"\n", nIndex);
+        LogPrintf("keypool keep %d\n", nIndex);
 }
 
 void CWallet::ReturnKey(int64_t nIndex)
@@ -6216,7 +6158,7 @@ void CWallet::ReturnKey(int64_t nIndex)
         setKeyPool.insert(nIndex);
     }
     if(fDebug)
-        printf("keypool return %"PRId64"\n", nIndex);
+        LogPrintf("keypool return %d\n", nIndex);
 }
 
 bool CWallet::GetKeyFromPool(CPubKey& result, bool fAllowReuse)
@@ -6390,7 +6332,7 @@ void CWallet::FixSpentCoins(int& nMismatchFound, int64_t& nBalanceInQuestion, bo
 {
     if (nNodeMode != NT_FULL)
     {
-        printf("FixSpentCoins must be run in full mode.\n");
+        LogPrintf("FixSpentCoins must be run in full mode.\n");
         return;
     };
 
@@ -6414,7 +6356,7 @@ void CWallet::FixSpentCoins(int& nMismatchFound, int64_t& nBalanceInQuestion, bo
         {
             if (IsMine(pcoin->vout[n]) && pcoin->IsSpent(n) && (txindex.vSpent.size() <= n || txindex.vSpent[n].IsNull()))
             {
-                printf("FixSpentCoins found lost coin %s SDC %s[%d], %s\n",
+                LogPrintf("FixSpentCoins found lost coin %s SDC %s[%d], %s\n",
                     FormatMoney(pcoin->vout[n].nValue).c_str(), pcoin->GetHash().ToString().c_str(), n, fCheckOnly? "repair not attempted" : "repairing");
                 nMismatchFound++;
                 nBalanceInQuestion += pcoin->vout[n].nValue;
@@ -6426,7 +6368,7 @@ void CWallet::FixSpentCoins(int& nMismatchFound, int64_t& nBalanceInQuestion, bo
             } else
             if (IsMine(pcoin->vout[n]) && !pcoin->IsSpent(n) && (txindex.vSpent.size() > n && !txindex.vSpent[n].IsNull()))
             {
-                printf("FixSpentCoins found spent coin %s SDC %s[%d], %s\n",
+                LogPrintf("FixSpentCoins found spent coin %s SDC %s[%d], %s\n",
                     FormatMoney(pcoin->vout[n].nValue).c_str(), pcoin->GetHash().ToString().c_str(), n, fCheckOnly? "repair not attempted" : "repairing");
                 nMismatchFound++;
                 nBalanceInQuestion += pcoin->vout[n].nValue;
@@ -6478,7 +6420,7 @@ bool CReserveKey::GetReservedKey(CPubKey& pubkey)
         {
             if (pwallet->vchDefaultKey.IsValid())
             {
-                printf("CReserveKey::GetReservedKey(): Warning: Using default key instead of a new key, top up your keypool!");
+                LogPrintf("CReserveKey::GetReservedKey(): Warning: Using default key instead of a new key, top up your keypool!");
                 vchPubKey = pwallet->vchDefaultKey;
             } else
                 return false;
