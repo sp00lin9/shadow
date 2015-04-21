@@ -99,6 +99,7 @@ extern bool fReopenDebugLog;
 extern bool fThinFullIndex;
 extern bool fReindexing;
 extern bool fHaveGUI;
+extern volatile bool fIsStaking;
 
 extern bool fConfChange;
 extern bool fEnforceCanonical;

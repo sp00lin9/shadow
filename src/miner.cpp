@@ -17,13 +17,6 @@ using namespace std;
 // BitcoinMiner
 //
 
-extern unsigned int nMinerSleep;
-extern unsigned int nBlockMaxSize;
-extern unsigned int nBlockPrioritySize;
-extern unsigned int nBlockMinSize;
-
-//extern int64_t nMinTxFee;
-
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
     unsigned char* pdata = (unsigned char*) pbuffer;
@@ -130,9 +123,6 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
     if (!pblock.get())
         return NULL;
     
-    
-    
-
     CBlockIndex* pindexPrev = pindexBest;
 
     // Create coinbase tx
@@ -591,14 +581,14 @@ void ThreadStakeMiner(CWallet *pwallet)
         
         while (pwallet->IsLocked())
         {
-            nLastCoinStakeSearchInterval = 0;
+            fIsStaking = false;
             MilliSleep(2000);
             boost::this_thread::interruption_point();
         };
 
         while (vNodes.empty() || IsInitialBlockDownload())
         {
-            nLastCoinStakeSearchInterval = 0;
+            fIsStaking = false;
             fTryToSync = true;
             if (fDebugPoS)
                 LogPrintf("StakeMiner() IsInitialBlockDownload\n");
@@ -612,6 +602,7 @@ void ThreadStakeMiner(CWallet *pwallet)
 
             if (vNodes.size() < 3 || nBestHeight < GetNumBlocksOfPeers())
             {
+                fIsStaking = false;
                 if (fDebugPoS)
                     LogPrintf("StakeMiner() TryToSync\n");
                 MilliSleep(60000);
@@ -621,6 +612,7 @@ void ThreadStakeMiner(CWallet *pwallet)
 
         if (nBestHeight < GetNumBlocksOfPeers()-1)
         {
+            fIsStaking = false;
             if (fDebugPoS)
                 LogPrintf("StakeMiner() nBestHeight < GetNumBlocksOfPeers()\n");
             MilliSleep(nMinerSleep * 4);
@@ -642,8 +634,9 @@ void ThreadStakeMiner(CWallet *pwallet)
         auto_ptr<CBlock> pblock(CreateNewBlock(pwallet, true, &nFees));
         if (!pblock.get())
             return;
-
-
+        
+        fIsStaking = true;
+        
         // Trying to sign a block
         if (pblock->SignBlock(*pwallet, nFees))
         {

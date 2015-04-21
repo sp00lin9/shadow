@@ -37,8 +37,8 @@ bool fLogTimestamps = false;
 bool fReopenDebugLog = false;
 bool fThinFullIndex = false; // when in thin mode don't keep all headers in memory
 bool fReindexing = false;
-
 bool fHaveGUI = false;
+volatile bool fIsStaking = false; // looks at stake weight also
 
 bool fConfChange;
 bool fEnforceCanonical;

@@ -953,6 +953,8 @@ void ShadowGUI::updateWeight()
     nWeight = pwalletMain->GetStakeWeight();
 }
 
+#include <QDebug>
+
 void ShadowGUI::updateStakingIcon()
 {
 
