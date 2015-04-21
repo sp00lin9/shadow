@@ -57,7 +57,6 @@
 #include <iostream>
 
 extern CWallet* pwalletMain;
-extern int64_t nLastCoinStakeSearchInterval;
 double GetPoSKernelPS();
 
 ShadowGUI::ShadowGUI(QWidget *parent):
@@ -953,8 +952,6 @@ void ShadowGUI::updateWeight()
     nWeight = pwalletMain->GetStakeWeight();
 }
 
-#include <QDebug>
-
 void ShadowGUI::updateStakingIcon()
 {
 
@@ -962,7 +959,7 @@ void ShadowGUI::updateStakingIcon()
 
     updateWeight();
 
-    if (nLastCoinStakeSearchInterval && nWeight)
+    if (fIsStaking && nWeight)
     {
         uint64_t nWeight = this->nWeight;
         uint64_t nNetworkWeight = GetPoSKernelPS();
