@@ -114,7 +114,7 @@ ShadowGUI::ShadowGUI(QWidget *parent):
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
-    
+
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
@@ -869,11 +869,11 @@ void ShadowGUI::unlockWallet()
 {
     if(!walletModel)
         return;
-    
+
     // Unlock wallet when requested by wallet model
     if(walletModel->getEncryptionStatus() == WalletModel::Locked)
     {
-        
+
         AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
               AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
         AskPassphraseDialog dlg(mode, this);
@@ -895,7 +895,7 @@ void ShadowGUI::toggleLock()
     if(!walletModel)
         return;
     WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
-    
+
     switch(status)
     {
         case WalletModel::Locked:       unlockWalletAction->trigger(); break;
@@ -906,7 +906,7 @@ void ShadowGUI::toggleLock()
                 QMessageBox::Ok, QMessageBox::Ok);
             break;
     };
-    
+
 }
 
 void ShadowGUI::showNormalIfMinimized(bool fToggleHidden)
@@ -963,8 +963,12 @@ void ShadowGUI::updateStakingIcon()
     {
         uint64_t nWeight = this->nWeight;
         uint64_t nNetworkWeight = GetPoSKernelPS();
+
+        // PoSV1
+        if(nNetworkWeight < COIN)
+            nWeight /= COIN;
+
         unsigned nEstimateTime = GetTargetSpacing(nBestHeight) * nNetworkWeight / nWeight;
-        
         QString text;
 
         text = (nEstimateTime < 60)           ? tr("%n second(s)", "", nEstimateTime) : \
@@ -975,9 +979,12 @@ void ShadowGUI::updateStakingIcon()
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
-        
-        nWeight /= COIN;
-        nNetworkWeight /= COIN;
+
+        // PoSV2
+        if(nNetworkWeight > COIN) {
+            nWeight /= COIN;
+            nNetworkWeight /= COIN;
+        }
 
         stakingIcon.setAttribute("title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
     } else

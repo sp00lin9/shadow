@@ -2097,6 +2097,7 @@ var chainDataPage = {
 }
 var blockExplorerPage = 
 {
+    init: function() {},
     blockHeader: {},
     findBlock: function(searchID) {
 
