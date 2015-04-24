@@ -244,6 +244,18 @@ public:
             fValid = false;
         }
     }
+    
+    void Set(unsigned char *p, bool fCompressedIn)
+    {
+        if (Check(p)) {
+            memcpy(vch, p, 32);
+            fValid = true;
+            fCompressed = fCompressedIn;
+        } else
+        {
+            fValid = false;
+        }
+    }
 
     // Simple read-only vector-like interface.
     unsigned int size() const { return (fValid ? 32 : 0); }

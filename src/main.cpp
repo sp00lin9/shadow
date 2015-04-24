@@ -4608,6 +4608,9 @@ static void ProcessGetData(CNode* pfrom)
         // having to download the entire memory pool.
         pfrom->PushMessage("notfound", vNotFound);
     };
+
+    if (fDebugNet)
+        LogPrintf("ProcessGetData - End\n");
 }
 
 static int ProcessMerkleBlock(CNode* pfrom, CMerkleBlockIncoming& merkleBlock, std::vector<CTransaction>* pvTxns)

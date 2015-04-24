@@ -170,8 +170,10 @@ public:
     // keystore implementation
     // Generate a new key
     CPubKey GenerateNewKey();
+    
     // Adds a key to the store, and saves it to disk.
     bool AddKey(const CKey& key);
+    bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey);
     
     bool AddKeyInDBTxn(CWalletDB* pdb, const CKey& key);
     

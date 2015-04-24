@@ -36,14 +36,14 @@ CPubKey CWallet::GenerateNewKey()
     bool fCompressed = CanSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
 
     RandAddSeedPerfmon();
-    CKey key;
-    key.MakeNewKey(fCompressed);
+    CKey secret;
+    secret.MakeNewKey(fCompressed);
 
     // Compressed public keys were introduced in version 0.6.0
     if (fCompressed)
         SetMinVersion(FEATURE_COMPRPUBKEY);
 
-    CPubKey pubkey = key.GetPubKey();
+    CPubKey pubkey = secret.GetPubKey();
 
     // Create new metadata
     int64_t nCreationTime = GetTime();
@@ -51,23 +51,26 @@ CPubKey CWallet::GenerateNewKey()
     if (!nTimeFirstKey || nCreationTime < nTimeFirstKey)
         nTimeFirstKey = nCreationTime;
 
-    if (!AddKey(key))
-        throw std::runtime_error("CWallet::GenerateNewKey() : AddKey failed");
-    return key.GetPubKey();
+    if (!AddKeyPubKey(secret, pubkey))
+        throw std::runtime_error("CWallet::GenerateNewKey() : AddKeyPubKey failed");
+    return pubkey;
 }
 
-bool CWallet::AddKey(const CKey& key)
+bool CWallet::AddKey(const CKey& secret)
+{
+    return CWallet::AddKeyPubKey(secret, secret.GetPubKey());
+}
+
+bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata
-
-    CPubKey pubkey = key.GetPubKey();
-
-    if (!CCryptoKeyStore::AddKey(key))
+    if (!CCryptoKeyStore::AddKeyPubKey(secret, pubkey))
         return false;
     if (!fFileBacked)
         return true;
-    if (!IsCrypted())
-        return CWalletDB(strWalletFile).WriteKey(pubkey, key.GetPrivKey(), mapKeyMetadata[pubkey.GetID()]);
+    if (!IsCrypted()) {
+        return CWalletDB(strWalletFile).WriteKey(pubkey, secret.GetPrivKey(), mapKeyMetadata[pubkey.GetID()]);
+    }
     return true;
 }
 
@@ -79,16 +82,17 @@ bool CWallet::AddKeyInDBTxn(CWalletDB* pdb, const CKey& key)
     //    DB Write() uses activeTxn
     CWalletDB *pwalletdbEncryptionOld = pwalletdbEncryption;
     pwalletdbEncryption = pdb;
-
-    if (!CCryptoKeyStore::AddKey(key))
+    
+    CPubKey pubkey = key.GetPubKey();
+    bool rv = CCryptoKeyStore::AddKeyPubKey(key, pubkey);
+    
+    pwalletdbEncryption = pwalletdbEncryptionOld;
+    
+    if (!rv)
     {
-        LogPrintf("CCryptoKeyStore::AddKey failed.\n");
+        LogPrintf("CCryptoKeyStore::AddKeyPubKey failed.\n");
         return false;
     };
-
-    CPubKey pubkey = key.GetPubKey();
-
-    pwalletdbEncryption = pwalletdbEncryptionOld;
 
     if (fFileBacked
         && !IsCrypted())
@@ -222,7 +226,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         LOCK2(cs_main, cs_wallet);
         BOOST_FOREACH(const MasterKeyMap::value_type& pMasterKey, mapMasterKeys)
         {
-            if(!crypter.SetKeyFromPassphrase(strWalletPassphrase, pMasterKey.second.vchSalt, pMasterKey.second.nDeriveIterations, pMasterKey.second.nDerivationMethod))
+            if (!crypter.SetKeyFromPassphrase(strWalletPassphrase, pMasterKey.second.vchSalt, pMasterKey.second.nDeriveIterations, pMasterKey.second.nDerivationMethod))
                 return false;
             if (!crypter.Decrypt(pMasterKey.second.vchCryptedKey, vMasterKey))
                 return false;
@@ -234,9 +238,8 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         UnlockStealthAddresses(vMasterKey);
         ProcessLockedAnonOutputs();
         SecureMsgWalletUnlocked();
-        return true;
     }
-    return false;
+    return true;
 }
 
 bool CWallet::ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase)
@@ -2218,7 +2221,7 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
         };
         
         CKey ckey;
-        ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
+        ckey.Set(&sSpendR.e[0], true);
         
         if (!ckey.IsValid())
         {
@@ -2252,9 +2255,9 @@ bool CWallet::UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn)
             LogPrintf("Adding secret to key %s.\n", coinAddress.ToString().c_str());
         };
 
-        if (!AddKey(ckey))
+        if (!AddKeyPubKey(ckey, cpkT))
         {
-            LogPrintf("AddKey failed.\n");
+            LogPrintf("AddKeyPubKey failed.\n");
             continue;
         };
 
@@ -2656,7 +2659,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     };
 
                     CKey ckey;
-                    ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
+                    ckey.Set(&sSpendR.e[0], true);
 
                     if (!ckey.IsValid())
                     {
@@ -2678,9 +2681,9 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                         LogPrintf("Adding key %s.\n", coinAddress.ToString().c_str());
                     };
 
-                    if (!AddKey(ckey))
+                    if (!AddKeyPubKey(ckey, cpkT))
                     {
-                        LogPrintf("AddKey failed.\n");
+                        LogPrintf("AddKeyPubKey failed.\n");
                         continue;
                     };
 
@@ -3331,7 +3334,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB* pwdb, CTxDB* ptxdb, const CTrans
             };
 
             CKey ckey;
-            ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
+            ckey.Set(&sSpendR.e[0], true);
 
             if (!ckey.IsValid())
             {
@@ -4654,23 +4657,21 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
     
     
     CKey ckey;
-    ckey.Set(&sSpendR.e[0], &sSpendR.e[31], true);
-    
+    ckey.Set(&sSpendR.e[0], true);
     if (!ckey.IsValid())
     {
-        LogPrintf("ckey is invalid.\n");
+        LogPrintf("Reconstructed key is invalid.\n");
         return false;
     };
     
     CPubKey pkCoin = ckey.GetPubKey(true);
-    
-    CKeyID keyIDTest = pkCoin.GetID();
     if (!pkCoin.IsValid())
     {
         LogPrintf("pkCoin is invalid.\n");
         return false;
     };
     
+    CKeyID keyIDTest = pkCoin.GetID();
     if (keyIDTest != ckeyId)
     {
         LogPrintf("Error: Generated secret does not match.\n");
@@ -4679,12 +4680,6 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB* pwdb, CKeyID& ckeyId, CLockedAno
             LogPrintf("test   %s\n", keyIDTest.ToString().c_str());
             LogPrintf("gen    %s\n", ckeyId.ToString().c_str());
         };
-        return false;
-    };
-    
-    if (!ckey.IsValid())
-    {
-        LogPrintf("Reconstructed key is invalid.\n");
         return false;
     };
     
@@ -6538,3 +6533,4 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t> &mapKeyBirth) const
     for (std::map<CKeyID, CBlockIndex*>::const_iterator it = mapKeyFirstBlock.begin(); it != mapKeyFirstBlock.end(); it++)
         mapKeyBirth[it->first] = it->second->nTime - 7200; // block times can be 2h off
 }
+

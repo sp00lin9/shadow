@@ -164,31 +164,69 @@ bool CCryptoKeyStore::LockKeyStore()
 
 bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn)
 {
+    if (fDebug)
+        LogPrintf("CCryptoKeyStore::Unlock()\n");
+    
     {
         LOCK(cs_KeyStore);
         if (!SetCrypted())
             return false;
-
+        
+        int nUnlocked = 0;
+        
         CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
         for (; mi != mapCryptedKeys.end(); ++mi)
         {
             const CPubKey &vchPubKey = (*mi).second.first;
             const std::vector<unsigned char> &vchCryptedSecret = (*mi).second.second;
-            CKeyingMaterial vchSecret;
-            if(!DecryptSecret(vMasterKeyIn, vchCryptedSecret, vchPubKey.GetHash(), vchSecret))
+            CSecret vchSecret;
+            
+            if (vchCryptedSecret.size() < 1) // key was recieved from stealth/anon txn with wallet locked, will be expanded after this
+            {
+                if (fDebug)
+                    LogPrintf("Skipping unexpanded key %s.\n", vchPubKey.GetHash().ToString().c_str());
+                continue;
+            };
+            
+            if (!DecryptSecret(vMasterKeyIn, vchCryptedSecret, vchPubKey.GetHash(), vchSecret))
+            {
+                LogPrintf("DecryptSecret() failed.\n");
                 return false;
+            };
+            
             if (vchSecret.size() != 32)
                 return false;
+            
             CKey key;
             key.Set(vchSecret.begin(), vchSecret.end(), vchPubKey.IsCompressed());
-            if (key.GetPubKey() == vchPubKey)
-                break;
+            
+            if (key.GetPubKey() != vchPubKey)
+            {
+                LogPrintf("Unlock failed: PubKey mismatch %s.\n", vchPubKey.GetHash().ToString().c_str());
+                return false;
+            };
+            
+            nUnlocked++;
+            break;
+        };
+        
+        if (nUnlocked < 1) // at least 1 key must pass the test
+        {
+            LogPrintf("Unlock failed: No keys unlocked.\n");
             return false;
-        }
+        };
+        
         vMasterKey = vMasterKeyIn;
     }
+    
     NotifyStatusChanged(this);
+    
     return true;
+}
+
+bool CCryptoKeyStore::AddKey(const CKey& key)
+{
+    return CCryptoKeyStore::AddKeyPubKey(key, key.GetPubKey());
 }
 
 bool CCryptoKeyStore::AddKeyPubKey(const CKey& key, const CPubKey &pubkey)
@@ -197,15 +235,14 @@ bool CCryptoKeyStore::AddKeyPubKey(const CKey& key, const CPubKey &pubkey)
         LOCK(cs_KeyStore);
         if (!IsCrypted())
             return CBasicKeyStore::AddKeyPubKey(key, pubkey);
-
         if (IsLocked())
             return false;
-
         std::vector<unsigned char> vchCryptedSecret;
         CKeyingMaterial vchSecret(key.begin(), key.end());
         if (!EncryptSecret(vMasterKey, vchSecret, pubkey.GetHash(), vchCryptedSecret))
             return false;
-
+        
+        // -- NOTE: this is CWallet::AddCryptedKey
         if (!AddCryptedKey(pubkey, vchCryptedSecret))
             return false;
     }
