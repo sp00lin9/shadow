@@ -82,7 +82,7 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
 
-    if (fDebug) LogPrintf("Locking: %s\n", locklocation.ToString().c_str());
+//    if (fDebug) LogPrintf("Locking: %s\n", locklocation.ToString().c_str()); Logfile not yet open - causes freeze
     dd_mutex.lock();
 
     (*lockstack).push_back(std::make_pair(c, locklocation));
@@ -109,11 +109,13 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
 
 static void pop_lock()
 {
+/*
     if (fDebug)
     {
         const CLockLocation& locklocation = (*lockstack).rbegin()->second;
         LogPrintf("Unlocked: %s\n", locklocation.ToString().c_str());
     }
+*/
     dd_mutex.lock();
     (*lockstack).pop_back();
     dd_mutex.unlock();
