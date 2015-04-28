@@ -214,6 +214,11 @@ static void DebugPrintInit()
     mutexDebugLog = new boost::mutex();
 }
 
+bool IsLogOpen()
+{
+    return fileout != NULL;
+}
+
 bool LogAcceptCategory(const char* category)
 {
     if (category != NULL)
@@ -282,100 +287,6 @@ int LogPrintStr(const std::string &str)
     return ret;
 }
 
-/*
-inline int OutputDebugStringF(const char* pszFormat, ...)
-{
-    int ret = 0;
-    if (fPrintToConsole)
-    {
-        // print to console
-        va_list arg_ptr;
-        va_start(arg_ptr, pszFormat);
-        ret = vprintf(pszFormat, arg_ptr);
-        va_end(arg_ptr);
-    } else
-    if (!fPrintToDebugger)
-    {
-        // print to debug.log
-        static FILE* fileout = NULL;
-
-        if (!fileout)
-        {
-            boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
-            fileout = fopen(pathDebug.string().c_str(), "a");
-            if (fileout)
-                setbuf(fileout, NULL); // unbuffered
-        };
-        
-        if (fileout)
-        {
-            static bool fStartedNewLine = false;
-
-            // This routine may be called by global destructors during shutdown.
-            // Since the order of destruction of static/global objects is undefined,
-            // allocate mutexDebugLog on the heap the first time this routine
-            // is called to avoid crashes during shutdown.
-            static boost::mutex* mutexDebugLog = NULL;
-            if (mutexDebugLog == NULL)
-                mutexDebugLog = new boost::mutex();
-            boost::mutex::scoped_lock scoped_lock(*mutexDebugLog);
-
-            // reopen the log file, if requested
-            if (fReopenDebugLog)
-            {
-                fReopenDebugLog = false;
-                boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
-                if (freopen(pathDebug.string().c_str(),"a",fileout) != NULL)
-                    setbuf(fileout, NULL); // unbuffered
-            };
-            
-            // Debug print useful for profiling
-            if (fLogTimestamps)
-            {
-                if (fStartedNewLine)
-                    fprintf(fileout, "%s ", DateTimeStrFormat("%x %H:%M:%S", GetTime()).c_str());
-                
-                if (pszFormat[strlen(pszFormat) - 1] == '\n')
-                    fStartedNewLine = true;
-                else
-                    fStartedNewLine = false;
-            };
-            
-            va_list arg_ptr;
-            va_start(arg_ptr, pszFormat);
-            ret = vfprintf(fileout, pszFormat, arg_ptr);
-            va_end(arg_ptr);
-        };
-    };
-
-#ifdef WIN32
-    if (fPrintToDebugger)
-    {
-        static CCriticalSection cs_OutputDebugStringF;
-
-        // accumulate and output a line at a time
-        {
-            LOCK(cs_OutputDebugStringF);
-            static std::string buffer;
-
-            va_list arg_ptr;
-            va_start(arg_ptr, pszFormat);
-            buffer += vstrprintf(pszFormat, arg_ptr);
-            va_end(arg_ptr);
-
-            int line_start = 0, line_end;
-            while((line_end = buffer.find('\n', line_start)) != -1)
-            {
-                OutputDebugStringA(buffer.substr(line_start, line_end - line_start).c_str());
-                line_start = line_end + 1;
-            }
-            buffer.erase(0, line_start);
-        }
-    }
-#endif
-    return ret;
-}
-*/
 string vstrprintf(const char *format, va_list ap)
 {
     char buffer[50000];
@@ -603,7 +514,7 @@ static void InterpretNegativeSetting(string name, map<string, string>& mapSettin
         positive.append(name.begin()+3, name.end());
         if (mapSettingsRet.count(positive) == 0)
         {
-            bool value = !GetBoolArg(name);
+            bool value = !GetBoolArg(name, false);
             mapSettingsRet[positive] = (value ? "1" : "0");
         }
     }
@@ -613,44 +524,40 @@ void ParseParameters(int argc, const char* const argv[])
 {
     mapArgs.clear();
     mapMultiArgs.clear();
+
     for (int i = 1; i < argc; i++)
     {
-        char psz[10000];
-        strlcpy(psz, argv[i], sizeof(psz));
-        char* pszValue = (char*)"";
-        if (strchr(psz, '='))
+        std::string str(argv[i]);
+        std::string strValue;
+        size_t is_index = str.find('=');
+        if (is_index != std::string::npos)
         {
-            pszValue = strchr(psz, '=');
-            *pszValue++ = '\0';
+            strValue = str.substr(is_index+1);
+            str = str.substr(0, is_index);
         }
-        #ifdef WIN32
-        _strlwr(psz);
-        if (psz[0] == '/')
-            psz[0] = '-';
-        #endif
-        if (psz[0] != '-')
+#ifdef WIN32
+        boost::to_lower(str);
+        if (boost::algorithm::starts_with(str, "/"))
+            str = "-" + str.substr(1);
+#endif
+
+        if (str[0] != '-')
             break;
 
-        mapArgs[psz] = pszValue;
-        mapMultiArgs[psz].push_back(pszValue);
+        // Interpret --foo as -foo.
+        // If both --foo and -foo are set, the last takes effect.
+        if (str.length() > 1 && str[1] == '-')
+            str = str.substr(1);
+
+        mapArgs[str] = strValue;
+        mapMultiArgs[str].push_back(strValue);
     }
 
     // New 0.6 features:
     BOOST_FOREACH(const PAIRTYPE(string,string)& entry, mapArgs)
     {
-        string name = entry.first;
-
-        //  interpret --foo as -foo (as long as both are not set)
-        if (name.find("--") == 0)
-        {
-            std::string singleDash(name.begin()+1, name.end());
-            if (mapArgs.count(singleDash) == 0)
-                mapArgs[singleDash] = entry.second;
-            name = singleDash;
-        }
-
         // interpret -nofoo as -foo=0 (and -nofoo=0 as -foo=1) as long as -foo not set
-        InterpretNegativeSetting(name, mapArgs);
+        InterpretNegativeSetting(entry.first, mapArgs);
     }
 }
 
@@ -1190,6 +1097,12 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
     return path;
 }
 
+void ClearDatadirCache()
+{
+    std::fill(&pathCached[0], &pathCached[CChainParams::MAX_NETWORK_TYPES+1],
+              boost::filesystem::path());
+}
+
 boost::filesystem::path GetConfigFile()
 {
     boost::filesystem::path pathConfigFile(GetArg("-conf", "shadowcoin.conf"));
@@ -1200,7 +1113,7 @@ boost::filesystem::path GetConfigFile()
 void ReadConfigFile(map<string, string>& mapSettingsRet,
                     map<string, vector<string> >& mapMultiSettingsRet)
 {
-    boost::filesystem::ifstream streamConfig(GetConfigFile());
+   boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
         return; // No bitcoin.conf file is OK
 
@@ -1219,6 +1132,8 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
         }
         mapMultiSettingsRet[strKey].push_back(it->value[0]);
     }
+    // If datadir is changed in .conf file:
+    ClearDatadirCache();
 }
 
 boost::filesystem::path GetPidFile()

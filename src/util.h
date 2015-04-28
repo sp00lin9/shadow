@@ -85,7 +85,7 @@ inline void MilliSleep(int64_t n)
 }
 
 
-
+bool IsLogOpen();
 /* Return true if log accepts specified category */
 bool LogAcceptCategory(const char* category);
 /* Send a string to the log output */

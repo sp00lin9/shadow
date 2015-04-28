@@ -486,9 +486,13 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
 
     // ********************************************************* Step 3: parameter-to-internal-flags
-
-    fDebug = GetBoolArg("-debug");
-
+    
+    fDebug = !mapMultiArgs["-debug"].empty();
+    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
+    const std::vector<std::string>& categories = mapMultiArgs["-debug"];
+    if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
+        fDebug = false;
+    
     // -debug implies fDebug*, unless otherwise specified
     if (fDebug)
     {
@@ -506,14 +510,11 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     fNoSmsg = GetBoolArg("-nosmsg");
     
-    
     // Check for -socks - as this is a privacy risk to continue, exit here
     if (mapArgs.count("-socks"))
         return InitError(_("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
 
-
     bitdb.SetDetach(GetBoolArg("-detachdb", false));
-
     if (fDaemon)
         fServer = true;
     else
@@ -557,6 +558,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (!InitSanityCheck())
         return InitError(_("Initialization sanity check failed. ShadowCoin is shutting down."));
 
+    
     std::string strDataDir = GetDataDir().string();
     std::string strWalletFileName = GetArg("-wallet", "wallet.dat");
 
@@ -591,8 +593,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     std::ostringstream strErrors;
 
     if (fDaemon)
+    {
         fprintf(stdout, "ShadowCoin server starting\n");
-
+        fflush(stdout);
+    };
+    
     int64_t nStart;
 
 
@@ -964,7 +969,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 strErrors << _("Cannot write default address") << "\n";
         };
     };
-
+    
     LogPrintf("%s", strErrors.str().c_str());
     LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 

@@ -956,17 +956,23 @@ void ShadowGUI::updateStakingIcon()
 {
 
     QWebElement stakingIcon = documentFrame->findFirstElement("#stakingIcon");
+    uint64_t nNetworkWeight = 0;
 
-    updateWeight();
-
-    if (fIsStaking && nWeight)
+    if(fIsStaking)
     {
-        uint64_t nWeight = this->nWeight;
+        updateWeight();
         uint64_t nNetworkWeight = GetPoSKernelPS();
 
         // PoSV1
         if(nNetworkWeight < COIN)
             nWeight /= COIN;
+
+    } else
+        nWeight = 0;
+
+    if (nWeight)
+    {
+        uint64_t nWeight = this->nWeight;
 
         unsigned nEstimateTime = GetTargetSpacing(nBestHeight) * nNetworkWeight / nWeight;
         QString text;
