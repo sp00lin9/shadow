@@ -120,7 +120,7 @@ public:
         nDefaultPort = 51737;
         nRPCPort = 51736;
         
-        nFirstPosv2Block = 450500;
+        nFirstPosv2Block = 453000;
         
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
