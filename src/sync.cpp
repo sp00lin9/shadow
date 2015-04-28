@@ -5,6 +5,7 @@
 #include "sync.h"
 
 #include "util.h"
+#include "state.h"
 
 #include <boost/foreach.hpp>
 
