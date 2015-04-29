@@ -13,6 +13,7 @@
 #include "ui_interface.h"
 
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string.hpp>
 
 // Work around clang compilation problem in Boost 1.46:
 // /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
