@@ -961,7 +961,7 @@ void ShadowGUI::updateStakingIcon()
     if(fIsStaking)
     {
         updateWeight();
-        uint64_t nNetworkWeight = GetPoSKernelPS();
+        nNetworkWeight = GetPoSKernelPS();
 
         // PoSV1
         if(nNetworkWeight < COIN)
@@ -970,7 +970,7 @@ void ShadowGUI::updateStakingIcon()
     } else
         nWeight = 0;
 
-    if (nWeight)
+    if (fIsStaking && nWeight)
     {
         uint64_t nWeight = this->nWeight;
 
