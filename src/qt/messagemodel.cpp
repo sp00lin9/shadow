@@ -9,6 +9,7 @@
 #include "ui_interface.h"
 #include "base58.h"
 #include "json_spirit.h"
+#include "init.h"
 
 #include <QSet>
 #include <QTimer>
@@ -54,7 +55,7 @@ public:
         };
 
         {
-            LOCK(cs_smsgDB);
+            LOCK2(pwalletMain->cs_wallet, cs_smsgDB);
 
             SecMsgDB dbSmsg;
 
@@ -523,7 +524,7 @@ int MessageModel::lookupMessage(const QString &key) const
 
 static void NotifySecMsgInbox(MessageModel *messageModel, SecMsgStored inboxHdr)
 {
-    // Too noisy: OutputDebugStringF("NotifySecMsgInboxChanged %s\n", message);
+    // Too noisy: LogPrintf("NotifySecMsgInboxChanged %s\n", message);
     QMetaObject::invokeMethod(messageModel, "newMessage", Qt::QueuedConnection,
                               Q_ARG(SecMsgStored, inboxHdr));
 }

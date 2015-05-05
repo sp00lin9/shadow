@@ -5164,11 +5164,15 @@ int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, b
         //LogPrintf("[rem] mi->second.GetDepthInMainChain() %d \n", mi->second.GetDepthInMainChain());
         //LogPrintf("[rem] mi->second.hashBlock %s \n", mi->second.hashBlock.ToString().c_str());
         // -- txn must be in MIN_ANON_SPEND_DEPTH deep in the blockchain to be spent
-        if (fMatureOnly
-            && mi->second.GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH)
+        
         {
-            continue;
-        };
+            LOCK(cs_main);
+            if (fMatureOnly
+                && mi->second.GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH)
+            {
+                continue;
+            };
+        }
 
         // TODO: check ReadAnonOutput?
 

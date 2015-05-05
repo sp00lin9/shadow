@@ -321,7 +321,10 @@ static const CRPCCommand vRPCCommands[] =
     { "repairwallet",           &repairwallet,           false,     true,      false },
     { "resendtx",               &resendtx,               false,     true,      false },
     { "makekeypair",            &makekeypair,            false,     true,      false },
+    
     { "sendalert",              &sendalert,              false,     false,     false },
+    { "getnetworkinfo",         &getnetworkinfo,         false,     false,     false },
+    
     
     { "getnewstealthaddress",   &getnewstealthaddress,   false,     false,     false },
     { "liststealthaddresses",   &liststealthaddresses,   false,     false,     false },
