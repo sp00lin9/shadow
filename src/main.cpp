@@ -6499,8 +6499,9 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
     while (!pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow)
     {
         const CInv& inv = (*pto->mapAskFor.begin()).second;
-
-        if (!AlreadyHaveThin(txdb, inv))
+    
+        if ((nNodeMode == NT_FULL && !AlreadyHave(txdb, inv))
+            || (nNodeMode == NT_THIN && !AlreadyHaveThin(txdb, inv)))
         {
             if (fDebugNet)
                 LogPrintf("sending getdata: %s\n", inv.ToString().c_str());
