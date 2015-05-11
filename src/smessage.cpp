@@ -577,18 +577,21 @@ bool SecMsgDB::EraseSmesg(uint8_t* chKey)
 void ThreadSecureMsg()
 {
     // -- bucket management thread
-
+    
+    std::vector<std::pair<int64_t, NodeId> > vTimedOutLocks;
     while (fSecMsgEnabled)
     {
         int64_t now = GetTime();
 
         if (fDebugSmsg)
             LogPrintf("SecureMsgThread %d \n", now);
-
+        
+        vTimedOutLocks.resize(0);
+        
         int64_t cutoffTime = now - SMSG_RETENTION;
         {
             LOCK(cs_smsg);
-
+            
             for (std::map<int64_t, SecMsgBucket>::iterator it(smsgBuckets.begin()); it != smsgBuckets.end(); it++)
             {
                 //if (fDebugSmsg)
@@ -603,8 +606,7 @@ void ThreadSecureMsg()
                     fs::path fullPath = GetDataDir() / "smsgStore" / (fileName + "_01.dat");
                     if (fs::exists(fullPath))
                     {
-                        try {
-                            fs::remove(fullPath);
+                        try { fs::remove(fullPath);
                         } catch (const fs::filesystem_error& ex)
                         {
                             LogPrintf("Error removing bucket file %s.\n", ex.what());
@@ -618,8 +620,7 @@ void ThreadSecureMsg()
                     fullPath = GetDataDir() / "smsgStore" / (fileName + "_01_wl.dat");
                     if (fs::exists(fullPath))
                     {
-                        try {
-                            fs::remove(fullPath);
+                        try { fs::remove(fullPath);
                         } catch (const fs::filesystem_error& ex)
                         {
                             LogPrintf("Error removing wallet locked file %s.\n", ex.what());
@@ -634,35 +635,46 @@ void ThreadSecureMsg()
 
                     if (it->second.nLockCount == 0)     // lock timed out
                     {
-                        NodeId nPeerId     = it->second.nLockPeerId;
-                        int64_t  ignoreUntil = GetTime() + SMSG_TIME_IGNORE;
-
-                        if (fDebugSmsg)
-                            LogPrintf("Lock on bucket %d for peer %d timed out.\n", it->first, nPeerId);
-
-                        // -- look through the nodes for the peer that locked this bucket
-                        LOCK(cs_vNodes);
-                        BOOST_FOREACH(CNode* pnode, vNodes)
-                        {
-                            if (pnode->id != nPeerId)
-                                continue;
-                            pnode->smsgData.ignoreUntil = ignoreUntil;
-
-                            // -- alert peer that they are being ignored
-                            std::vector<uint8_t> vchData;
-                            vchData.resize(8);
-                            memcpy(&vchData[0], &ignoreUntil, 8);
-                            pnode->PushMessage("smsgIgnore", vchData);
-
-                            if (fDebugSmsg)
-                                LogPrintf("This node will ignore peer %d until %d.\n", nPeerId, ignoreUntil);
-                            break;
-                        };
+                        vTimedOutLocks.push_back(std::make_pair(it->first, it->second.nLockPeerId)); // cs_vNodes 
+                        
                         it->second.nLockPeerId = 0;
                     }; // if (it->second.nLockCount == 0)
+                    
                 }; // ! if (it->first < cutoffTime)
             };
-        }; // LOCK(cs_smsg);
+        } // cs_smsg
+        
+        for (std::vector<std::pair<int64_t, NodeId> >::iterator it(vTimedOutLocks.begin()); it != vTimedOutLocks.end(); it++)
+        {
+            NodeId nPeerId = it->second;
+            int64_t ignoreUntil = GetTime() + SMSG_TIME_IGNORE;
+
+            if (fDebugSmsg)
+                LogPrintf("Lock on bucket %d for peer %d timed out.\n", it->first, nPeerId);
+
+            // -- look through the nodes for the peer that locked this bucket
+            
+            {
+                LOCK(cs_vNodes);
+                BOOST_FOREACH(CNode* pnode, vNodes)
+                {
+                    if (pnode->id != nPeerId)
+                        continue;
+                    LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
+                    pnode->smsgData.ignoreUntil = ignoreUntil;
+                    
+                    // -- alert peer that they are being ignored
+                    std::vector<uint8_t> vchData;
+                    vchData.resize(8);
+                    memcpy(&vchData[0], &ignoreUntil, 8);
+                    pnode->PushMessage("smsgIgnore", vchData);
+
+                    if (fDebugSmsg)
+                        LogPrintf("This node will ignore peer %d until %d.\n", nPeerId, ignoreUntil);
+                    break;
+                };
+            } // cs_vNodes
+        };
         
         MilliSleep(SMSG_THREAD_DELAY * 1000); //  // check every SMSG_THREAD_DELAY seconds
     };
@@ -1120,6 +1132,7 @@ bool SecureMsgStart(bool fDontStart, bool fScanChain)
     threadGroupSmsg.create_thread(boost::bind(&TraceThread<void (*)()>, "smsg", &ThreadSecureMsg));
     threadGroupSmsg.create_thread(boost::bind(&TraceThread<void (*)()>, "smsg-pow", &ThreadSecureMsgPow));
     
+    
     /*
     // -- start threads
     if (!NewThread(ThreadSecureMsg, NULL)
@@ -1192,11 +1205,12 @@ bool SecureMsgEnable()
             return false;
         };
 
-    }; // LOCK(cs_smsg);
-
+    } // cs_smsg
+    
     // -- start threads
     threadGroupSmsg.create_thread(boost::bind(&TraceThread<void (*)()>, "smsg", &ThreadSecureMsg));
     threadGroupSmsg.create_thread(boost::bind(&TraceThread<void (*)()>, "smsg-pow", &ThreadSecureMsgPow));
+    
     /*
     if (!NewThread(ThreadSecureMsg, NULL)
         || !NewThread(ThreadSecureMsgPow, NULL))
@@ -1214,8 +1228,7 @@ bool SecureMsgEnable()
             pnode->PushMessage("smsgPing");
             pnode->PushMessage("smsgPong"); // Send pong as have missed initial ping sent by peer when it connected
         };
-    }
-
+    } // cs_vNodes
     LogPrintf("Secure messaging enabled.\n");
     return true;
 };
@@ -1228,7 +1241,7 @@ bool SecureMsgDisable()
         LogPrintf("SecureMsgDisable: secure messaging is already disabled.\n");
         return false;
     };
-
+    
     {
         LOCK(cs_smsg);
         fSecMsgEnabled = false;
@@ -1244,26 +1257,25 @@ bool SecureMsgDisable()
             it->second.setTokens.clear();
         };
         smsgBuckets.clear();
-
-        // -- tell each smsg enabled peer that this node is disabling
-        {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH(CNode* pnode, vNodes)
-            {
-                if (!pnode->smsgData.fEnabled)
-                    continue;
-
-                pnode->PushMessage("smsgDisabled");
-                pnode->smsgData.fEnabled = false;
-            };
-        }
-
-        if (SecureMsgWriteIni() != 0)
-            LogPrintf("Failed to save smsg.ini\n");
-
         smsgAddresses.clear();
+    } // cs_smsg
+    
+    // -- tell each smsg enabled peer that this node is disabling
+    {
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+        {
+            if (!pnode->smsgData.fEnabled)
+                continue;
+            LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
+            pnode->PushMessage("smsgDisabled");
+            pnode->smsgData.fEnabled = false;
+        };
+    } // cs_vNodes
 
-    } // LOCK(cs_smsg);
+
+    if (SecureMsgWriteIni() != 0)
+        LogPrintf("Failed to save smsg.ini\n");
 
     // -- allow time for threads to stop
     MilliSleep(3000); // seconds
@@ -1291,11 +1303,9 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
     if (fDebugSmsg)
         LogPrintf("SecureMsgReceiveData() %s %s.\n", pfrom->addrName.c_str(), strCommand.c_str());
-
-    {
     
     
-
+    
     if (strCommand == "smsgInv")
     {
         std::vector<uint8_t> vchData;
@@ -1308,14 +1318,18 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         };
 
         int64_t now = GetTime();
-
-        if (now < pfrom->smsgData.ignoreUntil)
+        
         {
-            if (fDebugSmsg)
-                LogPrintf("Node is ignoring peer %d until %d.\n", pfrom->id, pfrom->smsgData.ignoreUntil);
-            return false;
-        };
-
+            LOCK(pfrom->smsgData.cs_smsg_net);
+                
+            if (now < pfrom->smsgData.ignoreUntil)
+            {
+                if (fDebugSmsg)
+                    LogPrintf("Node is ignoring peer %d until %d.\n", pfrom->id, pfrom->smsgData.ignoreUntil);
+                return false;
+            };
+        }
+        
         uint32_t nBuckets       = smsgBuckets.size();
         uint32_t nLocked        = 0;    // no. of locked buckets on this node
         uint32_t nInvBuckets;           // no. of bucket headers sent by peer in smsgInv
@@ -1701,8 +1715,10 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             time = now;
         };
         
-        pfrom->smsgData.lastMatched = time;
-
+        {
+            LOCK(pfrom->smsgData.cs_smsg_net);
+            pfrom->smsgData.lastMatched = time;
+        }
         if (fDebugSmsg)
             LogPrintf("Peer buckets matched at %d.\n", time);
 
@@ -1716,15 +1732,22 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
     {
         if (fDebugSmsg)
              LogPrintf("Peer replied, secure messaging enabled.\n");
-
-        pfrom->smsgData.fEnabled = true;
+        
+        {
+            LOCK(pfrom->smsgData.cs_smsg_net);
+            pfrom->smsgData.fEnabled = true;
+        }
+        
     } else
     if (strCommand == "smsgDisabled")
     {
         // -- peer has disabled secure messaging.
-
-        pfrom->smsgData.fEnabled = false;
-
+        
+        {
+            LOCK(pfrom->smsgData.cs_smsg_net);
+            pfrom->smsgData.fEnabled = false;
+        }
+        
         if (fDebugSmsg)
             LogPrintf("Peer %d has disabled secure messaging.\n", pfrom->id);
 
@@ -1745,8 +1768,12 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
         int64_t time;
         memcpy(&time, &vchData[0], 8);
-
-        pfrom->smsgData.ignoreUntil = time;
+        
+        {
+            LOCK(pfrom->smsgData.cs_smsg_net);
+            pfrom->smsgData.ignoreUntil = time;
+        }
+        
 
         if (fDebugSmsg)
             LogPrintf("Peer %d is ignoring this node until %d, ignore peer too.\n", pfrom->id, time);
@@ -1754,8 +1781,6 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
     {
         // Unknown message
     };
-
-    }; //  LOCK(cs_smsg);
 
     return true;
 };
@@ -1766,10 +1791,11 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
         Called from ProcessMessage
         Runs in ThreadMessageHandler2
     */
+    
+    LOCK(pto->smsgData.cs_smsg_net);
 
     //LogPrintf("SecureMsgSendData() %s.\n", pto->addrName.c_str());
-
-
+    
     int64_t now = GetTime();
 
     if (pto->smsgData.lastSeen == 0)
@@ -2453,7 +2479,7 @@ int SecureMsgWalletKeyChanged(std::string sAddress, std::string sLabel, ChangeTy
                 break;
         }
 
-    }; // LOCK(cs_smsg);
+    } // cs_smsg
 
 
     return 0;

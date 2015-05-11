@@ -1520,7 +1520,7 @@ void ThreadMessageHandler()
     for (;;)
     {
         boost::this_thread::interruption_point();
-        vector<CNode*> vNodesCopy;
+        std::vector<CNode*> vNodesCopy;
         {
             LOCK(cs_vNodes);
             vNodesCopy = vNodes;
@@ -1559,7 +1559,7 @@ void ThreadMessageHandler()
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
                 if (lockSend)
-                    SendMessages(pnode, pnode == pnodeTrickle);
+                    SendMessages(pnode, vNodesCopy, pnode == pnodeTrickle);
             }
         };
 

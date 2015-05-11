@@ -6166,7 +6166,7 @@ bool ProcessMessages(CNode* pfrom)
 }
 
 
-bool SendMessages(CNode* pto, bool fSendTrickle)
+bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle)
 {
     // Don't send anything until we get their version message
     if (pto->nVersion == 0)
@@ -6214,23 +6214,20 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
     static int64_t nLastRebroadcast;
     if (!IsInitialBlockDownload() && (GetTime() - nLastRebroadcast > 24 * 60 * 60))
     {
+        BOOST_FOREACH(CNode* pnode, vNodesCopy)
         {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH(CNode* pnode, vNodes)
-            {
-                // Periodically clear setAddrKnown to allow refresh broadcasts
-                if (nLastRebroadcast)
-                    pnode->setAddrKnown.clear();
+            // Periodically clear setAddrKnown to allow refresh broadcasts
+            if (nLastRebroadcast)
+                pnode->setAddrKnown.clear();
 
-                // Rebroadcast our address
-                if (!fNoListen)
-                {
-                    CAddress addr = GetLocalAddress(&pnode->addr);
-                    if (addr.IsRoutable())
-                        pnode->PushAddress(addr);
-                };
+            // Rebroadcast our address
+            if (!fNoListen)
+            {
+                CAddress addr = GetLocalAddress(&pnode->addr);
+                if (addr.IsRoutable())
+                    pnode->PushAddress(addr);
             };
-        }
+        };
         nLastRebroadcast = GetTime();
     };
 
@@ -6268,7 +6265,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
     std::vector<CInv> vInvWait;
 
     {
-        LOCK(pto->cs_inventory);
+        LOCK2(pwalletMain->cs_wallet, pto->cs_inventory);
         vInv.reserve(pto->vInventoryToSend.size());
         vInvWait.reserve(pto->vInventoryToSend.size());
         BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)

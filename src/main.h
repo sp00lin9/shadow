@@ -117,7 +117,7 @@ void PrintBlockTree();
 CBlockIndex* FindBlockByHeight(int nHeight);
 CBlockThinIndex* FindBlockThinByHeight(int nHeight);
 bool ProcessMessages(CNode* pfrom);
-bool SendMessages(CNode* pto, bool fSendTrickle);
+bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle);
 
 bool LoadExternalBlockFile(int nFile, FILE* fileIn);
 
