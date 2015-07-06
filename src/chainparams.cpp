@@ -152,11 +152,11 @@ public:
         vSeeds.push_back(CDNSSeedData("shadow.cash", "seed3.shadow.cash"));
         vSeeds.push_back(CDNSSeedData("shadow.cash", "seed4.shadow.cash"));
         
-        base58Prefixes[PUBKEY_ADDRESS] = list_of(63);
-        base58Prefixes[SCRIPT_ADDRESS] = list_of(125);
-        base58Prefixes[SECRET_KEY]     = list_of(191);
-        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0xEE)(0x80)(0x28)(0x6A);
-        base58Prefixes[EXT_SECRET_KEY] = list_of(0xEE)(0x80)(0x31)(0xE8);
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(63)                    .convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[SCRIPT_ADDRESS] = list_of(125)                   .convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[SECRET_KEY]     = list_of(191)                   .convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0xEE)(0x80)(0x28)(0x6A).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_SECRET_KEY] = list_of(0xEE)(0x80)(0x31)(0xE8).convert_to_container<std::vector<unsigned char> >();
         
         //convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
@@ -213,11 +213,11 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
 
-        base58Prefixes[PUBKEY_ADDRESS] = list_of(127);
-        base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
-        base58Prefixes[SECRET_KEY]     = list_of(255);
-        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x76)(0xC0)(0xFD)(0xFB);
-        base58Prefixes[EXT_SECRET_KEY] = list_of(0x76)(0xC1)(0x07)(0x7A);
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(127)                   .convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[SCRIPT_ADDRESS] = list_of(196)                   .convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[SECRET_KEY]     = list_of(255)                   .convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x76)(0xC0)(0xFD)(0xFB).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_SECRET_KEY] = list_of(0x76)(0xC1)(0x07)(0x7A).convert_to_container<std::vector<unsigned char> >();
         
         //convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
