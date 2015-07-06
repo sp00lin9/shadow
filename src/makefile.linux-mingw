@@ -47,7 +47,6 @@ ifndef USE_UPNP
 	override USE_UPNP = -
 endif
 ifneq (${USE_UPNP}, -)
-	LIBPATHS += -L"$(DEPSDIR)/miniupnpc"
 	LIBS += -l miniupnpc -l iphlpapi
 	DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
@@ -66,7 +65,6 @@ OBJS= \
     obj/crypter.o \
     obj/key.o \
     obj/eckey.o \
-    obj/extkey.o \
     obj/db.o \
     obj/init.o \
     obj/shadowcoind.o \
@@ -86,7 +84,6 @@ OBJS= \
     obj/rpcblockchain.o \
     obj/rpcrawtransaction.o \
     obj/rpcsmessage.o \
-    obj/rpcextkey.o \
     obj/script.o \
     obj/sync.o \
     obj/util.o \
