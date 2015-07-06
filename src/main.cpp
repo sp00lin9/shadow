@@ -5561,7 +5561,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> vBlocks; // TODO: use a plain byte buffer?
         uint32_t nBlocks = vBlocks.size();
         
-        LOCK(cs_main);
         
         if (nBlocks > MAX_MULTI_BLOCK_ELEMENTS)
         {
@@ -5582,20 +5581,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             
             CInv inv(MSG_BLOCK, hashBlock);
             
-            // -- if peer is thin, it will want the (merkle) block sent if accepted
-            if (pfrom->nTypeInd == NT_FULL)
-                pfrom->AddInventoryKnown(inv);
+            {
+                LOCK(cs_main);
+                // -- if peer is thin, it will want the (merkle) block sent if accepted
+                if (pfrom->nTypeInd == NT_FULL)
+                    pfrom->AddInventoryKnown(inv);
+                
+                if (ProcessBlock(pfrom, &block, hashBlock))
+                    mapAlreadyAskedFor.erase(inv);
+
+                if (block.nDoS)
+                    pfrom->Misbehaving(block.nDoS);
+            } // cs_main
             
-            if (ProcessBlock(pfrom, &block, hashBlock))
-                mapAlreadyAskedFor.erase(inv);
-
-            if (block.nDoS)
-                pfrom->Misbehaving(block.nDoS);
-
             if (fSecMsgEnabled)
                 SecureMsgScanBlock(block);
-            
-            MilliSleep(100);
         };
 
 
