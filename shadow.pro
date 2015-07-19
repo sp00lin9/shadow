@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = shadow
-VERSION = 1.3.2.4
+VERSION = 1.3.3.0
 INCLUDEPATH += src src/json src/qt
 DEFINES += BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
@@ -146,7 +146,8 @@ contains(SHADOW_NEED_QT_PLUGINS, 1) {
 
 INCLUDEPATH += src/leveldb/include src/leveldb/helpers
 LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
-SOURCES += src/txdb-leveldb.cpp
+SOURCES += src/txdb-leveldb.cpp \
+    src/qt/addresstablemodel.cpp
 
 !win32 {
     # we use QMAKE_CXXFLAGS_RELEASE even without RELEASE=1 because we use RELEASE to indicate linking preferences not -O preferences
@@ -228,6 +229,7 @@ HEADERS += \
     src/miner.h \
     src/net.h \
     src/key.h \
+    src/extkey.h \
     src/eckey.h \
     src/db.h \
     src/txdb.h \
@@ -258,7 +260,6 @@ HEADERS += \
     src/qt/addresstablemodel.h \
     src/qt/coincontroldialog.h \
     src/qt/coincontroltreewidget.h \
-    src/qt/signverifymessagedialog.h \
     src/qt/aboutdialog.h \
     src/qt/editaddressdialog.h \
     src/qt/bitcoinaddressvalidator.h \
@@ -284,8 +285,7 @@ HEADERS += \
     src/qt/trafficgraphwidget.h \
     src/qt/messagemodel.h \
     src/qt/shadowgui.h \
-    src/qt/shadowbridge.h \
-    src/qt/addressbookpage.h
+    src/qt/shadowbridge.h
 
 SOURCES += \
     src/alert.cpp \
@@ -297,6 +297,7 @@ SOURCES += \
     src/hash.cpp \
     src/netbase.cpp \
     src/key.cpp \
+    src/extkey.cpp \
     src/eckey.cpp \
     src/script.cpp \
     src/main.cpp \
@@ -335,11 +336,10 @@ SOURCES += \
     src/rpcblockchain.cpp \
     src/rpcrawtransaction.cpp \
     src/rpcsmessage.cpp \
+    src/rpcextkey.cpp \
     src/qt/transactiontablemodel.cpp \
-    src/qt/addresstablemodel.cpp \
     src/qt/coincontroldialog.cpp \
     src/qt/coincontroltreewidget.cpp \
-    src/qt/signverifymessagedialog.cpp \
     src/qt/aboutdialog.cpp \
     src/qt/editaddressdialog.cpp \
     src/qt/bitcoinaddressvalidator.cpp \
@@ -366,19 +366,16 @@ SOURCES += \
     src/qt/messagemodel.cpp \
     src/qt/shadowgui.cpp \
     src/qt/shadow.cpp \
-    src/qt/shadowbridge.cpp \
-    src/qt/addressbookpage.cpp 
+    src/qt/shadowbridge.cpp
     
 
 FORMS += \
     src/qt/forms/coincontroldialog.ui \
-    src/qt/forms/signverifymessagedialog.ui \
     src/qt/forms/aboutdialog.ui \
     src/qt/forms/editaddressdialog.ui \
     src/qt/forms/transactiondescdialog.ui \
     src/qt/forms/askpassphrasedialog.ui \
-    src/qt/forms/rpcconsole.ui \
-    src/qt/forms/addressbookpage.ui
+    src/qt/forms/rpcconsole.ui
 
 
 CODECFORTR = UTF-8

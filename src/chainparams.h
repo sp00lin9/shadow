@@ -47,9 +47,12 @@ public:
         PUBKEY_ADDRESS,
         SCRIPT_ADDRESS,
         SECRET_KEY,
+        STEALTH_ADDRESS,
         EXT_PUBLIC_KEY,
         EXT_SECRET_KEY,
-
+        EXT_KEY_HASH,
+        EXT_ACC_HASH,
+        
         MAX_BASE58_TYPES
     };
     
@@ -84,7 +87,7 @@ public:
     
 protected:
     CChainParams() {};
-
+    
     uint256 hashGenesisBlock;
     MessageStartChars pchMessageStart;
     // Raw pub key bytes for the broadcast alert signing key.
