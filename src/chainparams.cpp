@@ -146,7 +146,7 @@ public:
         
         nDefaultPort = 51737;
         nRPCPort = 51736;
-        nBIP44ID = 0x80000016;
+        nBIP44ID = 0x80000023;
         
         nFirstPosv2Block = 453000;
         
@@ -207,7 +207,7 @@ public:
         
         nDefaultPort = 51997;
         nRPCPort = 51996;
-        nBIP44ID = 0x80000016;
+        nBIP44ID = 0x80000001;
         
         nFirstPosv2Block = 91400;
         
