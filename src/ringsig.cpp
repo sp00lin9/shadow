@@ -957,7 +957,7 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
     
     if (fDebugRingSig)
     {
-        LogPrintf("%s size %d\n", __func__, nRingSize); // happens often
+        //LogPrintf("%s size %d\n", __func__, nRingSize); // happens often
     };
     
     if (sigC.size() != EC_SECRET_SIZE)

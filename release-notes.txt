@@ -4,6 +4,12 @@ Shadowcoin Release Notes
 
 Version 1.3.3.0
  
+ - Added BIP44 support
+ 
+ - Added BIP39 support
+ 
+ - Added smaller ring signatures
+    https://bitcointalk.org/index.php?topic=972541.msg10619684
  
  - The goal for this release is to implement a framework for BIP32
    on which to build, the more interesting features possible with bip32 keys can

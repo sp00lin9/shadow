@@ -52,6 +52,8 @@ public:
         EXT_SECRET_KEY,
         EXT_KEY_HASH,
         EXT_ACC_HASH,
+        EXT_PUBLIC_KEY_BTC,
+        EXT_SECRET_KEY_BTC,
         
         MAX_BASE58_TYPES
     };
@@ -78,6 +80,8 @@ public:
     
     int RPCPort() const { return nRPCPort; }
     
+    int BIP44ID() const { return nBIP44ID; }
+    
     
     int LastPOWBlock() const { return nLastPOWBlock; }
     int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
@@ -95,6 +99,7 @@ protected:
     std::string strNetworkID;
     int nDefaultPort;
     int nRPCPort;
+    int nBIP44ID;
     
     int nFirstPosv2Block;
     CBigNum bnProofOfWorkLimit;

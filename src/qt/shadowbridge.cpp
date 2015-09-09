@@ -27,6 +27,8 @@
 #include "txdb.h"
 #include "state.h"
 
+#include "extkey.h"
+
 #include <QApplication>
 #include <QThread>
 #include <QWebFrame>
@@ -36,7 +38,6 @@
 
 #include <QVariantList>
 #include <QVariantMap>
-
 #include <QDir>
 #include <list>
 #define ROWS_TO_REFRESH 200
@@ -1475,3 +1476,709 @@ QVariantMap ShadowBridge::verifyMessage(QString address, QString message, QStrin
     return result;
 }
 
+QVariantMap ShadowBridge::getNewMnemonic(QString password, QString language)
+{
+    QVariantMap result;
+    int nLanguage = language.toInt();
+
+    int nBytesEntropy = 32;
+    std::string sPassword = password.toStdString();
+    std::string sError;
+    std::string sKey;
+    std::vector<uint8_t> vEntropy;
+    std::vector<uint8_t> vSeed;
+    bool fBip44 = false;
+    vEntropy.resize(nBytesEntropy);
+    std::string sMnemonic;
+    CExtKey ekMaster;
+
+    RandAddSeedPerfmon();
+    for (uint32_t i = 0; i < MAX_DERIVE_TRIES; ++i)
+    {
+        if (1 != RAND_bytes(&vEntropy[0], nBytesEntropy))
+            throw std::runtime_error("RAND_bytes failed.");
+
+        if (0 != MnemonicEncode(nLanguage, vEntropy, sMnemonic, sError))
+        {
+            result.insert("error_msg", strprintf("MnemonicEncode failed %s.", sError.c_str()).c_str());
+            return result;
+        }
+
+        if (0 != MnemonicToSeed(sMnemonic, sPassword, vSeed))
+        {
+          result.insert("error_msg", "MnemonicToSeed failed.");
+          return result;
+        }
+
+        ekMaster.SetMaster(&vSeed[0], vSeed.size());
+
+        CExtKey58 eKey58;
+
+        if (fBip44)
+        {
+            eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY_BTC);
+        } else
+        {
+            eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY);
+        };
+
+        sKey = eKey58.ToString();
+
+        if (!ekMaster.IsValid())
+              continue;
+        break;
+    };
+
+    result.insert("error_msg", "");
+    result.insert("mnemonic" , QString::fromStdString(sMnemonic));
+    //result.insert("master"   , QString::fromStdString(sKey));
+    return result;
+}
+
+QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel)
+{
+
+    bool fBip44 = false;
+    std::string sPassword = inPassword.toStdString();
+    std::string sMnemonic = inMnemonic.toStdString();
+    std::string sError;
+    std::vector<uint8_t> vEntropy;
+    std::vector<uint8_t> vSeed;
+    QVariantMap result;
+
+    // - decode to determine validity of mnemonic
+    if (0 != MnemonicDecode(-1, sMnemonic, vEntropy, sError))
+    {
+        result.insert("error_msg", QString::fromStdString(strprintf("MnemonicDecode failed %s.", sError.c_str()).c_str() ));
+        return result;
+    }
+
+    if (0 != MnemonicToSeed(sMnemonic, sPassword, vSeed))
+    {
+        result.insert("error_msg", "MnemonicToSeed failed.");
+        return result;
+    }
+
+    CExtKey ekMaster;
+    CExtKey58 eKey58;
+    ekMaster.SetMaster(&vSeed[0], vSeed.size());
+
+    if (!ekMaster.IsValid())
+    {
+        result.insert("error_msg", "Invalid key.");
+        return result;
+    }
+
+    if (fBip44)
+    {
+        eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY_BTC);
+
+
+        //result.push_back(Pair("master", eKey58.ToString()));
+
+        // m / purpose' / coin_type' / account' / change / address_index
+        CExtKey ekDerived;
+        ekMaster.Derive(ekDerived, BIP44_PURPOSE);
+        ekDerived.Derive(ekDerived, Params().BIP44ID());
+
+        eKey58.SetKey(ekDerived, CChainParams::EXT_SECRET_KEY);
+        //result.push_back(Pair("derived", eKey58.ToString()));
+    } else
+    {
+        eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY);
+        //result.push_back(Pair("master", eKey58.ToString()));
+    };
+
+        // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
+        //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
+        //    OPENSSL_cleanse(&sPassword[0], sPassword.size());
+
+
+    return result = extKeyImport(QString::fromStdString(eKey58.ToString()),  inLabel);
+
+}
+
+inline uint32_t reversePlace(uint8_t *p)
+{
+    uint32_t rv = 0;
+    for (int i = 0; i < 4; ++i)
+        rv |= (uint32_t) *(p+i) << (8 * (3-i));
+    return rv;
+};
+
+int KeyInfo(CKeyID &idMaster, CKeyID &idKey, CStoredExtKey &sek, int nShowKeys, QVariantMap &obj, std::string &sError)
+{
+    CExtKey58 eKey58;
+
+    bool fBip44Root = false;
+
+    obj.insert("type", "Loose");
+    obj.insert("active", sek.nFlags & EAF_ACTIVE ? "true" : "false");
+    obj.insert("receive_on", sek.nFlags & EAF_RECEIVE_ON ? "true" : "false");
+    obj.insert("encrypted", sek.nFlags & EAF_IS_CRYPTED ? "true" : "false");
+    obj.insert("label", QString::fromStdString(sek.sLabel));
+
+    if (reversePlace(&sek.kp.vchFingerprint[0]) == 0)
+    {
+        obj.insert("path", "Root");
+    } else
+    {
+        mapEKValue_t::iterator mi = sek.mapValue.find(EKVT_PATH);
+        if (mi != sek.mapValue.end())
+        {
+            std::string sPath;
+            if (0 == PathToString(mi->second, sPath, 'h'))
+                obj.insert("path", QString::fromStdString(sPath));
+        };
+    };
+
+    mapEKValue_t::iterator mi = sek.mapValue.find(EKVT_KEY_TYPE);
+    if (mi != sek.mapValue.end())
+    {
+        uint8_t type = EKT_MAX_TYPES;
+        if (mi->second.size() == 1)
+            type = mi->second[0];
+
+        std::string sType;
+        switch (type)
+        {
+            case EKT_MASTER      : sType = "Master"; break;
+            case EKT_BIP44_MASTER:
+                sType = "BIP44 Key";
+                fBip44Root = true;
+                break;
+            default              : sType = "Unknown"; break;
+        };
+        obj.insert("key_type", QString::fromStdString(sType));
+    };
+
+    if (idMaster == idKey)
+        obj.insert("current_master", "true");
+
+    CBitcoinAddress addr;
+    mi = sek.mapValue.find(EKVT_ROOT_ID);
+    if (mi != sek.mapValue.end())
+    {
+        CKeyID idRoot;
+
+        if (GetCKeyID(mi->second, idRoot))
+        {
+            addr.Set(idRoot, CChainParams::EXT_KEY_HASH);
+            obj.insert("root_key_id", QString::fromStdString(addr.ToString()));
+        } else
+        {
+            obj.insert("root_key_id", "malformed");
+        };
+    };
+
+    mi = sek.mapValue.find(EKVT_CREATED_AT);
+    if (mi != sek.mapValue.end())
+    {
+        int64_t nCreatedAt;
+        GetCompressedInt64(mi->second, (uint64_t&)nCreatedAt);
+        obj.insert("created_at", QString::number(nCreatedAt));
+    };
+
+
+    addr.Set(idKey, CChainParams::EXT_KEY_HASH);
+    obj.insert("id", QString::fromStdString(addr.ToString()));
+
+    if (nShowKeys > 1
+        && pwalletMain->ExtKeyUnlock(&sek) == 0)
+    {
+        if (fBip44Root)
+            eKey58.SetKey(sek.kp, CChainParams::EXT_SECRET_KEY_BTC);
+        else
+            eKey58.SetKeyV(sek.kp);
+        obj.insert("evkey", QString::fromStdString(eKey58.ToString()));
+    };
+
+    if (nShowKeys > 0)
+    {
+        if (fBip44Root)
+            eKey58.SetKey(sek.kp, CChainParams::EXT_PUBLIC_KEY_BTC);
+        else
+            eKey58.SetKeyP(sek.kp);
+
+        obj.insert("epkey", QString::fromStdString(eKey58.ToString()));
+    };
+
+    obj.insert("num_derives"         , QString::fromStdString(strprintf("%u", sek.nGenerated)));
+    obj.insert("num_derives_hardened", QString::fromStdString(strprintf("%u", sek.nHGenerated)));
+
+
+    return 0;
+}
+
+int AccountInfo(CExtKeyAccount *pa, int nShowKeys, QVariantMap &obj, std::string &sError)
+{
+    CExtKey58 eKey58;
+
+    obj.insert("type", "Account");
+    obj.insert("active", pa->nFlags & EAF_ACTIVE ? "true" : "false");
+    obj.insert("label", QString::fromStdString(pa->sLabel));
+
+    if (pwalletMain->idDefaultAccount == pa->GetID())
+        obj.insert("default_account", "true");
+
+    mapEKValue_t::iterator mi = pa->mapValue.find(EKVT_CREATED_AT);
+    if (mi != pa->mapValue.end())
+    {
+        int64_t nCreatedAt;
+        GetCompressedInt64(mi->second, (uint64_t&)nCreatedAt);
+
+        obj.insert("created_at", QString::fromStdString(DateTimeStrFormat("%x %H:%M:%S", nCreatedAt).c_str()));
+    };
+
+    obj.insert("id", QString::fromStdString(pa->GetIDString58()));
+    obj.insert("has_secret", pa->nFlags & EAF_HAVE_SECRET ? "true" : "false");
+
+    CStoredExtKey *sekAccount = pa->ChainAccount();
+    if (!sekAccount)
+    {
+        obj.insert("error", "chain account not set.");
+        return 0;
+    };
+
+    CBitcoinAddress addr;
+    addr.Set(pa->idMaster, CChainParams::EXT_KEY_HASH);
+    obj.insert("root_key_id", QString::fromStdString(addr.ToString()));
+
+    mi = sekAccount->mapValue.find(EKVT_PATH);
+    if (mi != sekAccount->mapValue.end())
+    {
+        std::string sPath;
+        if (0 == PathToString(mi->second, sPath, 'h'))
+            obj.insert("path", QString::fromStdString(sPath));
+    };
+    // TODO: separate passwords for accounts
+    if (pa->nFlags & EAF_HAVE_SECRET
+        && nShowKeys > 1
+        && pwalletMain->ExtKeyUnlock(sekAccount) == 0)
+    {
+        eKey58.SetKeyV(sekAccount->kp);
+        obj.insert("evkey", QString::fromStdString(eKey58.ToString()));
+    };
+
+    if (nShowKeys > 0)
+    {
+        eKey58.SetKeyP(sekAccount->kp);
+        obj.insert("epkey", QString::fromStdString(eKey58.ToString()));
+    };
+
+    if (pa->nActiveExternal < pa->vExtKeys.size())
+    {
+        CStoredExtKey *sekE = pa->vExtKeys[pa->nActiveExternal];
+        if (nShowKeys > 0)
+        {
+            eKey58.SetKeyP(sekE->kp);
+            obj.insert("external_chain", QString::fromStdString(eKey58.ToString()));
+        };
+        obj.insert("num_derives_external", QString::fromStdString(strprintf("%u", sekE->nGenerated)));
+        obj.insert("num_derives_external_h", QString::fromStdString(strprintf("%u", sekE->nHGenerated)));
+    };
+
+    if (pa->nActiveInternal < pa->vExtKeys.size())
+    {
+        CStoredExtKey *sekI = pa->vExtKeys[pa->nActiveInternal];
+        if (nShowKeys > 0)
+        {
+            eKey58.SetKeyP(sekI->kp);
+            obj.insert("internal_chain", QString::fromStdString(eKey58.ToString()));
+        };
+        obj.insert("num_derives_internal", QString::fromStdString(strprintf("%u", sekI->nGenerated)));
+        obj.insert("num_derives_internal_h", QString::fromStdString(strprintf("%u", sekI->nHGenerated)));
+    };
+
+    if (pa->nActiveStealth < pa->vExtKeys.size())
+    {
+        CStoredExtKey *sekS = pa->vExtKeys[pa->nActiveStealth];
+        obj.insert("num_derives_stealth", QString::fromStdString(strprintf("%u", sekS->nGenerated)));
+        obj.insert("num_derives_stealth_h", QString::fromStdString(strprintf("%u", sekS->nHGenerated)));
+    };
+
+    return 0;
+};
+
+class GUIListExtCallback : public   LoopExtKeyCallback
+{
+public:
+    GUIListExtCallback(QVariantMap *resMap, int _nShowKeys)
+    {
+        nItems = 0;
+        resultMap = resMap;
+        nShowKeys = _nShowKeys;
+
+        if (pwalletMain && pwalletMain->pEkMaster)
+            idMaster = pwalletMain->pEkMaster->GetID();
+    };
+
+    int ProcessKey(CKeyID &id, CStoredExtKey &sek)
+    {
+        nItems++;
+        QVariantMap obj;
+        KeyInfo(idMaster, id, sek, nShowKeys, obj, sError);
+        resultMap->insert(QString::number(nItems), obj);
+        return 0;
+    };
+
+    int ProcessAccount(CKeyID &id, CExtKeyAccount &sea)
+    {
+        nItems++;
+        QVariantMap obj;
+
+        AccountInfo(&sea, nShowKeys, obj, sError);
+        resultMap->insert(QString::number(nItems), obj);
+        return 0;
+    };
+
+    std::string sError;
+    int nItems;
+    int nShowKeys;
+    CKeyID idMaster;
+    QVariantMap *resultMap;
+};
+
+QVariantMap ShadowBridge::extKeyAccList() {
+    QVariantMap result;
+    int i_result;
+
+    GUIListExtCallback bas(&result, 10 );
+
+    LOCK(pwalletMain->cs_wallet);
+    i_result = LoopExtAccountsInDB(true, bas);
+
+    CBitcoinAddress addr;
+
+    addr.GetKeyID(bas.idMaster);
+
+    return result;
+}
+
+QVariantMap ShadowBridge::extKeyList() {
+    QVariantMap result;
+    int i_result;
+
+    GUIListExtCallback bas(&result, 10 );
+
+    LOCK(pwalletMain->cs_wallet);
+    i_result = LoopExtKeysInDB(true, false, bas);
+
+    return result;
+}
+
+QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel)
+{
+    QVariantMap result;
+    std::string sInKey = inKey.toStdString();
+    CStoredExtKey sek;
+    sek.sLabel = inLabel.toStdString();
+
+    bool fBip44 = false;
+    bool fSaveBip44 = false;
+
+    std::vector<uint8_t> v;
+    sek.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
+
+    CExtKey58 eKey58;
+    if (eKey58.Set58(sInKey.c_str()) == 0)
+    {
+        if (fBip44)
+        {
+            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
+            {
+                result.insert("error_msg"       , "Import failed - BIP44 key must begin with Bitcoin secret key prefix.");
+                return result;
+            }
+        } else
+        {
+            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
+                && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
+            {
+                result.insert("error_msg"       , "Import failed - Key must begin with Shadowcoin prefix.");
+                return result;
+            }
+        };
+
+        sek.kp = eKey58.GetKey();
+    } else
+    {
+        result.insert("error_msg"       , "Import failed - Invalid key.");
+        return result;
+    };
+
+    LOCK(pwalletMain->cs_wallet);
+    CWalletDB wdb(pwalletMain->strWalletFile, "r+");
+    if (!wdb.TxnBegin())
+    {
+        result.insert("error_msg"       , "TxnBegin failed.");
+        return result;
+    }
+
+    int rv;
+    if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fSaveBip44)))
+    {
+        wdb.TxnAbort();
+        result.insert("error_msg"       , QString::fromStdString(strprintf("ExtKeyImportLoose failed, %s", ExtKeyGetString(rv))));
+        return result;
+    } else
+    {
+        if (!wdb.TxnCommit())
+        {
+            result.insert("error_msg"       , "TxnCommit failed.");
+            return result;
+        }
+    };
+
+    // If we get here all went well and the message is valid
+    result.insert("error_msg"       , "");
+    return result;
+}
+
+QVariantMap ShadowBridge::extKeySetDefault(QString extKeyID)
+{
+    QVariantMap result;
+
+    std::string sInKey = extKeyID.toStdString();
+    if (extKeyID.length() == 0)
+    {
+        result.insert("error_msg"       , "Must specify ext key or id.");
+        return result;
+    };
+
+    CKeyID idNewDefault;
+    CBitcoinAddress addr;
+
+    CExtKeyAccount *sea = new CExtKeyAccount();
+
+    if (addr.SetString(sInKey)
+        && addr.IsValid(CChainParams::EXT_ACC_HASH)
+        && addr.GetKeyID(idNewDefault, CChainParams::EXT_ACC_HASH))
+    {
+        // idNewDefault is set
+    };
+
+
+    {
+        LOCK(pwalletMain->cs_wallet);
+        CWalletDB wdb(pwalletMain->strWalletFile, "r+");
+        if (!wdb.TxnBegin())
+        {
+            result.insert("error_msg"       , "TxnBegin failed.");
+            return result;
+        }
+
+        if (!wdb.ReadExtAccount(idNewDefault, *sea))
+        {
+            result.insert("error_msg"       , "Account not in wallet.");
+            return result;
+        }
+
+        if (!wdb.WriteNamedExtKeyId("defaultAccount", idNewDefault))
+        {
+            wdb.TxnAbort();
+            result.insert("error_msg"       , "WriteNamedExtKeyId failed.");
+            return result;
+        };
+        if (!wdb.TxnCommit())
+        {
+            result.insert("error_msg"       , "TxnCommit failed.");
+            return result;
+
+        }
+
+        pwalletMain->idDefaultAccount = idNewDefault;
+
+        // TODO: necessary?
+        ExtKeyAccountMap::iterator mi = pwalletMain->mapExtAccounts.find(idNewDefault);
+        if (mi == pwalletMain->mapExtAccounts.end())
+        {
+            pwalletMain->mapExtAccounts[idNewDefault] = sea;
+        } else
+        {
+            delete sea;
+        };
+
+        result.insert("result"      , "Success.");
+    } // cs_wallet
+
+    // If we get here all went well
+    result.insert("error_msg"   , "");
+    return result;
+}
+
+QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
+{
+    QVariantMap result;
+    std::string sInKey = extKeyID.toStdString();
+    if (extKeyID.length() == 0)
+    {
+        result.insert("error_msg"       , "Must specify ext key or id.");
+        return result;
+    };
+
+    CKeyID idNewMaster;
+    CExtKey58 eKey58;
+    CExtKeyPair ekp;
+    CBitcoinAddress addr;
+
+    if (addr.SetString(sInKey)
+        && addr.IsValid(CChainParams::EXT_KEY_HASH)
+        && addr.GetKeyID(idNewMaster, CChainParams::EXT_KEY_HASH))
+    {
+        // idNewMaster is set
+    } else
+    if (eKey58.Set58(sInKey.c_str()) == 0)
+    {
+        ekp = eKey58.GetKey();
+        idNewMaster = ekp.GetID();
+    } else
+    {
+        result.insert("error_msg"       , "Invalid key: " + extKeyID);
+        return result;
+    };
+
+    {
+        LOCK(pwalletMain->cs_wallet);
+        CWalletDB wdb(pwalletMain->strWalletFile, "r+");
+        if (!wdb.TxnBegin())
+        {
+            result.insert("error_msg"       , "TxnBegin failed.");
+            return result;
+        }
+
+        int rv;
+        if (0 != (rv = pwalletMain->ExtKeySetMaster(&wdb, idNewMaster)))
+        {
+            wdb.TxnAbort();
+            result.insert("error_msg"       , QString::fromStdString(strprintf("ExtKeySetMaster failed, %s.", ExtKeyGetString(rv))));
+            return result;
+        };
+        if (!wdb.TxnCommit())
+        {
+            result.insert("error_msg"       , "TxnCommit failed.");
+            return result;
+        }
+    } // cs_wallet
+
+    // If we get here all went well
+    result.insert("error_msg"   , "");
+    result.insert("result"      , "Success.");
+    return result;
+}
+
+QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
+{
+    QVariantMap result;
+    std::string sInKey = extKeyID.toStdString();
+
+    if (extKeyID.length() == 0)
+    {
+        result.insert("error_msg"       , "Must specify ext key or id.");
+        return result;
+    };
+
+
+    CBitcoinAddress addr;
+
+    CKeyID id;
+    if (!addr.SetString(sInKey))
+    {
+        result.insert("error_msg"       , "Invalid key or account id.");
+        return result;
+    }
+
+    bool fAccount = false;
+    bool fKey = false;
+    if (addr.IsValid(CChainParams::EXT_KEY_HASH)
+        && addr.GetKeyID(id, CChainParams::EXT_KEY_HASH))
+    {
+        // id is set
+        fKey = true;
+    } else
+    if (addr.IsValid(CChainParams::EXT_ACC_HASH)
+        && addr.GetKeyID(id, CChainParams::EXT_ACC_HASH))
+    {
+        // id is set
+        fAccount = true;
+    } else
+    {
+        result.insert("error_msg"       , "Invalid key or account id.");
+        return result;
+    }
+
+    CStoredExtKey sek;
+    CExtKeyAccount sea;
+    {
+        LOCK(pwalletMain->cs_wallet);
+        CWalletDB wdb(pwalletMain->strWalletFile, "r+");
+        if (!wdb.TxnBegin())
+        {
+            result.insert("error_msg"       , "TxnBegin failed.");
+            return result;
+        }
+
+
+
+        if (fKey)
+        {
+            if (wdb.ReadExtKey(id, sek))
+            {
+                if (isActive == "false")
+                    sek.nFlags |= EAF_ACTIVE;
+                else
+                    sek.nFlags &= ~EAF_ACTIVE;
+
+                if (isActive > 0
+                    && !wdb.WriteExtKey(id, sek))
+                {
+                    wdb.TxnAbort();
+                    result.insert("error_msg"       , "Write failed.");
+                    return result;
+                };
+            } else
+            {
+                wdb.TxnAbort();
+                result.insert("error_msg"       , "Account not in wallet.");
+                return result;
+            };
+        };
+
+        if (fAccount)
+        {
+            if (wdb.ReadExtAccount(id, sea))
+            {
+
+                if (isActive == "false")
+                    sea.nFlags |= EAF_ACTIVE;
+                else
+                    sea.nFlags &= ~EAF_ACTIVE;
+
+                if (isActive > 0
+                    && !wdb.WriteExtAccount(id, sea))
+                {
+                    wdb.TxnAbort();
+                    result.insert("error_msg"       , "Write failed.");
+                    return result;
+                };
+            } else
+            {
+                wdb.TxnAbort();
+                result.insert("error_msg"       , "Account not in wallet.");
+                return result;
+            };
+        };
+
+        if (!wdb.TxnCommit())
+        {
+            result.insert("error_msg"       , "TxnCommit failed.");
+            return result;
+        }
+
+    } // cs_wallet
+
+    // If we get here all went well
+    result.insert("error_msg"   , "");
+    result.insert("result"      , "Success.");
+    return result;
+}

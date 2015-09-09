@@ -191,7 +191,7 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 const char *GetNodeModeName(int modeInd);
 const char *GetNodeStateName(int stateInd);
 
-void ReplaceStrInPlace(std::string &subject, const std::string &search, const std::string &replace);
+void ReplaceStrInPlace(std::string &subject, const std::string search, const std::string replace);
 std::string getTimeString(int64_t timestamp, char *buffer, size_t nBuffer);
 std::string bytesReadable(uint64_t nBytes);
 

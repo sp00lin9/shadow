@@ -384,6 +384,8 @@ static const CRPCCommand vRPCCommands[] =
     
     { "extkey",                 &extkey,                 false,     false,     true  },
     { "bip32",                  &extkey,                 false,     false,     true  },
+    { "mnemonic",               &mnemonic,               false,     false,     false },
+    { "bip39",                  &mnemonic,               false,     false,     false },
 };
 
 CRPCTable::CRPCTable()

@@ -35,7 +35,18 @@ int ExtractBip32InfoV(std::vector<unsigned char> &vchKey, Object &keyInfo, std::
     CExtKey58 ek58;
     CExtKeyPair vk;
     vk.DecodeV(&vchKey[4]);
-    keyInfo.push_back(Pair("type", "Shadowcoin extended secret key"));
+    
+    CChainParams::Base58Type typePk = CChainParams::EXT_PUBLIC_KEY;
+    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0)
+        keyInfo.push_back(Pair("type", "Shadowcoin extended secret key"));
+    else
+    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0)
+    {
+        keyInfo.push_back(Pair("type", "Bitcoin extended secret key"));
+        typePk = CChainParams::EXT_PUBLIC_KEY_BTC;
+    } else
+        keyInfo.push_back(Pair("type", "Unknown extended secret key"));
+    
     keyInfo.push_back(Pair("version", strprintf("%02X", reversePlace(&vchKey[0]))));
     keyInfo.push_back(Pair("depth", strprintf("%u", vchKey[4])));
     keyInfo.push_back(Pair("parent_fingerprint", strprintf("%08X", reversePlace(&vchKey[5]))));
@@ -57,7 +68,7 @@ int ExtractBip32InfoV(std::vector<unsigned char> &vchKey, Object &keyInfo, std::
     keyInfo.push_back(Pair("address", addr.ToString().c_str()));
     keyInfo.push_back(Pair("checksum", strprintf("%02X", reversePlace(&vchKey[78]))));
     
-     ek58.SetKeyP(vk);
+    ek58.SetKey(vk, typePk);
     keyInfo.push_back(Pair("ext_public_key", ek58.ToString()));
     
     return 0;
@@ -66,7 +77,15 @@ int ExtractBip32InfoV(std::vector<unsigned char> &vchKey, Object &keyInfo, std::
 int ExtractBip32InfoP(std::vector<unsigned char> &vchKey, Object &keyInfo, std::string &sError)
 {
     CExtPubKey pk;
-    keyInfo.push_back(Pair("type", "Shadowcoin extended public key"));
+    
+    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0)
+        keyInfo.push_back(Pair("type", "Shadowcoin extended public key"));
+    else
+    if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0)
+        keyInfo.push_back(Pair("type", "Bitcoin extended public key"));
+    else
+        keyInfo.push_back(Pair("type", "Unknown extended public key"));
+        
     keyInfo.push_back(Pair("version", strprintf("%02X", reversePlace(&vchKey[0]))));
     keyInfo.push_back(Pair("depth", strprintf("%u", vchKey[4])));
     keyInfo.push_back(Pair("parent_fingerprint", strprintf("%08X", reversePlace(&vchKey[5]))));
@@ -184,6 +203,14 @@ int AccountInfo(CExtKeyAccount *pa, int nShowKeys, Object &obj, std::string &sEr
     if (pwalletMain->idDefaultAccount == pa->GetID())
         obj.push_back(Pair("default_account", "true"));
     
+    mapEKValue_t::iterator mi = pa->mapValue.find(EKVT_CREATED_AT);
+    if (mi != pa->mapValue.end())
+    {
+        int64_t nCreatedAt;
+        GetCompressedInt64(mi->second, (uint64_t&)nCreatedAt);
+        obj.push_back(Pair("created_at", nCreatedAt));
+    };
+    
     obj.push_back(Pair("id", pa->GetIDString58()));
     obj.push_back(Pair("has_secret", pa->nFlags & EAF_HAVE_SECRET ? "true" : "false"));
     
@@ -194,7 +221,11 @@ int AccountInfo(CExtKeyAccount *pa, int nShowKeys, Object &obj, std::string &sEr
         return 0;
     };
     
-    mapEKValue_t::iterator mi = sekAccount->mapValue.find(EKVT_PATH);
+    CBitcoinAddress addr;
+    addr.Set(pa->idMaster, CChainParams::EXT_KEY_HASH);
+    obj.push_back(Pair("root_key_id", addr.ToString()));
+    
+    mi = sekAccount->mapValue.find(EKVT_PATH);
     if (mi != sekAccount->mapValue.end())
     {
         std::string sPath;
@@ -265,153 +296,140 @@ int AccountInfo(CKeyID &keyId, int nShowKeys, Object &obj, std::string &sError)
     return AccountInfo(pa, nShowKeys, obj, sError);
 };
 
-int ListLooseExtKeys(int nShowKeys, Array &ret, size_t &nKeys)
+int KeyInfo(CKeyID &idMaster, CKeyID &idKey, CStoredExtKey &sek, int nShowKeys, Object &obj, std::string &sError)
 {
-    /* 
-        nShowKeys 1 for public, 2 for private
-    */
-    AssertLockHeld(pwalletMain->cs_wallet);
-    
-    CWalletDB wdb(pwalletMain->strWalletFile);
-    
-    CKeyID idMaster;
-    wdb.ReadNamedExtKeyId("master", idMaster);
-    
-    
-    // - list loose keys
-    
-    Dbc *pcursor;
-    if (!(pcursor = wdb.GetAtCursor()))
-        throw std::runtime_error(strprintf("%s : cannot create DB cursor", __func__).c_str());
-    
-    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-    
-    CKeyID ckeyId;
-    CStoredExtKey sek;
     CExtKey58 eKey58;
-    std::string strType;
     
-    uint32_t fFlags = DB_SET_RANGE;
-    ssKey << std::string("ek32");
+    bool fBip44Root = false;
+    obj.push_back(Pair("type", "Loose"));
+    obj.push_back(Pair("active", sek.nFlags & EAF_ACTIVE ? "true" : "false"));
+    obj.push_back(Pair("receive_on", sek.nFlags & EAF_RECEIVE_ON ? "true" : "false"));
+    obj.push_back(Pair("encrypted", sek.nFlags & EAF_IS_CRYPTED ? "true" : "false"));
+    obj.push_back(Pair("label", sek.sLabel));
     
-    while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0)
+    if (reversePlace(&sek.kp.vchFingerprint[0]) == 0)
     {
-        fFlags = DB_NEXT;
-        
-        ssKey >> strType;
-        if (strType != "ek32")
-            break;
-        
-        ssKey >> ckeyId;
-        ssValue >> sek;
-        
-        if (sek.nFlags & EAF_IN_ACCOUNT)
-            continue;
-        
-        nKeys++;
-        
-        Object obj;
-        obj.push_back(Pair("type", "Loose"));
-        obj.push_back(Pair("active", sek.nFlags & EAF_ACTIVE ? "true" : "false"));
-        obj.push_back(Pair("receive_on", sek.nFlags & EAF_RECEIVE_ON ? "true" : "false"));
-        obj.push_back(Pair("encrypted", sek.nFlags & EAF_IS_CRYPTED ? "true" : "false"));
-        obj.push_back(Pair("label", sek.sLabel));
-        
-        if (reversePlace(&sek.kp.vchFingerprint[0]) == 0)
+        obj.push_back(Pair("path", "Root"));
+    } else
+    {
+        mapEKValue_t::iterator mi = sek.mapValue.find(EKVT_PATH);
+        if (mi != sek.mapValue.end())
         {
-            obj.push_back(Pair("path", "Root"));
-        } else
-        {
-            
+            std::string sPath;
+            if (0 == PathToString(mi->second, sPath, 'h'))
+                obj.push_back(Pair("path", sPath));
         };
-        
-        if (idMaster == ckeyId)
-            obj.push_back(Pair("current_master", "true"));
-        
-        CBitcoinAddress addr;
-        addr.Set(ckeyId, CChainParams::EXT_KEY_HASH);
-        obj.push_back(Pair("id", addr.ToString()));
-        
-        if (nShowKeys > 1
-            && pwalletMain->ExtKeyUnlock(&sek) == 0)
-        {
-            eKey58.SetKeyV(sek.kp);
-            obj.push_back(Pair("evkey", eKey58.ToString()));
-        };
-        if (nShowKeys > 0)
-        {
-            eKey58.SetKeyP(sek.kp);
-            obj.push_back(Pair("epkey", eKey58.ToString()));
-        };
-        
-        obj.push_back(Pair("num_derives", strprintf("%u", sek.nGenerated)));
-        obj.push_back(Pair("num_derives_hardened", strprintf("%u", sek.nHGenerated)));
-        
-        ret.push_back(obj);
     };
     
-    pcursor->close();
+    mapEKValue_t::iterator mi = sek.mapValue.find(EKVT_KEY_TYPE);
+    if (mi != sek.mapValue.end())
+    {
+        uint8_t type = EKT_MAX_TYPES;
+        if (mi->second.size() == 1)
+            type = mi->second[0];
+        
+        std::string sType;
+        switch (type)
+        {
+            case EKT_MASTER      : sType = "Master"; break;
+            case EKT_BIP44_MASTER:
+                sType = "BIP44 Key";
+                fBip44Root = true;
+                break;
+            default              : sType = "Unknown"; break;
+        };
+        obj.push_back(Pair("key_type", sType));
+    };
+    
+    if (idMaster == idKey)
+        obj.push_back(Pair("current_master", "true"));
+    
+    CBitcoinAddress addr;
+    mi = sek.mapValue.find(EKVT_ROOT_ID);
+    if (mi != sek.mapValue.end())
+    {
+        CKeyID idRoot;
+        
+        if (GetCKeyID(mi->second, idRoot))
+        {
+            addr.Set(idRoot, CChainParams::EXT_KEY_HASH);
+            obj.push_back(Pair("root_key_id", addr.ToString()));
+        } else
+        {
+            obj.push_back(Pair("root_key_id", "malformed"));
+        };
+    };
+    
+    mi = sek.mapValue.find(EKVT_CREATED_AT);
+    if (mi != sek.mapValue.end())
+    {
+        int64_t nCreatedAt;
+        GetCompressedInt64(mi->second, (uint64_t&)nCreatedAt);
+        obj.push_back(Pair("created_at", nCreatedAt));
+    };
+    
+    
+    addr.Set(idKey, CChainParams::EXT_KEY_HASH);
+    obj.push_back(Pair("id", addr.ToString()));
+    
+    if (nShowKeys > 1
+        && pwalletMain->ExtKeyUnlock(&sek) == 0)
+    {
+        if (fBip44Root)
+            eKey58.SetKey(sek.kp, CChainParams::EXT_SECRET_KEY_BTC);
+        else
+            eKey58.SetKeyV(sek.kp);
+        obj.push_back(Pair("evkey", eKey58.ToString()));
+    };
+    
+    if (nShowKeys > 0)
+    {
+        if (fBip44Root)
+            eKey58.SetKey(sek.kp, CChainParams::EXT_PUBLIC_KEY_BTC);
+        else
+            eKey58.SetKeyP(sek.kp);
+        
+        obj.push_back(Pair("epkey", eKey58.ToString()));
+    };
+    
+    obj.push_back(Pair("num_derives", strprintf("%u", sek.nGenerated)));
+    obj.push_back(Pair("num_derives_hardened", strprintf("%u", sek.nHGenerated)));
+    
     
     return 0;
 };
 
-int ListAccountExtKeys(int nShowKeys, Array &ret, size_t &nKeys)
+class ListExtCallback : public LoopExtKeyCallback
 {
-    /* 
-        nShowKeys 1 for public, 2 for private
-    */
-    
-    AssertLockHeld(pwalletMain->cs_wallet);
-    
-    CWalletDB wdb(pwalletMain->strWalletFile);
-    
-    // - list accounts
-    
-    Dbc *pcursor;
-    if (!(pcursor = wdb.GetAtCursor()))
-        throw std::runtime_error(strprintf("%s : cannot create DB cursor", __func__).c_str());
-    
-    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-    
-    CKeyID idAccount;
-    CExtKeyAccount sea;
-    CBitcoinAddress addr;
-    std::string strType, sError;
-    
-    uint32_t fFlags = DB_SET_RANGE;
-    ssKey << std::string("eacc");
-    
-    while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0)
+public:
+    ListExtCallback(Array *arr, int _nShowKeys)
     {
-        fFlags = DB_NEXT;
+        nItems = 0;
+        rvArray = arr;
+        nShowKeys = _nShowKeys;
         
-        ssKey >> strType;
-        if (strType != "eacc")
-            break;
         
-        ssKey >> idAccount;
-        ssValue >> sea;
-        
-        sea.vExtKeys.resize(sea.vExtKeyIDs.size());
-        for (size_t i = 0; i < sea.vExtKeyIDs.size(); ++i)
+        if (pwalletMain && pwalletMain->pEkMaster)
+            idMaster = pwalletMain->pEkMaster->GetID();
+    };
+
+    int ProcessKey(CKeyID &id, CStoredExtKey &sek)
+    {
+        nItems++;
+        Object obj;
+        if (0 != KeyInfo(idMaster, id, sek, nShowKeys, obj, sError))
         {
-            CKeyID &id = sea.vExtKeyIDs[i];
-            CStoredExtKey *sek = new CStoredExtKey();
-            
-            if (wdb.ReadExtKey(id, *sek))
-            {
-                sea.vExtKeys[i] = sek;
-            } else
-            {
-                addr.Set(idAccount, CChainParams::EXT_ACC_HASH);
-                LogPrintf("WARNING: Could not read key %d of account %s\n", i, addr.ToString().c_str());
-                sea.vExtKeys[i] = NULL;
-                delete sek;
-            };
+            obj.push_back(Pair("id", sek.GetIDString58()));
+            obj.push_back(Pair("error", sError));
         };
         
+        rvArray->push_back(obj);
+        
+    };
+    
+    int ProcessAccount(CKeyID &id, CExtKeyAccount &sea)
+    {
+        nItems++;
         Object obj;
         if (0 != AccountInfo(&sea, nShowKeys, obj, sError))
         {
@@ -419,12 +437,36 @@ int ListAccountExtKeys(int nShowKeys, Array &ret, size_t &nKeys)
             obj.push_back(Pair("error", sError));
         };
         
-        ret.push_back(obj);
-        
-        sea.FreeChains();
+        rvArray->push_back(obj);
     };
     
-    pcursor->close();
+    std::string sError;
+    int nItems;
+    int nShowKeys;
+    CKeyID idMaster;
+    Array *rvArray;
+};
+
+int ListLooseExtKeys(int nShowKeys, Array &ret, size_t &nKeys)
+{
+    ListExtCallback cbc(&ret, nShowKeys);
+    
+    if (0 != LoopExtKeysInDB(true, false, cbc))
+        return errorN(1, "LoopExtKeys failed.");
+    
+    nKeys = cbc.nItems;
+    
+    return 0;
+};
+
+int ListAccountExtKeys(int nShowKeys, Array &ret, size_t &nKeys)
+{
+    ListExtCallback cbc(&ret, nShowKeys);
+    
+    if (0 != LoopExtAccountsInDB(true, cbc))
+        return errorN(1, "LoopExtKeys failed.");
+    
+    nKeys = cbc.nItems;
     
     return 0;
 };
@@ -515,8 +557,10 @@ Value extkey(const Array &params, bool fHelp)
         "extkey gen [passphrase] [num hashes] [seed string]\n"
         "    If no passhrase is specified key will be generated from random data.\n"
         "    Warning: It is recommended to not use the passphrase\n"
-        "extkey import <key> [label]\n"
+        "extkey import <key> [label] [bip44] [save_bip44_key]\n"
         "    Add loose key to wallet.\n"
+        "    If bip44 is set import will add the key derived from <key> on the bip44 path."
+        "    If save_bip44_key is set import will save the bip44 key to the wallet."
         "extkey importAccount <key> [time_scan_from] [label] \n"
         "    Add account key to wallet.\n"
         "        time_scan_from: N no check, Y-m-d date to start scanning the blockchain for owned txns.\n"
@@ -555,7 +599,7 @@ Value extkey(const Array &params, bool fHelp)
     //   - locked wallets must be able to derive new keys as they receive
     
     
-    if (fHelp || params.size() > 4) // defaults to info, will always take at least 1 parameter
+    if (fHelp || params.size() > 5) // defaults to info, will always take at least 1 parameter
         throw std::runtime_error(help);
     
     std::string mode = "list";
@@ -618,41 +662,35 @@ Value extkey(const Array &params, bool fHelp)
         if (!VerifyChecksum(vchOut))
             throw std::runtime_error("VerifyChecksum failed.");
         
-        
-        
         size_t keyLen = vchOut.size();
         std::string sError;
-        switch (keyLen)
+        
+        if (keyLen != BIP32_KEY_LEN)
+            throw std::runtime_error(strprintf("Unknown ext key length '%d'", keyLen));
+        
+        const CChainParams &otherNet = TestNet() ? MainNetParams() : TestNetParams();
+        
+        if (memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0
+            || memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0)
         {
-            case BIP32_KEY_LEN:
-                if (memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0)
-                {
-                    if (ExtKeyPathV(sMode, vchOut, keyInfo, sError) != 0)
-                        throw std::runtime_error(strprintf("ExtKeyPathV failed %s.", sError.c_str()));
-                } else
-                if (memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0)
-                {
-                    if (ExtKeyPathP(sMode, vchOut, keyInfo, sError) != 0)
-                        throw std::runtime_error(strprintf("ExtKeyPathP failed %s.", sError.c_str()));
-                } else
-                if (TestNet()
-                    && (memcmp(&vchOut[0], &MainNetParams().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0
-                        || memcmp(&vchOut[0], &MainNetParams().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0))
-                {
-                    throw std::runtime_error("Prefix is for main-net bip32 key.");
-                } else
-                if (!TestNet()
-                    && (memcmp(&vchOut[0], &TestNetParams().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0
-                        || memcmp(&vchOut[0], &TestNetParams().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0))
-                {
-                    throw std::runtime_error("Prefix is for test-net bip32 key.");
-                } else
-                {
-                    throw std::runtime_error(strprintf("Unknown prefix '%s'", sInKey.substr(0, 4)));
-                };
-                break;
-            default:
-                throw std::runtime_error(strprintf("Unknown ext key length '%d'", keyLen));
+            if (ExtKeyPathV(sMode, vchOut, keyInfo, sError) != 0)
+                throw std::runtime_error(strprintf("ExtKeyPathV failed %s.", sError.c_str()));
+        } else
+        if (memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0
+            || memcmp(&vchOut[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY_BTC)[0], 4) == 0)
+        {
+            if (ExtKeyPathP(sMode, vchOut, keyInfo, sError) != 0)
+                throw std::runtime_error(strprintf("ExtKeyPathP failed %s.", sError.c_str()));
+        } else
+        if (memcmp(&vchOut[0], &otherNet.Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0
+            || memcmp(&vchOut[0], &otherNet.Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0
+            || memcmp(&vchOut[0], &otherNet.Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4) == 0
+            || memcmp(&vchOut[0], &otherNet.Base58Prefix(CChainParams::EXT_PUBLIC_KEY_BTC)[0], 4) == 0)
+        {
+            throw std::runtime_error(strprintf("Prefix is for %s-net bip32 key.", otherNet.NetworkIDString().c_str()));
+        } else
+        {
+            throw std::runtime_error(strprintf("Unknown prefix '%s'", sInKey.substr(0, 4)));
         };
         
         result.push_back(Pair("key_info", keyInfo));
@@ -805,12 +843,41 @@ Value extkey(const Array &params, bool fHelp)
             nParamOffset++;
         };
         
+        bool fBip44 = false;
+        if (params.size() > nParamOffset)
+        {
+            std::string s = params[nParamOffset].get_str();
+            if (IsStringBoolPositive(s))
+                fBip44 = true;
+            nParamOffset++;
+        };
+        
+        bool fSaveBip44 = false;
+        if (params.size() > nParamOffset)
+        {
+            std::string s = params[nParamOffset].get_str();
+            if (IsStringBoolPositive(s))
+                fSaveBip44 = true;
+            nParamOffset++;
+        };
+        
         std::vector<uint8_t> v;
         sek.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
         
         CExtKey58 eKey58;
         if (eKey58.Set58(sInKey.c_str()) == 0)
         {
+            if (fBip44)
+            {
+                if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
+                    throw std::runtime_error("Import failed - BIP44 key must begin with Bitcoin secret key prefix.");
+            } else
+            {
+                if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
+                    && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
+                    throw std::runtime_error("Import failed - Key must begin with Shadowcoin prefix.");
+            };
+            
             sek.kp = eKey58.GetKey();
         } else
         {
@@ -823,10 +890,11 @@ Value extkey(const Array &params, bool fHelp)
             if (!wdb.TxnBegin())
                 throw std::runtime_error("TxnBegin failed.");
             
-            if (0 != pwalletMain->ExtKeyImportLoose(&wdb, sek))
+            int rv;
+            if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fSaveBip44)))
             {
                 wdb.TxnAbort();
-                throw std::runtime_error("Import failed - ExtKeyImportLoose failed.");
+                throw std::runtime_error(strprintf("ExtKeyImportLoose failed, %s", ExtKeyGetString(rv)));
             } else
             {
                 if (!wdb.TxnCommit())
@@ -973,10 +1041,11 @@ Value extkey(const Array &params, bool fHelp)
             if (!wdb.TxnBegin())
                 throw std::runtime_error("TxnBegin failed.");
             
-            if (pwalletMain->ExtKeySetMaster(&wdb, idNewMaster) != 0)
+            int rv;
+            if (0 != (rv = pwalletMain->ExtKeySetMaster(&wdb, idNewMaster)))
             {
                 wdb.TxnAbort();
-                throw std::runtime_error("ExtKeySetMaster failed.");
+                throw std::runtime_error(strprintf("ExtKeySetMaster failed, %s.", ExtKeyGetString(rv)));
             };
             if (!wdb.TxnCommit())
                 throw std::runtime_error("TxnCommit failed.");

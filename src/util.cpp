@@ -1215,7 +1215,7 @@ const char *GetNodeStateName(int stateInd)
     return "unknown";
 };
 
-void ReplaceStrInPlace(std::string &subject, const std::string &search, const std::string &replace)
+void ReplaceStrInPlace(std::string &subject, const std::string search, const std::string replace)
 {
     size_t pos = 0;
     while ((pos = subject.find(search, pos)) != std::string::npos)

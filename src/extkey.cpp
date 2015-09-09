@@ -8,12 +8,21 @@
 #include "base58.h"
 #include "state.h"
 #include "wallet.h"
+#include "init.h" // for pwalletMain
+
+#include "wordlists/english.h"
+#include "wordlists/french.h"
+#include "wordlists/japanese.h"
+#include "wordlists/spanish.h"
+#include "wordlists/chinese_simplified.h"
+#include "wordlists/chinese_traditional.h"
 
 #include <stdint.h>
 
 
 #include <openssl/rand.h>
 #include <openssl/hmac.h>
+#include <openssl/evp.h>
 
 CCriticalSection cs_extKey;
 
@@ -28,7 +37,12 @@ const char *ExtKeyGetString(int ind)
         case 6:     return "'0' only valid at start or end";
         case 7:     return "Malformed path";
         case 8:     return "Offset is hardened already";
-        default:    return "Unknown error";
+        case 9:     return "Can't use BIP44 key as master";
+        case 10:    return "Ext key not found in wallet";
+        case 11:    return "This key is already the master key";
+        case 12:    return "Derived key already exists in wallet";
+        case 13:    return "Failed to unlock";
+        default:    return "Unknown error, check log";
     };
     
 };
@@ -54,6 +68,23 @@ int64_t GetCompressedInt64(const std::vector<uint8_t> &v, uint64_t &n)
         memcpy((uint8_t*) &n, &v[0], b);
     
     return (int64_t)n;
+};
+
+std::vector<uint8_t> &SetCKeyID(std::vector<uint8_t> &v, CKeyID n)
+{
+    v.resize(20);
+    memcpy(&v[0], (uint8_t*) &n, 20);
+    return v;
+};
+
+bool GetCKeyID(const std::vector<uint8_t> &v, CKeyID &n)
+{
+    if (v.size() != 20)
+        return false;
+    
+    memcpy((uint8_t*) &n, &v[0], 20);
+    
+    return true;
 };
 
 std::vector<uint8_t> &SetString(std::vector<uint8_t> &v, const char *s)
@@ -263,9 +294,7 @@ int PathToString(const std::vector<uint8_t> &vPath, std::string &sPath, char cH)
 {
     sPath = "";
     if (vPath.size() % 4 != 0)
-    {
         return 1;
-    };
     
     sPath = "m";
     for (size_t o = 0; o < vPath.size(); o+=4)
@@ -287,7 +316,6 @@ int PathToString(const std::vector<uint8_t> &vPath, std::string &sPath, char cH)
     
     return 0;
 };
-
 
 std::string CEKAStealthKey::ToStealthAddress() const
 {
@@ -500,7 +528,7 @@ bool CExtKeyAccount::SaveKey(const CKeyID &id, CEKAKey &keyIn)
     CStoredExtKey *pc;
     if ((pc = GetChain(keyIn.nParent)) != NULL)
     {
-        if (keyIn.nKey == pc->nGenerated + 1) // TODO: gaps?
+        if (keyIn.nKey == pc->nGenerated) // TODO: gaps?
             pc->nGenerated++;
         
         if (pc->nFlags & EAF_ACTIVE
@@ -575,7 +603,7 @@ bool CExtKeyAccount::IsLocked(const CEKAStealthKey &aks)
 
 int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys)
 {
-    // -- start from key 1, child key 0 is not used
+    // -- start from key 0
     CStoredExtKey *pc = GetChain(nChain);
     if (!pc)
         return errorN(1, "%s: Unknown chain, %d.", __func__, nChain);
@@ -594,12 +622,13 @@ int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys)
         bool fGotKey = false;
         for (uint32_t i = 0; i < MAX_DERIVE_TRIES; ++i) // MAX_DERIVE_TRIES > lookahead pool
         {
-            nChild = nChildOut+1; // 1st key is 1
             if (pc->DeriveKey(pk, nChild, nChildOut, false) != 0)
             {
                 LogPrintf("%s: DeriveKey failed, chain %d, child %d.\n", __func__, nChain, nChild);
+                nChild = nChildOut+1;
                 continue;
             };
+            nChild = nChildOut+1;
             
             keyId = pk.GetID();
             if ((mi = mapKeys.find(keyId)) != mapKeys.end())
@@ -688,7 +717,7 @@ int CExtKeyAccount::WipeEncryption()
     std::vector<CStoredExtKey*>::iterator it;
     for (it = vExtKeys.begin(); it != vExtKeys.end(); ++it)
     {
-        if (!(*it)->nFlags & EAF_IS_CRYPTED)
+        if (!((*it)->nFlags & EAF_IS_CRYPTED))
             continue;
         
         if ((*it)->fLocked)
@@ -719,3 +748,499 @@ bool IsBIP32(const char *base58)
     
     return false;
 };
+
+
+int LoopExtKeysInDB(bool fInactive, bool fInAccount, LoopExtKeyCallback &callback)
+{
+    AssertLockHeld(pwalletMain->cs_wallet);
+    
+    CWalletDB wdb(pwalletMain->strWalletFile);
+    
+    Dbc *pcursor;
+    if (!(pcursor = wdb.GetAtCursor()))
+        throw std::runtime_error(strprintf("%s : cannot create DB cursor", __func__).c_str());
+    
+    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+    
+    CKeyID ckeyId;
+    CStoredExtKey sek;
+    std::string strType;
+    
+    uint32_t fFlags = DB_SET_RANGE;
+    ssKey << std::string("ek32");
+    
+    while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0)
+    {
+        fFlags = DB_NEXT;
+        
+        ssKey >> strType;
+        if (strType != "ek32")
+            break;
+        
+        ssKey >> ckeyId;
+        ssValue >> sek;
+        
+        if (!fInAccount
+            && sek.nFlags & EAF_IN_ACCOUNT)
+            continue;
+        
+        callback.ProcessKey(ckeyId, sek);
+    };
+    
+    pcursor->close();
+    
+    return 0;
+};
+
+int LoopExtAccountsInDB(bool fInactive, LoopExtKeyCallback &callback)
+{
+    AssertLockHeld(pwalletMain->cs_wallet);
+    CWalletDB wdb(pwalletMain->strWalletFile);
+    // - list accounts
+    
+    Dbc *pcursor;
+    if (!(pcursor = wdb.GetAtCursor()))
+        throw std::runtime_error(strprintf("%s : cannot create DB cursor", __func__).c_str());
+    
+    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+    CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+    CKeyID idAccount;
+    CExtKeyAccount sea;
+    CBitcoinAddress addr;
+    std::string strType, sError;
+    
+    uint32_t fFlags = DB_SET_RANGE;
+    ssKey << std::string("eacc");
+    
+    while (wdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags) == 0)
+    {
+        fFlags = DB_NEXT;
+        
+        ssKey >> strType;
+        if (strType != "eacc")
+            break;
+        
+        ssKey >> idAccount;
+        ssValue >> sea;
+        
+        sea.vExtKeys.resize(sea.vExtKeyIDs.size());
+        for (size_t i = 0; i < sea.vExtKeyIDs.size(); ++i)
+        {
+            CKeyID &id = sea.vExtKeyIDs[i];
+            CStoredExtKey *sek = new CStoredExtKey();
+            
+            if (wdb.ReadExtKey(id, *sek))
+            {
+                sea.vExtKeys[i] = sek;
+            } else
+            {
+                addr.Set(idAccount, CChainParams::EXT_ACC_HASH);
+                LogPrintf("WARNING: Could not read key %d of account %s\n", i, addr.ToString().c_str());
+                sea.vExtKeys[i] = NULL;
+                delete sek;
+            };
+        };
+        callback.ProcessAccount(idAccount, sea);
+        
+        sea.FreeChains();
+    };
+    
+    pcursor->close();
+    
+    return 0;
+};
+
+
+
+static int GetWord(int o, const char *pwl, int max, std::string &sWord)
+{
+    char *pt = (char*)pwl;
+    while (o > 0)
+    {
+        if (*pt == '\n')
+            o--;
+        pt++;
+        
+        if (pt >= pwl+max)
+            return 1;
+    };
+    
+    while (pt < (pwl+max))
+    {
+        if (*pt == '\n')
+            return 0;
+        sWord += *pt;
+        pt++;
+    };
+    
+    return 1;
+};
+
+int GetWordOffset(const char *p, const char *pwl, int max, int &o)
+{
+    // - list must end with \n
+    char *pt = (char*)pwl;
+    int l = strlen(p);
+    int i = 0;
+    int c = 0;
+    int f = 1;
+    while (pt < (pwl+max))
+    {
+        if (*pt == '\n')
+        {
+            if (f && c == l) // found
+            {
+                o = i;
+                return 0;
+            };
+            i++;
+            c = 0;
+            f = 1;
+        } else
+        {
+            if (c >= l)
+                f = 0;
+            else
+            if (f && *(p+c) != *pt)
+                f = 0;
+            c++;
+        };
+        pt++;
+    };
+    
+    return 1;
+};
+
+static const unsigned char *mnLanguages[] =
+{
+    NULL,
+    english_txt,
+    french_txt,
+    japanese_txt,
+    spanish_txt,
+    chinese_simplified_txt,
+    chinese_traditional_txt,
+};
+
+static const uint32_t mnLanguageLens[] =
+{
+    0,
+    english_txt_len,
+    french_txt_len,
+    japanese_txt_len,
+    spanish_txt_len,
+    chinese_simplified_txt_len,
+    chinese_traditional_txt_len,
+};
+
+int MnemonicDetectLanguage(const std::string &sWordList)
+{
+    char tmp[2048];
+    if (sWordList.size() >= 2048)
+        return errorN(-1, "%s: Word List too long.", __func__);
+    
+    // try to detect the language
+    // try max 4 words
+    // allow errors to account for spelling mistakes
+    for (int l = 1; l < WLL_MAX; ++l)
+    {
+        strcpy(tmp, sWordList.c_str());
+        
+        char *pwl = (char*) mnLanguages[l];
+        int m = mnLanguageLens[l];
+        
+        int maxTries = 4;
+        int nHit = 0;
+        int nMiss = 0;
+        char *p;
+        p = strtok(tmp, " ");
+        while (p != NULL)
+        {
+            int ofs;
+            if (0 == GetWordOffset(p, pwl, m, ofs))
+                nHit++;
+            else
+                nMiss++;
+            
+            if (!maxTries--)
+                break;
+            p = strtok(NULL, " ");
+        };
+        
+        if (nHit > nMiss)
+            return l;
+    };
+    
+    return 0;
+};
+
+int MnemonicEncode(int nLanguage, const std::vector<uint8_t> &vEntropy, std::string &sWordList, std::string &sError)
+{
+    if (fDebug)
+        LogPrintf("%s: language %d.\n", __func__, nLanguage);
+    
+    if (nLanguage < 1 || nLanguage > WLL_MAX)
+    {
+        sError = "Unknown language.";
+        return errorN(1, "%s: %s", __func__, sError.c_str());
+    };
+    
+    // -- checksum is 1st n bytes of the sha256 hash
+    uint8_t hash[32];
+    SHA256(&vEntropy[0], vEntropy.size(), (uint8_t*)hash);
+    
+    int nCsSize = vEntropy.size() / 4; // 32 / 8
+    
+    if (nCsSize < 1 || nCsSize > 256)
+    {
+        sError = "Entropy bytes out of range.";
+        return errorN(2, "%s: %s", __func__, sError.c_str());
+    };
+    
+    std::vector<uint8_t> vIn = vEntropy;
+    
+    int ncb = nCsSize/8;
+    int r = nCsSize % 8;
+    if (r != 0)
+        ncb++;
+    std::vector<uint8_t> vTmp(32);
+    memcpy(&vTmp[0], &hash, ncb);
+    memset(&vTmp[ncb], 0, 32-ncb);
+    
+    vIn.insert(vIn.end(), vTmp.begin(), vTmp.end());
+    
+    std::vector<int> vWord;
+    
+    int nBits = vEntropy.size() * 8 + nCsSize;
+    
+    int i = 0;
+    while (i < nBits)
+    {
+        int o = 0;
+        int s = i / 8;
+        int r = i % 8;
+        
+        uint8_t b1 = vIn[s];
+        uint8_t b2 = vIn[s+1];
+        
+        o = (b1 << r) & 0xFF;
+        o = o << (11 - 8);
+        
+        if (r > 5)
+        {
+            uint8_t b3 = vIn[s+2];
+            o |= (b2 << (r-5));
+            o |= (b3 >> (8-(r-5)));
+        } else
+        {
+            o |= ((int)b2) >> ((8 - (11 - 8))-r);
+        };
+        
+        o = o & 0x7FF;
+        
+        vWord.push_back(o);
+        i += 11;
+    };
+    
+    char *pwl = (char*) mnLanguages[nLanguage];
+    int m = mnLanguageLens[nLanguage];
+    
+    for (size_t k = 0; k < vWord.size(); ++k)
+    {
+        int o = vWord[k];
+        
+        std::string sWord;
+        
+        if (0 != GetWord(o, pwl, m, sWord))
+        {
+            sError = strprintf("Word extract failed %d.", o);
+            return errorN(3, "%s: %s", __func__, sError.c_str());
+        };
+         
+        if (sWordList != "")
+            sWordList += " ";
+        sWordList += sWord;
+    };
+    
+    if (nLanguage == WLL_JAPANESE)
+        ReplaceStrInPlace(sWordList, " ", "\u3000");
+    
+    return 0;
+};
+
+int MnemonicDecode(int nLanguage, const std::string &sWordListIn, std::vector<uint8_t> &vEntropy, std::string &sError, bool fIgnoreChecksum)
+{
+    if (fDebug)
+        LogPrintf("%s: Language %d.\n", __func__, nLanguage);
+    
+    std::string sWordList = sWordListIn;
+    ReplaceStrInPlace(sWordList, "\u3000", " ");
+    
+    if (nLanguage == -1)
+        nLanguage = MnemonicDetectLanguage(sWordList);
+    
+    if (nLanguage < 1 || nLanguage > WLL_MAX)
+    {
+        sError = "Unknown language.";
+        return errorN(1, "%s: %s", __func__, sError.c_str());
+    };
+    
+    char tmp[2048];
+    if (sWordList.size() >= 2048)
+    {
+        sError = "Word List too long.";
+        return errorN(2, "%s: %s", __func__, sError.c_str());
+    };
+    
+    strcpy(tmp, sWordList.c_str());
+    
+    char *pwl = (char*) mnLanguages[nLanguage];
+    int m = mnLanguageLens[nLanguage];
+    
+    std::vector<int> vWordInts;
+    
+    char *p;
+    p = strtok(tmp, " ");
+    while (p != NULL)
+    {
+        int ofs;
+        if (0 != GetWordOffset(p, pwl, m, ofs))
+        {
+            sError = strprintf("Unknown word: %s", p);
+            return errorN(3, "%s: %s", __func__, sError.c_str());
+        };
+        
+        vWordInts.push_back(ofs);
+        
+        p = strtok(NULL, " ");
+    };
+    
+    if (!fIgnoreChecksum
+        && vWordInts.size() % 3 != 0)
+    {
+        sError = "No. of words must be divisible by 3.";
+        return errorN(4, "%s: %s", __func__, sError.c_str());
+    };
+    
+    int nBits = vWordInts.size() * 11;
+    int nBytes = nBits/8 + (nBits % 8 == 0 ? 0 : 1);
+    vEntropy.resize(nBytes);
+    
+    memset(&vEntropy[0], 0, nBytes);
+    
+    int i = 0;
+    size_t wl = vWordInts.size();
+    size_t el = vEntropy.size();
+    for (size_t k = 0; k < wl; ++k)
+    {
+        int o = vWordInts[k];
+        
+        int s = i / 8;
+        int r = i % 8;
+        
+        vEntropy[s] |= (o >> (r+3)) & 0x7FF;
+        
+        if (s < (int)el-1)
+        {
+            if (r > 5)
+            {
+                vEntropy[s+1] |= ((o >> (r-5))) & 0x7FF;
+                if (s < (int)el-2)
+                {
+                    vEntropy[s+2] |= (o << (8-(r-5))) & 0x7FF;
+                };
+            } else
+            {
+                vEntropy[s+1] |= (o << (5-r)) & 0x7FF;
+            };
+        };
+        i += 11;
+    };
+    
+    if (fIgnoreChecksum)
+        return 0;
+    
+    // -- checksum
+    int nLenChecksum = nBits / 32;
+    int nLenEntropy = nBits - nLenChecksum;
+    
+    int nBytesEntropy = nLenEntropy / 8;
+    int nBytesChecksum = nLenChecksum / 8 + (nLenChecksum % 8 == 0 ? 0 : 1);
+    
+    std::vector<uint8_t> vCS;
+    
+    vCS.resize(nBytesChecksum);
+    memcpy(&vCS[0], &vEntropy[nBytesEntropy], nBytesChecksum);
+    
+    vEntropy.resize(nBytesEntropy);
+    
+    uint8_t hash[32];
+    SHA256(&vEntropy[0], vEntropy.size(), (uint8_t*)hash);
+    
+    std::vector<uint8_t> vCSTest;
+    
+    vCSTest.resize(nBytesChecksum);
+    memcpy(&vCSTest[0], &hash, nBytesChecksum);
+    
+    int r = nLenChecksum % 8;
+    
+    if (r > 0)
+        vCSTest[nBytesChecksum-1] &= (((1<<r)-1) << (8-r));
+    
+    if (vCSTest != vCS)
+    {
+        sError = "Checksum mismatch.";
+        return errorN(5, "%s: %s", __func__, sError.c_str());
+    };
+    
+    return 0;
+};
+
+int MnemonicToSeed(const std::string &sMnemonic, const std::string &sPasswordIn, std::vector<uint8_t> &vSeed)
+{
+    if (fDebug)
+        LogPrintf("%s\n", __func__);
+    
+    vSeed.resize(64);
+    
+    std::string sWordList = sMnemonic;
+    ReplaceStrInPlace(sWordList, "\u3000", " ");
+    
+    std::string sPassword = sPasswordIn;
+    ReplaceStrInPlace(sPassword, "\u3000", " ");
+    
+    int nIterations = 2048;
+    
+    std::string sSalt = std::string("mnemonic") + sPassword;
+    
+    int nBytesOut = 64;
+    if (1 != PKCS5_PBKDF2_HMAC(
+        sWordList.data(), sWordList.size(),
+        (const unsigned char*)sSalt.data(), sSalt.size(),
+        nIterations, EVP_sha512(), nBytesOut, &vSeed[0]))
+        return errorN(1, "%s: PKCS5_PBKDF2_HMAC failed.", __func__);
+    
+    return 0;
+};
+
+int MnemonicAddChecksum(int nLanguageIn, const std::string &sWordListIn, std::string &sWordListOut, std::string &sError)
+{
+    int nLanguage = nLanguageIn;
+    if (nLanguage == -1)
+        nLanguage = MnemonicDetectLanguage(sWordListIn); // needed here for MnemonicEncode, MnemonicDecode will complain if in error
+    
+    int rv;
+    std::vector<uint8_t> vEntropy;
+    if (0 != (rv = MnemonicDecode(nLanguage, sWordListIn, vEntropy, sError, true)))
+        return rv;
+    
+    if (0 != (rv = MnemonicEncode(nLanguage, vEntropy, sWordListOut, sError)))
+        return rv;
+    
+    if (0 != (rv = MnemonicDecode(nLanguage, sWordListOut, vEntropy, sError)))
+        return rv;
+    
+    return 0;
+};
+

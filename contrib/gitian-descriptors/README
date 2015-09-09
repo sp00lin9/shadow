@@ -12,11 +12,11 @@ Name: gitianbuild
 Type: Linux (64bit)
 Version: Debian
 
-Memory: 1024Mb+ ( less than 1024 could cause major performance issues when compiling )
+Memory: 1400MB or more
 Hard Drive: Create a virtual hard drive now
 Hard drive file type: VDI ( Virtualbox disk image )
 Storage on physical hard drive : Dynamically allocated
-File location and size: 40Gb
+File location and size: 40GB (20GB should work)
 
 <CREATE> 
 

@@ -3,6 +3,7 @@
 <head>
     <title>Shadow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <link href="qrc:///css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
     <link href="qrc:///css/normalize.css" rel="stylesheet" type="text/css">
@@ -52,8 +53,9 @@
             <li><a href="#messages" onclick="iscrollReload(true);">ShadowChat</a></li>
             <li><a href="#chaindata" onclick="chainDataPage.updateAnonOutputs();">Chain Data</a></li>
             <li><a href="#blockdata" onclick="blockExplorerPage.updateLatestBlocks();">Block Explorer</a></li>
+            <li><a href="#keymanagement" onclick="$('#key-options').show(); $('#wizards').hide(); $('#keymanagement-advanced').hide();">Key Management</a></li>
             <li class="none"><a href="#options">Options</a></li>
-            <!--li><a href="#news">news</a></li-->
+            <!--li><a href="#news">news</a></li   showWizardScreen('key-manage-wizard'); -->
         </ul>
 
         <div id="navinfo">
@@ -951,6 +953,157 @@
                 </div><!-- /content -->
             </div><!-- /bottom -->
         </article><!-- Block Explorer Page -->
+
+        <div id="import-key-modal" style="display:none;" class="content">
+            <a class="heading-selected">Import BIP Key</a>
+            <br/>
+            <a class="modal_close" href="#close"><i class="fa fa-times-circle red"></i></a>
+            <div style="white-space:nowrap;"></br>
+                <div style="white-space: pre-wrap; line-height: 1em;">Some bip information</div><br/>
+
+                <label for="import-bip39-mnemonic" class="recipient">BIP39 Mnemonic: </label>
+                <input id="import-bip39-mnemonic"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Enter the twelve word mnemonic you wish to import" placeholder="Enter the twelve word mnemonic you wish to import"/><br>
+                <label for="ximport-bip39-passphrase"  class="recipient">Passphrase (Optional): </label>
+                <input id="ximport-bip39-passphrase"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Enter a passphrase for the bip39 mnemonic" placeholder="Enter a passphrase for the bip39 mnemonic"   onchange="" /></br>
+
+                <label class="recipient" for="import-bip32-genkey">BIP32 Generated rootkey: </label>
+                <input id="import-bip32-genkey" class="recipient input_box" style="width: 450px; height: 40px;" data-title="" placeholder=""/></br>
+
+            </div>
+            <div style="white-space:nowrap;">
+                <a class="button is-inverse has-icon-spacing" href=""><i class="fa fa-check"></i>Generate</a>
+                <span id="import-result" style="width:300px"></span>
+            </div>
+
+            
+        </div>
+
+        <!-- Key Management Page -->
+        <article id="keymanagement" style="display:none;">
+            <div class="content top">
+                <h2>Key Management</h2>
+            </div>
+            <div class="bottom">
+                <div class="content">
+                    <div id="key-options"> 
+                        <h3> Please select one of the following options: </h3>
+                        <div class="optionblock"><img src="qrc:///images/extkey_new"     alt="New Account"     onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('new-key-wizard', 0, true);resizeFooter();"/>New Account </div>
+                        <div class="optionblock"><img src="qrc:///images/extkey_recover" alt="Recover Account" onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('recover-key-wizard', 0, true);resizeFooter();"/>Recover     </div>
+                        <div class="optionblock"><img src="qrc:///images/extkey_open"    alt="Advanced Management" onclick="$('#key-options').hide(); $('#wizards').hide(); $('#keymanagement-advanced').show(); keyManagementPage.updateKeyList(); keyManagementPage.updateAccountList(); resizeFooter(); "/>Advanced management</div>
+                    </div>
+    
+                    <div id="wizards" style="display:none">    
+                        <div id="new-key-wizard" class="wizardblock" style="display:none">
+                            <div>
+                                <h3>Lets create a new account</h3>
+                                <h2>Give your new account a label and a password</h2>
+                                <label for="new-account-label" class="recipient">Label: </label>
+                                <input id="new-account-label"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Label for account" ></br>
+                                <label for="new-account-passphrase" class="recipient">Passphrase (Optional): </label>
+                                <input id="new-account-passphrase" type="password"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Enter a passphrase for the bip39 mnemonic" ></br>
+
+                                <label for="new-account-language" class="recipient">Language: </label>
+                                <select id="new-account-language" class="button is-inverse has-fixed-icon"  style="width:25%;height:40px;padding:0 10px;margin-bottom:10px;">
+                                    <option value="1" title="English">English</option>
+                                    <option value="2" title="French">French</option>
+                                    <option value="3" title="Japanese">Japanese</option>
+                                    <option value="4" title="Spanish">Spanish</option>
+                                    <option value="5" title="Chinese (Simplified)">Chinese (Simplified)</option>
+                                    <option value="6" title="Chinese (Traditional)">Chinese (Traditional)</option>
+                                </select>
+                            </div>
+                            <div stepJS="keyManagementPage.newMnemonic();"> 
+                                <h3>Here is your 24 word account mnemonic </h3>                            
+                                <textarea id="new-key-mnemonic" style="width:90%; height:100px; font-family: 'NotoCJK';" class="input_box" placeholder="24 word mnemonic" data-title="Your 24 word mnemonic ( Keep this safe! )" readonly></textarea><br/>
+                                <p>It is very important to write this down as this is the only backup you will need for your wallet. You will be asked to confirm the seed in the next screen to ensure it has been copied down correctly</p>
+                            </div>
+                            <div validateJS="keyManagementPage.compareMnemonics();"> 
+                                <h3>Please re-enter your 24 word mnemonic from earlier</h3>
+                                <textarea id="validate-key-mnemonic" style="width:90%; height:100px; font-family: 'NotoCJK';" class="input_box" placeholder="24 word mnemonic" data-title="24 word mnemonic"></textarea><br/>
+                                <p>We really want to make sure that you have copied these 24 words down correctly as this will serve as a means to recover your wallet if you should ever lose it. </p>
+                            </div>
+                            <div stepJS="keyManagementPage.newKey();" endWiz=" keyManagementPage.gotoPage('overview'); " >
+                                <h3>Congratulations! You have successfully created a new wallet account</h3>
+                                <p>You can now use your account to send and receive funds :) Remember to keep your 24 work mnemonic and passphase safe in case you ever need to recover your wallet </p></br>
+
+<!-- TODO: Implement a SET DEFAULT / SET MASTER option at the end of the wizard -->                                 
+<!--                                <input id="new-key-make-default" type="checkbox" checked>
+                                <label for="new-key-make-default" class="option">Make this account the default</label> -->
+                            </div>
+                        </div>
+                        <div id="recover-key-wizard" class="wizardblock" style="display:none">
+                            <div validateJS="keyManagementPage.recoverKey();">
+                                <h3>Lets recover your account</h3>
+
+                                <label for="recover-account-label" class="recipient">Label: </label>
+                                <input id="recover-account-label"  class="recipient input_box" style="width: 550px; height: 40px;" data-title="Label for recovered account"></br>
+                                <label for="recover-passphrase" class="recipient">Passphrase (Optional): </label>
+                                <input id="recover-passphrase"  class="recipient input_box" style="width: 550px; height: 40px;" type="password" data-title="Enter the passphrase for the wallet you are trying to recover" ></br>
+                                <textarea id="recover-key-mnemonic" style="width:90%; height:100px; font-family: 'NotoCJK';" class="input_box" placeholder="Your 24 word mnemonic for recovery" data-title="Your 24 word mnemonic for recovery"></textarea></br>
+                            </div>
+                            <div endWiz="keyManagementPage.gotoPage('overview');">
+                                <h3>Congratulations! You have successfully recovered your wallet from your 24 word mnemonic</h3>
+                                <p>You can now use your account to send and receive funds :) Remember to keep your 24 work mnemonic and passphase safe in case you ever need to recover your wallet again!</p></br>
+<!--                                <input id="recover-key-make-default" type="checkbox" checked>
+                                <label for="recover-key-make-default" class="option">Make this account the default</label> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="keymanagement-advanced" style="display:none">
+                        <h3>Accounts </h3>
+                        <table id="extkey-account-table" class="footable shadow" data-page=false>
+                            <thead>
+                                <tr>
+                                    <th data-toggle="true"  data-title="ID" data-sort-initial="ascending">ID</th>
+                                    <th data-toggle="true"  data-title="Label" data-sort-initial="ascending">Label</th>
+                                    <th data-toggle="true"  data-title="Created" data-sort-initial="ascending">Created</th>
+                                    <th data-toggle="true"  data-title="Active Account" data-sort-initial="ascending">Active Account</th>
+                                    <th data-toggle="true"  data-title="Default" data-sort-initial="ascending">Default</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5" style="background:#E5203D!important;">
+                                        <div class="pagination pagination-centered hide-if-no-paging"></div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        </br>
+                        <h3>Keys </h3>
+                        <table id="extkey-table" class="footable shadow" data-page=false>
+                            <thead>
+                                <tr>
+                                    <th data-toggle="true"  data-title="ID" data-sort-initial="ascending">ID</th>
+                                    <th data-toggle="true"  data-title="Label" data-sort-initial="ascending">Label</th>
+                                    <th data-toggle="true"  data-title="Path" data-sort-initial="ascending">Path</th>
+                                    <th data-toggle="true"  data-title="Active" data-sort-initial="ascending">Active</th>
+                                    <th data-toggle="true"  data-title="Master" data-sort-initial="ascending">Master</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5" style="background:#E5203D!important;">
+                                        <div class="pagination pagination-centered hide-if-no-paging"></div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="ui-buttons">
+                            <a id="btn-make-default-key" class="button is-inverse has-icon-spacing" href="#" onclick="keyManagementPage.setDefault();"><i class="fa fa-pencil-square-o"></i>Make Default</a>
+                            <a id="btn-activate-deactivate" class="button is-inverse has-icon-spacing" href="#" onclick="keyManagementPage.changeActiveFlag();"><i class="fa fa-pencil-square-o"></i>Activate/Deactivate</a>
+                            <a id="btn-set-master" class="button is-inverse has-icon-spacing" href="#" onclick="keyManagementPage.setMaster();"><i class="fa fa-pencil-square-o"></i>Set as Master</a>
+                        </div> 
+                    </div>
+                </div> <!-- content -->
+            </div><!-- bottom -->
+        </article><!-- Key Management Page -->
+
+
 
 
         <!-- Options Page -->

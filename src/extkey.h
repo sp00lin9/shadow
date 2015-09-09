@@ -15,11 +15,11 @@
 static const uint32_t MAX_DERIVE_TRIES = 16;
 static const uint32_t BIP32_KEY_LEN = 82; // raw, 74 + 4 bytes id + 4 checksum
 static const uint32_t BIP32_KEY_N_BYTES = 74; // raw without id and checksum
-//static const uint32_t BIP44_KEY_LEN = 82; // raw
 
 static const uint32_t MAX_KEY_PACK_SIZE = 100;
 static const uint32_t N_DEFAULT_LOOKAHEAD = 5;
 
+static const uint32_t BIP44_PURPOSE = (((uint32_t)44) | (1 << 31));
 
 typedef std::map<uint8_t, std::vector<uint8_t> > mapEKValue_t;
 
@@ -28,7 +28,7 @@ enum EKAddonValueTypes
     EKVT_CREATED_AT         = 1, // up to 8 bytes of int64_t
     EKVT_KEY_TYPE           = 2, // 1 uint8 of MainExtKeyTypes
     EKVT_STRING_PAIR        = 3, // str1 null str2 null
-    EKVT_PARENT_ID          = 4,
+    EKVT_ROOT_ID            = 4, // packed keyid of the root key in the path eg: for key of path m/44'/22'/0, EKVT_ROOT_ID is the id of m
     EKVT_PATH               = 5, // pack 4bytes no separators
     EKVT_ADDED_SECRET_AT    = 6,
     EKVT_N_LOOKAHEAD        = 7,
@@ -39,6 +39,7 @@ extern CCriticalSection cs_extKey;
 enum MainExtKeyTypes
 {
     EKT_MASTER,
+    EKT_BIP44_MASTER, // display with btc prefix (xprv)
     EKT_MAX_TYPES,
 };
 
@@ -50,6 +51,21 @@ enum AccountFlagTypes
     EAF_RECEIVE_ON       = (1 << 3), // CStoredExtKey with this flag set generate look ahead keys
     EAF_IN_ACCOUNT       = (1 << 4), // CStoredExtKey is part of an account
 };
+
+enum WordListLanguages
+{
+    WLL_ENGLISH         = 1,
+    WLL_FRENCH          = 2,
+    WLL_JAPANESE        = 3,
+    WLL_SPANISH         = 4,
+    WLL_CHINESE_S       = 5,
+    WLL_CHINESE_T       = 6,
+    
+    WLL_MAX
+};
+
+
+
 
 class CStoredExtKey
 {
@@ -116,12 +132,12 @@ public:
         uint32_t nChild = fHardened ? nHGenerated : nGenerated;
         
         int rv;
-        if ((rv = DeriveKey(keyOut, nChild+1, nChildOut, fHardened)) != 0)
+        if ((rv = DeriveKey(keyOut, nChild, nChildOut, fHardened)) != 0)
             return rv;
         
         nChild = nChildOut & ~(1 << 31); // clear the hardened bit
         if (fUpdate)
-            SetCounter(nChild, fHardened);
+            SetCounter(nChild+1, fHardened);
         
         return 0;
     };
@@ -495,6 +511,9 @@ inline int GetNumBytesReqForInt(uint64_t v)
 std::vector<uint8_t> &SetCompressedInt64(std::vector<uint8_t> &v, uint64_t n);
 int64_t GetCompressedInt64(const std::vector<uint8_t> &v, uint64_t &n);
 
+std::vector<uint8_t> &SetCKeyID(std::vector<uint8_t> &v, CKeyID n);
+bool GetCKeyID(const std::vector<uint8_t> &v, CKeyID &n);
+
 std::vector<uint8_t> &SetString(std::vector<uint8_t> &v, const char *s);
 std::vector<uint8_t> &SetChar(std::vector<uint8_t> &v, const uint8_t c);
 std::vector<uint8_t> &PushUInt32(std::vector<uint8_t> &v, const uint32_t i);
@@ -507,6 +526,25 @@ int PathToString(const std::vector<uint8_t> &vPath, std::string &sPath, char cH=
 
 bool IsBIP32(const char *base58);
 
+
+class LoopExtKeyCallback
+{
+public:
+    // NOTE: the key and account instances passed to Process are temporary
+    virtual int ProcessKey(CKeyID &id, CStoredExtKey &sek) {return 1;};
+    virtual int ProcessAccount(CKeyID &id, CExtKeyAccount &sek) {return 1;};
+};
+
+int LoopExtKeysInDB(bool fInactive, bool fInAccount, LoopExtKeyCallback &callback);
+int LoopExtAccountsInDB(bool fInactive, LoopExtKeyCallback &callback);
+
+
+int GetWordOffset(const char *p, const char *pwl, int max, int &o);
+int MnemonicDetectLanguage(const std::string &sWordList);
+int MnemonicEncode(int nLanguage, const std::vector<uint8_t> &vEntropy, std::string &sWordList, std::string &sError);
+int MnemonicDecode(int nLanguage, const std::string &sWordListIn, std::vector<uint8_t> &vEntropy, std::string &sError, bool fIgnoreChecksum=false);
+int MnemonicToSeed(const std::string &sMnemonic, const std::string &sPasswordIn, std::vector<uint8_t> &vSeed);
+int MnemonicAddChecksum(int nLanguageIn, const std::string &sWordListIn, std::string &sWordListOut, std::string &sError);
 
 #endif // EXT_KEY_H
 

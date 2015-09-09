@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = shadow
-VERSION = 1.3.3.0
+VERSION = 1.3.3.1
 INCLUDEPATH += src src/json src/qt
 DEFINES += BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
@@ -337,6 +337,7 @@ SOURCES += \
     src/rpcrawtransaction.cpp \
     src/rpcsmessage.cpp \
     src/rpcextkey.cpp \
+    src/rpcmnemonic.cpp \
     src/qt/transactiontablemodel.cpp \
     src/qt/coincontroldialog.cpp \
     src/qt/coincontroltreewidget.cpp \

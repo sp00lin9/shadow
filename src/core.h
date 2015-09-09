@@ -120,10 +120,10 @@ public:
     {
         return (nSequence == std::numeric_limits<unsigned int>::max());
     }
-
+    
     bool IsAnonInput() const
     {
-        return (scriptSig.size() >= 2 + (33 + 32 + 32) // 2byte marker (cpubkey + sigc + sigr)
+        return (scriptSig.size() >= MIN_ANON_IN_SIZE
             && scriptSig[0] == OP_RETURN
             && scriptSig[1] == OP_ANON_MARKER);
     }

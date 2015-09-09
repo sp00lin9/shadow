@@ -8,6 +8,8 @@ $("#sign-addlkp-btn").leanModal({  top : 110, overlay : 1,  zindex:11001, closeB
 $("#verify-addlkp-btn").leanModal({ top : 110, overlay : 1, zindex:11001, closeButton: "#address-lookup-modal .modal_close", childPopup: true});
 $("#verify-message-button").leanModal({top : 50, overlay : 0.5, closeButton: "#verify-sign-modal .modal_close"});
 $("#sign-message-button").leanModal({top : 50, overlay : 0.5, closeButton: "#verify-sign-modal .modal_close"});
+$("#import-key-button").leanModal({top : 50, overlay : 0.5, closeButton: "#import-key-modal .modal_close"});
+
 
 var qrcode = new QRCode("qrcode", {colorDark:'#E51C39', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H, width: 220, height: 220,});
 
@@ -132,6 +134,7 @@ $(function() {
     addressBookInit();
     shadowChatInit();
     chainDataPage.init();
+    keyManagementPage.init();
     // Tooltip
     $('[data-title]').on('mouseenter', tooltip);
 
@@ -2359,8 +2362,8 @@ var blockExplorerPage =
                                     <td>' +  blkTx.transaction_value + '</td>\
                                     </tr>'); 
                     }
-                    $("#block-txs-table").removeClass("none");
 
+                    $("#block-txs-table").removeClass("none");
                     $("#block-txs-table > tbody tr")
                         .on('click', function() {
                             $(this).addClass("selected").siblings("tr").removeClass("selected");
@@ -2399,7 +2402,8 @@ var blockExplorerPage =
                             
                             var txnInputs = $('#txn-detail-inputs > tbody');
                             txnInputs.html('');
-                            for (value in selectedTxn.transaction_inputs) {
+                            for (value in selectedTxn.transaction_inputs) 
+                            {
 
                               
                               
@@ -2468,4 +2472,317 @@ var blockExplorerPage =
                 })
             }).find(".editable")
     }
+}
+
+var keyManagementPage = {
+    init: function() {
+        setupWizard('new-key-wizard');    
+        setupWizard('recover-key-wizard');
+        setupWizard('open-key-wizard');
+    },
+
+    newMnemonic: function () {
+        var result = bridge.getNewMnemonic( $("#new-account-passphrase").val(), $("#new-account-language").val() );
+        var error  = result.error_msg;
+        var mnemonic = result.mnemonic;
+
+        if(error != "")
+        {
+            alert(error);
+        }
+        else
+        {
+            $("#new-key-mnemonic").val(mnemonic);
+        }
+    },
+    compareMnemonics: function () {
+        var original = $("#new-key-mnemonic").val().trim();
+        var typed    = $("#validate-key-mnemonic").val().trim();
+
+        if (original == typed) {
+            $("#validate-key-mnemonic").removeClass("red");
+            $("#validate-key-mnemonic").val("");
+            return true;
+        }
+        else
+        {
+            $("#validate-key-mnemonic").addClass("red");
+            alert("The mnemonic you provided does not match the mnemonic that was generated eariler - please go back and check to make sure you've copied it down correctly.")
+            return false;
+        }
+    },
+    gotoPage: function(page) {
+        $("#navitems a[href='#" + page + "']").trigger('click');
+    },
+    prepareAccountTable: function()
+    {
+        $("#extkey-account-table  > tbody tr")
+            .on('click', function()
+            { 
+                $(this).addClass("selected").siblings("tr").removeClass("selected");
+                var otherTableRows = $('#extkey-table > tbody > tr');
+                otherTableRows.removeClass("selected");
+            })   
+    },
+    updateAccountList: function() {
+        keyManagementPage.accountList = bridge.extKeyAccList();
+        
+        var tbody = $('#extkey-account-table  > tbody');
+        tbody.html('');
+        for (value in keyManagementPage.accountList) {
+
+            var acc = keyManagementPage.accountList[value];
+
+            tbody.append('<tr data-value='+acc.id+' active-flag=' + acc.active + '>\
+                         <td>' +  acc.id   + '</td>\
+                         <td>' +  acc.label + '</td>\
+                         <td>' +  acc.created_at + '</td>\
+                         <td><div ' + ((acc.active == 'true') ? 'class="green-circle"' : 'class="red-circle"') + ' ></td>\
+                         <td style="font-size: 2em; margin: auto;">' +  ((acc.default_account != undefined ? "&#x2611;" : "")) + '</td>\
+                         </tr>'); 
+        }
+        keyManagementPage.prepareAccountTable();
+    },
+    prepareKeyTable: function()
+    {
+        $("#extkey-table  > tbody tr")
+            .on('click', function()
+            { 
+                $(this).addClass("selected").siblings("tr").removeClass("selected"); 
+                var otherTableRows = $('#extkey-account-table > tbody > tr');
+                otherTableRows.removeClass("selected");
+            })   
+    },
+    updateKeyList: function() {
+        keyManagementPage.keyList = bridge.extKeyList();
+
+        var tbody = $('#extkey-table  > tbody');
+        tbody.html('');
+        for (value in keyManagementPage.keyList) {
+
+            var key = keyManagementPage.keyList[value];
+            tbody.append('<tr data-value='+key.id+' active-flag=' + key.active + '>\
+                         <td>' +  key.id   + '</td>\
+                         <td>' +  key.label + '</td>\
+                         <td>' +  key.path + '</td>\
+                         <td><div ' + ((key.active == 'true') ? 'class="green-circle"' : 'class="red-circle"') + ' ></td>\
+                         <td style="font-size: 2em; margin: auto;">' +  ((key.current_master != undefined ? "&#x2611;" : "")) + '</td>\
+                         </tr>'); 
+        }
+        keyManagementPage.prepareKeyTable();
+    },
+    newKey: function()
+    {
+        newMnemonic   = $('#new-key-mnemonic').val().trim();
+        newPassphrase = $('#new-account-passphrase').val().trim();
+        newLabel      = $('#new-account-label').val().trim();
+
+        result = bridge.importFromMnemonic(newMnemonic, newPassphrase, newLabel);
+        
+        if(result.error_msg != '' )
+        { 
+            alert(result.error_msg);
+            return false;
+        }
+    },
+    recoverKey: function()
+    {
+        var recMnemonic = $("#recover-key-mnemonic").val().trim();
+        var recPassword = $("#recover-passphrase").val().trim();
+        var recLabel = $("#recover-account-label").val().trim();
+
+        result = bridge.importFromMnemonic(recMnemonic, recPassword , recLabel);
+        
+        if(result.error_msg != '' )
+        { 
+            alert(result.error_msg);
+            return false;
+        }
+        else return true;
+    },
+    setMaster: function()
+    {
+        var keySelector = $("#extkey-table tr.selected");
+        if( !keySelector.length )
+        {
+            alert("Please select a key to set it as master.");
+            return false;
+        }
+
+        selected = $("#extkey-table tr.selected").attr("data-value").trim();
+        if(selected != undefined && selected != "")
+        {
+            result = bridge.extKeySetMaster(selected);
+            if(result.error_msg != '' )
+            { 
+                alert(result.error_msg);
+                return false;
+            }
+            else
+            {
+                keyManagementPage.updateKeyList();
+            }
+        }
+        else
+        {
+            alert("Select a key from the table to set a Master.");
+            return false;
+        }
+    },
+    setDefault: function()
+    {
+        var accSelector = $("#extkey-account-table tr.selected");
+
+        if( !accSelector.length )
+        {
+            alert("Please select an account to set it as default.");
+            return false;
+        }        
+
+        selected = $("#extkey-account-table tr.selected").attr("data-value").trim();
+        if(selected != undefined && selected != "")
+        {
+            result = bridge.extKeySetDefault(selected);
+            if(result.error_msg != '' )
+            { 
+                alert(result.error_msg);
+                return false;
+            }
+            else
+            {
+                keyManagementPage.updateKeyList();
+            }
+        }
+        else
+        {
+            alert("Select an account from the table to set a default.");
+            return false;
+        }
+    },
+    changeActiveFlag: function()
+    {
+        var forAcc = false;
+
+        //Check whats selected - if anything.
+        var accSelector = $("#extkey-account-table tr.selected");
+        var keySelector = $("#extkey-table tr.selected");
+        if( !accSelector.length && !keySelector.length )
+        {
+            alert("Please select an account or key to change the active status.");
+            return false;
+        }
+
+        if( accSelector.length )
+        {
+            selected = accSelector.attr("data-value").trim();
+            active   = accSelector.attr("active-flag").trim();
+            forAcc   = true;
+        }
+        else
+        {
+            selected = keySelector.attr("data-value").trim();
+            active   = keySelector.attr("active-flag").trim();            
+        }
+
+        if(selected != undefined && selected != "")
+        {
+            result = bridge.extKeySetActive(selected, active);
+            if(result.error_msg != '' )
+            { 
+                alert(result.error_msg);
+                return false;
+            }
+            else
+            {
+                if(forAcc)
+                {
+                    keyManagementPage.updateAccountList();
+                }
+                else
+                {
+                    keyManagementPage.updateKeyList();    
+                }
+            }
+        }
+        else
+        {
+            alert("Please select an account or key to change the active status.");
+            return false;
+        }
+    }    
+}
+
+function setupWizard(section) {
+    
+    var steps = $("#" + section + " > div");
+
+    // I just did this to make using 's and "s easier in the below prepend and append.
+    backbtnjs = '$("#key-options").show(); $("#wizards").hide();';
+    fwdbtnjs  = 'gotoWizard("new-key-wizard", 1);';
+    $("#" + section).prepend("<div id='backWiz'   class='wizardback' onclick='" + backbtnjs + "' ><img src='qrc:///icons/backbtn' alt='Back'/></div>")
+    $("#" + section).prepend("<div id='fwdWiz'    class='wizardfwd'  onclick='" + fwdbtnjs  + "' ><img src='qrc:///icons/fwdbtn' alt='Forward'/></div>")
+
+    steps.each(function (i) {
+            $(this).addClass("step" + i)
+            $(this).hide();
+        }
+    );
+}
+
+function gotoWizard(section, step, runStepJS) {
+    // Hide all wizards 
+    var sections = $("#wizards > div"); 
+
+    // Run validation on the wizard step - any error messages can be set there as well
+    // TODO:  enhance these wizard functions to cater for validation fields etc.
+    validateJS = $("#" + section + " .step" + (step - 1) ).attr("validateJS");
+
+    // We check runStepJS because we must only validate when moving forward in the wizard
+    if(runStepJS && validateJS != undefined)
+    {
+        var valid = eval(validateJS);
+        if(!valid) {return false;}
+    }
+
+    sections.each(function (i) {
+        $(this).hide();
+        sections.width( $("#keymanagement > .bottom").width() - 100 );
+    })
+
+    var steps = $("#" + section + " > div[class^=step]");
+    var gotoStep = step;
+    if (gotoStep == null) { gotoStep = 0; }
+
+    if(gotoStep == 0) {
+        $("#" + section + " #backWiz").attr( 'onclick', '$("#key-options").show(); $("#wizards").hide();' )
+        $("#" + section + " #fwdWiz").attr( 'onclick', 'gotoWizard("' + section + '", 1, true);' )
+    }
+    else
+    {
+        $("#" + section + " #backWiz").attr( 'onclick', 'gotoWizard("' + section + '", ' + (gotoStep - 1) + ' , false);' )
+        $("#" + section + " #fwdWiz").attr( 'onclick',  'gotoWizard("' + section + '", ' + (gotoStep + 1) + ' , true);' )        
+    }
+
+    // If we're at the end of the wizard then change the forward button to do whatever
+    endWiz = $("#" + section + " .step" + (step) ).attr("endWiz");
+    if(endWiz != undefined && endWiz != "")
+    {
+      $("#" + section + " #fwdWiz").attr( 'onclick',  endWiz );
+    }
+
+    // Hide all wizard steps - if we want cross wizards/steps etc.
+    steps.each(function (i) {
+        $(this).hide();
+    });
+
+    //Show the correct section and the step.
+    $("#" + section).show();
+    stepJS = $("#" + section + " .step" + gotoStep ).attr("stepJS");
+
+    // Run the JS we want for this step we're about to start - 
+    if(runStepJS && stepJS != undefined)
+    {
+        eval(stepJS);
+    }    
+    $("#" + section + " .step" + gotoStep ).fadeIn(500);
 }

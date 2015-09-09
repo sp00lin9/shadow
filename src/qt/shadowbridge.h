@@ -13,6 +13,9 @@ class SendCoinsRecipient;
 #include <QObject>
 #include <QModelIndex>
 
+
+
+
 class ShadowBridge : public QObject
 {
     Q_OBJECT
@@ -72,6 +75,15 @@ public:
 
     Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
     Q_INVOKABLE QVariantMap verifyMessage(QString address, QString message, QString signature);
+
+    Q_INVOKABLE QVariantMap importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel);
+    Q_INVOKABLE QVariantMap getNewMnemonic(QString password, QString language);
+    Q_INVOKABLE QVariantMap extKeyAccList();
+    Q_INVOKABLE QVariantMap extKeyList();
+    Q_INVOKABLE QVariantMap extKeyImport(QString inKey, QString inLabel);
+    Q_INVOKABLE QVariantMap extKeySetDefault(QString extKeyID);
+    Q_INVOKABLE QVariantMap extKeySetMaster(QString extKeyID);
+    Q_INVOKABLE QVariantMap extKeySetActive(QString extKeySetActive, QString isActive);
 
 signals:
     void emitPaste(QString text);

@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -3245,7 +3246,19 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
         };
         
-        if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        
+        const uint8_t *pPubkeys;
+        int rsType;
+        if (s.size() == 2 + EC_SECRET_SIZE + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize)
+        {
+            rsType = RING_SIG_2;
+            pPubkeys = &s[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
+        } else
+        if (s.size() >= 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        {
+            rsType = RING_SIG_1;
+            pPubkeys = &s[2];
+        } else
         {
             return error("%s: Input %d scriptSig too small.", __func__, i);
         };
@@ -3255,7 +3268,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         CPubKey pkRingCoin;
         CAnonOutput ao;
         CTxIndex txindex;
-        const uint8_t* pPubkeys = &s[2];
+        
         for (uint32_t ri = 0; ri < (uint32_t)nRingSize; ++ri)
         {
             pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
@@ -3978,7 +3991,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     return false;
 }
 
-int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError)
+int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError)
 {
     if (fDebugRingSig)
         LogPrintf("PickAnonInputs(), ChangeOuts %d\n", nExpectChangeOuts);
@@ -4001,11 +4014,24 @@ int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalle
         vData[vi++] = &(*it);
         nAmountCheck += it->nValue;
     };
-
-    // -- sigSize:  2byte marker + (cpubkey + sigc + sigr) * nRingSize;
-    uint32_t nByteSizePerInCoin = (sizeof(COutPoint) + sizeof(unsigned int)) // CTxIn
-        + GetSizeOfCompactSize(2 + (33 + 32 + 32) * nRingSize)
-        + 2 + (33 + 32 + 32) * nRingSize;
+    
+    uint32_t nByteSizePerInCoin;
+    switch(rsType)
+    {
+        case RING_SIG_1:
+            nByteSizePerInCoin = (sizeof(COutPoint) + sizeof(unsigned int)) // CTxIn
+                + GetSizeOfCompactSize(2 + (33 + 32 + 32) * nRingSize)
+                + 2 + (33 + 32 + 32) * nRingSize;
+            break;
+        case RING_SIG_2:
+            nByteSizePerInCoin = (sizeof(COutPoint) + sizeof(unsigned int)) // CTxIn
+                + GetSizeOfCompactSize(2 + 32 + (33 + 32) * nRingSize)
+                + 2 + 32 + (33 + 32) * nRingSize;
+            break;
+        default:
+            sError = "Unknown ring signature type.";
+            return false;
+    };
 
     // -- repeat until all levels are tried (1 coin, 2 coins, 3 coins etc)
     for (uint32_t i = 0; i < lAvailableCoins.size(); ++i)
@@ -4093,7 +4119,6 @@ int CWallet::PickAnonInputs(int64_t nValue, int64_t& nFee, int nRingSize, CWalle
             nFee = nTestFee;
             return 1; // found
         };
-
     };
 
     return 0; // not found
@@ -4252,7 +4277,35 @@ bool CWallet::AreOutputsUnique(CWalletTx& wtxNew)
     return true;
 };
 
-bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
+static int GetRingSigSize(int rsType, int nRingSize)
+{
+    switch(rsType)
+    {
+        case RING_SIG_1:
+            return 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize;
+        case RING_SIG_2:
+            return 2 + EC_SECRET_SIZE + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize;
+        default:
+            LogPrintf("Unknown ring signature type.\n");
+            return 0;
+    };
+};
+
+static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
+{
+    switch(rsType)
+    {
+        case RING_SIG_1:
+            return pStart + 2;
+        case RING_SIG_2:
+            return pStart + 2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize;
+        default:
+            LogPrintf("Unknown ring signature type.\n");
+            return 0;
+    };
+}
+
+bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
 {
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d\n", nTotalOut, nRingSize);
@@ -4315,7 +4368,7 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
     for (int k = 0; k < 50; ++k) // safety
     {
         // -- nExpectChangeOuts is raised if needed (rv == 2)
-        int rv = PickAnonInputs(nTotalOut, nFee, nRingSize, wtxNew, vecSend.size(), nSizeOutputs, nExpectChangeOuts, lAvailableCoins, vPickedCoins, vecChange, false, sPickError);
+        int rv = PickAnonInputs(rsType, nTotalOut, nFee, nRingSize, wtxNew, vecSend.size(), nSizeOutputs, nExpectChangeOuts, lAvailableCoins, vPickedCoins, vecChange, false, sPickError);
         if (rv == 0)
             break;
         if (rv == 3)
@@ -4353,15 +4406,18 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
         memcpy(txin.prevout.hash.begin(), &(*it)->vchImage[0], EC_SECRET_SIZE);
 
         txin.prevout.n = 0 | (((*it)->vchImage[32]) & 0xFF) | (int32_t)(((int16_t) nRingSize) << 16);
-
+        
+        
+        int nSigSize = GetRingSigSize(rsType, nRingSize);
+        
         // -- size for full signature, signature is added later after hash
-        try { txin.scriptSig.resize(2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize); } catch (std::exception& e)
+        try { txin.scriptSig.resize(nSigSize); } catch (std::exception& e)
         {
             LogPrintf("Error: SendAnonToAnon() txin.scriptSig.resize threw: %s.\n", e.what());
             sError = "resize failed.\n";
             return false;
         };
-
+        
         txin.scriptSig[0] = OP_RETURN;
         txin.scriptSig[1] = OP_ANON_MARKER;
 
@@ -4400,9 +4456,10 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
         
         vCoinOffsets[ii] = GetRand(nRingSize);
         
-        memcpy(&txin.scriptSig[2 + vCoinOffsets[ii] * EC_COMPRESSED_SIZE], pkCoin.begin(), EC_COMPRESSED_SIZE);
+        uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
         
-        if (PickHidingOutputs((*it)->nValue, nRingSize, pkCoin, vCoinOffsets[ii], &txin.scriptSig[2]) != 0)
+        memcpy(pPubkeyStart + vCoinOffsets[ii] * EC_COMPRESSED_SIZE, pkCoin.begin(), EC_COMPRESSED_SIZE);
+        if (PickHidingOutputs((*it)->nValue, nRingSize, pkCoin, vCoinOffsets[ii], pPubkeyStart) != 0)
         {
             sError = "PickHidingOutputs() failed.\n";
             return false;
@@ -4442,18 +4499,20 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
             sError = "nRingSize embed error.";
             return false;
         };
-
-        if (txin.scriptSig.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        
+        int nSigSize = GetRingSigSize(rsType, nRingSize);
+        if (txin.scriptSig.size() < nSigSize)
         {
             sError = "Error: scriptSig too small.";
             return false;
         };
         
-        
         int nSecretOffset = vCoinOffsets[i];
         
+        uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
+        
         // -- get secret
-        CPubKey pkCoin = CPubKey(&txin.scriptSig[2 + EC_COMPRESSED_SIZE * nSecretOffset], EC_COMPRESSED_SIZE);
+        CPubKey pkCoin = CPubKey(pPubkeyStart + EC_COMPRESSED_SIZE * nSecretOffset, EC_COMPRESSED_SIZE);
         CKeyID pkId = pkCoin.GetID();
         
         CKey key;
@@ -4471,24 +4530,53 @@ bool CWallet::AddAnonInputs(int64_t nTotalOut, int nRingSize, std::vector<std::p
         };
 
         memcpy(&ecSecret.e[0], key.begin(), key.size());
-
-        uint8_t *pPubkeys = &txin.scriptSig[2];
-        uint8_t *pSigc    = &txin.scriptSig[2 + EC_COMPRESSED_SIZE * nRingSize];
-        uint8_t *pSigr    = &txin.scriptSig[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
-        if (generateRingSignature(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigc, pSigr) != 0)
+        
+        switch(rsType)
         {
-            sError = "Error: generateRingSignature() failed.";
-            return false;
+            case RING_SIG_1:
+                {
+                uint8_t *pPubkeys = &txin.scriptSig[2];
+                uint8_t *pSigc    = &txin.scriptSig[2 + EC_COMPRESSED_SIZE * nRingSize];
+                uint8_t *pSigr    = &txin.scriptSig[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
+                if (generateRingSignature(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigc, pSigr) != 0)
+                {
+                    sError = "Error: generateRingSignature() failed.";
+                    return false;
+                };
+                // -- test verify
+                if (verifyRingSignature(vchImageTest, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
+                {
+                    sError = "Error: verifyRingSignature() failed.";
+                    return false;
+                };
+                }
+                break;
+            case RING_SIG_2:
+                {
+                ec_point pSigC;
+                uint8_t *pSigS    = &txin.scriptSig[2 + EC_SECRET_SIZE];
+                uint8_t *pPubkeys = &txin.scriptSig[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
+                if (generateRingSignatureAB(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigC, pSigS) != 0)
+                {
+                    sError = "Error: generateRingSignatureAB() failed.";
+                    return false;
+                };
+                if (pSigC.size() == EC_SECRET_SIZE)
+                    memcpy(&txin.scriptSig[2], &pSigC[0], EC_SECRET_SIZE);
+                // -- test verify
+                if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
+                {
+                    sError = "Error: verifyRingSignature() failed.";
+                    return false;
+                };
+                }
+                break;
+            default:
+                sError = "Unknown ring signature type.";
+                return false;
         };
-
+        
         memset(&ecSecret.e[0], 0, EC_SECRET_SIZE); // optimised away?
-
-        // -- test verify
-        if (verifyRingSignature(vchImageTest, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
-        {
-            sError = "Error: verifyRingSignature() failed.";
-            return false;
-        };
     };
 
     // -- check if new coins already exist (in case random is broken ?)
@@ -4683,7 +4771,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed : " + sError2;
@@ -4792,7 +4880,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed: " + sError2;
@@ -5089,7 +5177,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     };
 
     int64_t nFeeRequired;
-    if (!AddAnonInputs(nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, true, sError))
+    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, true, sError))
     {
         LogPrintf("EstimateAnonFee() AddAnonInputs failed %s.\n", sError.c_str());
         sError = "AddAnonInputs() failed.";
@@ -6660,7 +6748,9 @@ int CWallet::ExtKeyNew32(CExtKey &out)
     RandAddSeedPerfmon();
     for (uint32_t i = 0; i < MAX_DERIVE_TRIES; ++i)
     {
-        RAND_bytes(data, 32);
+        if (1 != RAND_bytes(data, 32))
+            return errorN(1, "%s RAND_bytes failed.", __func__);
+        
         if (ExtKeyNew32(out, data, 32) == 0)
             break;
     };
@@ -6724,7 +6814,7 @@ int CWallet::ExtKeyNew32(CExtKey &out, uint8_t *data, uint32_t lenData)
     return out.IsValid() ? 0 : 1;
 };
 
-int CWallet::ExtKeyImportLoose(CWalletDB *pwdb, CStoredExtKey &sekIn)
+int CWallet::ExtKeyImportLoose(CWalletDB *pwdb, CStoredExtKey &sekIn, bool fBip44, bool fSaveBip44)
 {
     if (fDebug)
     {
@@ -6737,13 +6827,18 @@ int CWallet::ExtKeyImportLoose(CWalletDB *pwdb, CStoredExtKey &sekIn)
     if (IsLocked())
         return errorN(1, "Wallet must be unlocked.");
     
-    CKeyID id = sekIn.kp.GetID();
+    CKeyID id = sekIn.GetID();
     
+    bool fsekInExist = true;
     // - it's possible for a public ext key to be added first
     CStoredExtKey sekExist;
     CStoredExtKey sek = sekIn;
     if (pwdb->ReadExtKey(id, sekExist))
     {
+        if (IsCrypted()
+            && 0 != ExtKeyUnlock(&sekExist))
+            return errorN(13, "%s: %s", __func__, ExtKeyGetString(13));
+        
         sek = sekExist;
         if (!sek.kp.IsValidV()
             && sekIn.kp.IsValidV())
@@ -6756,19 +6851,66 @@ int CWallet::ExtKeyImportLoose(CWalletDB *pwdb, CStoredExtKey &sekIn)
     {
         // - new key
         sek.nFlags |= EAF_ACTIVE;
+        
+        fsekInExist = false;
     };
     
-    if (IsCrypted()
-        && ExtKeyEncrypt(&sek, vMasterKey, false) != 0)
+    if (fBip44)
     {
-        return errorN(1, "ExtKeyEncrypt failed.");
+        // import key as bip44 root and derive a new master key
+        // NOTE: can't know created at time of derived key here
+        
+        std::vector<uint8_t> v;
+        sek.mapValue[EKVT_KEY_TYPE] = SetChar(v, EKT_BIP44_MASTER);
+        CKeyID idRoot = sek.GetID();
+        
+        CExtKey evDerivedKey;
+        sek.kp.Derive(evDerivedKey, BIP44_PURPOSE);
+        evDerivedKey.Derive(evDerivedKey, Params().BIP44ID());
+        
+        v.resize(0);
+        PushUInt32(v, BIP44_PURPOSE);
+        PushUInt32(v, Params().BIP44ID());
+        
+        CStoredExtKey sekDerived;
+        sekDerived.nFlags |= EAF_ACTIVE;
+        sekDerived.kp = evDerivedKey;
+        sekDerived.mapValue[EKVT_PATH] = v;
+        sekDerived.mapValue[EKVT_ROOT_ID] = SetCKeyID(v, id);
+        sekDerived.sLabel = sek.sLabel + " - bip44 derived.";
+        
+        CKeyID idDerived = sekDerived.GetID();
+        
+        if (pwdb->ReadExtKey(idDerived, sekExist))
+        {
+            if (fSaveBip44
+                && !fsekInExist)
+            {
+                // - assume the user wants to save the bip44 key, drop down
+            } else
+            {
+                return errorN(12, "%s: %s", __func__, ExtKeyGetString(12));
+            };
+        } else
+        {
+            if (IsCrypted()
+                && (ExtKeyEncrypt(&sekDerived, vMasterKey, false) != 0))
+                return errorN(1, "%s: ExtKeyEncrypt failed.", __func__);
+            
+            if (!pwdb->WriteExtKey(idDerived, sekDerived))
+                return errorN(1, "%s: DB Write failed.", __func__);
+        };
     };
     
-    if (!pwdb->WriteExtKey(id, sek))
+    if (!fBip44 || fSaveBip44)
     {
-        return errorN(1, "DB Write failed.");
+        if (IsCrypted()
+            && ExtKeyEncrypt(&sek, vMasterKey, false) != 0)
+            return errorN(1, "%s: ExtKeyEncrypt failed.", __func__);
+        
+        if (!pwdb->WriteExtKey(id, sek))
+            return errorN(1, "%s: DB Write failed.", __func__);
     };
-    
     
     return 0;
 };
@@ -6794,7 +6936,7 @@ int CWallet::ExtKeyImportAccount(CWalletDB *pwdb, CStoredExtKey &sekIn, int64_t 
     if (IsLocked())
         return errorN(1, "Wallet must be unlocked.");
     
-    CKeyID idAccount = sekIn.kp.GetID();
+    CKeyID idAccount = sekIn.GetID();
     
     CStoredExtKey *sek = new CStoredExtKey();
     *sek = sekIn;
@@ -6919,12 +7061,14 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
     if (IsLocked())
         return errorN(1, "Wallet must be unlocked.");
     
-   
-    ExtKeyMap::iterator mi;
-    CStoredExtKey ekOldMaster, *pEkOldMaster, *pEkNewMaster;
     CKeyID idOldMaster;
     bool fOldMaster = pwdb->ReadNamedExtKeyId("master", idOldMaster);
     
+    if (idNewMaster == idOldMaster)
+        return errorN(11, ExtKeyGetString(11));
+    
+    ExtKeyMap::iterator mi;
+    CStoredExtKey ekOldMaster, *pEkOldMaster, *pEkNewMaster;
     bool fNew = false;
     mi = mapExtKeys.find(idNewMaster);
     if (mi != mapExtKeys.end())
@@ -6935,8 +7079,20 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
         pEkNewMaster = new CStoredExtKey();
         fNew = true;
         if (!pwdb->ReadExtKey(idNewMaster, *pEkNewMaster))
-            return errorN(1, "New master ext key not in wallet.");
-        
+        {
+            delete pEkNewMaster;
+            return errorN(10, ExtKeyGetString(10));
+        };
+    };
+    
+    // - prevent setting bip44 root key as a master key.
+    mapEKValue_t::iterator mvi = pEkNewMaster->mapValue.find(EKVT_KEY_TYPE);
+    if (mvi != pEkNewMaster->mapValue.end()
+        && mvi->second.size() == 1
+        && mvi->second[0] == EKT_BIP44_MASTER)
+    {
+        if (fNew) delete pEkNewMaster;
+        return errorN(9, ExtKeyGetString(9));
     };
     
     if (ExtKeyUnlock(pEkNewMaster) != 0
@@ -6956,10 +7112,6 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
         return errorN(1, "DB Write failed.");
     };
     
-    mapExtKeys[idNewMaster] = pEkNewMaster;
-    pEkMaster = pEkNewMaster;
-    
-    
     // -- unset old master ext key
     if (fOldMaster)
     {
@@ -6970,7 +7122,10 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
         } else
         {
             if (!pwdb->ReadExtKey(idOldMaster, ekOldMaster))
+            {
+                if (fNew) delete pEkNewMaster;
                 return errorN(1, "ReadExtKey failed.");
+            };
             
             pEkOldMaster = &ekOldMaster;
         };
@@ -6982,9 +7137,15 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
                 LogPrintf("Removing tag from old master key %s.\n", pEkOldMaster->GetIDString58().c_str());
             pEkOldMaster->mapValue.erase(it);
             if (!pwdb->WriteExtKey(idOldMaster, *pEkOldMaster))
+            {
+                if (fNew) delete pEkNewMaster;
                 return errorN(1, "WriteExtKey failed.");
+            };
         };
     };
+    
+    mapExtKeys[idNewMaster] = pEkNewMaster; 
+    pEkMaster = pEkNewMaster;
     
     return 0;
 };
@@ -6992,6 +7153,11 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
 int CWallet::ExtKeyNewMaster(CWalletDB *pwdb, CKeyID &idMaster, bool fAutoGenerated)
 {
     // - Must pair with ExtKeySetMaster
+    
+    //  This creates two keys, a root key and a master key derived according
+    //  to BIP44 (path 44'/22'), The root (bip44) key only stored in the system
+    //  and the derived key is set as the system master key.
+    
     LogPrintf("ExtKeyNewMaster.\n");
     AssertLockHeld(cs_wallet);
     assert(pwdb);
@@ -6999,33 +7165,48 @@ int CWallet::ExtKeyNewMaster(CWalletDB *pwdb, CKeyID &idMaster, bool fAutoGenera
     if (IsLocked())
         return errorN(1, "Wallet must be unlocked.");
     
-    CStoredExtKey *sekMaster = new CStoredExtKey();
-    CExtKey evNewKey;
-    
-    if (ExtKeyNew32(evNewKey) != 0)
-    {
-        delete sekMaster;
+    CExtKey evRootKey;
+    CStoredExtKey sekRoot;
+    if (ExtKeyNew32(evRootKey) != 0)
         return errorN(1, "ExtKeyNew32 failed.");
-    };
-    std::vector<uint8_t> v;
-    sekMaster->nFlags |= EAF_ACTIVE;
-    sekMaster->kp = evNewKey;
-    sekMaster->mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
-    sekMaster->sLabel = "Initial Master";
     
-    idMaster = sekMaster->kp.GetID();
+    std::vector<uint8_t> v;
+    sekRoot.nFlags |= EAF_ACTIVE;
+    sekRoot.mapValue[EKVT_KEY_TYPE] = SetChar(v, EKT_BIP44_MASTER);
+    sekRoot.kp = evRootKey;
+    sekRoot.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
+    sekRoot.sLabel = "Initial BIP44 Master";
+    CKeyID idRoot = sekRoot.GetID();
+    
+    CExtKey evMasterKey;
+    evRootKey.Derive(evMasterKey, BIP44_PURPOSE);
+    evMasterKey.Derive(evMasterKey, Params().BIP44ID());
+    
+    std::vector<uint8_t> vPath;
+    PushUInt32(vPath, BIP44_PURPOSE);
+    PushUInt32(vPath, Params().BIP44ID());
+    
+    CStoredExtKey sekMaster;
+    sekMaster.nFlags |= EAF_ACTIVE;
+    sekMaster.kp = evMasterKey;
+    sekMaster.mapValue[EKVT_PATH] = vPath;
+    sekMaster.mapValue[EKVT_ROOT_ID] = SetCKeyID(v, idRoot);
+    sekMaster.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
+    sekMaster.sLabel = "Initial Master";
+    
+    idMaster = sekMaster.GetID();
     
     if (IsCrypted()
-        && ExtKeyEncrypt(sekMaster, vMasterKey, false) != 0)
+        && (ExtKeyEncrypt(&sekRoot, vMasterKey, false) != 0
+            || ExtKeyEncrypt(&sekMaster, vMasterKey, false) != 0))
     {
-        delete sekMaster;
         return errorN(1, "ExtKeyEncrypt failed.");
     };
     
-    if (!pwdb->WriteExtKey(idMaster, *sekMaster)
+    if (!pwdb->WriteExtKey(idRoot, sekRoot)
+        || !pwdb->WriteExtKey(idMaster, sekMaster)
         || (fAutoGenerated && !pwdb->WriteFlag("madeDefaultEKey", 1)))
     {
-        delete sekMaster;
         return errorN(1, "DB Write failed.");
     };
     
@@ -7357,7 +7538,7 @@ int CWallet::ExtKeyLock()
         for (it = sea->vExtKeys.begin(); it != sea->vExtKeys.end(); ++it)
         {
             CStoredExtKey *sek = *it;
-            if (!sek->nFlags & EAF_IS_CRYPTED)
+            if (!(sek->nFlags & EAF_IS_CRYPTED))
                 continue;
             sek->kp.key.Clear();
             sek->fLocked = 1;
@@ -7381,7 +7562,7 @@ int CWallet::ExtKeyUnlock(CExtKeyAccount *sea, const CKeyingMaterial &vMKey)
     for (it = sea->vExtKeys.begin(); it != sea->vExtKeys.end(); ++it)
     {
         CStoredExtKey *sek = *it;
-        if (!sek->nFlags & EAF_IS_CRYPTED)
+        if (!(sek->nFlags & EAF_IS_CRYPTED))
             continue;
         if (ExtKeyUnlock(sek, vMKey) != 0)
             return 1;
@@ -7871,7 +8052,7 @@ int CWallet::ExtKeyAppendToPack(CWalletDB *pwdb, CExtKeyAccount *sea, const CKey
     };
     
     fUpdateAcc = false;
-    if ((uint32_t)ekPak.size() >= MAX_KEY_PACK_SIZE)
+    if ((uint32_t)ekPak.size() >= MAX_KEY_PACK_SIZE-1)
     {
         fUpdateAcc = true;
         sea->nPack++;
@@ -7903,7 +8084,7 @@ int CWallet::ExtKeyAppendToPack(CWalletDB *pwdb, CExtKeyAccount *sea, const CKey
         return errorN(1, "%s Save key pack %u failed.", __func__, sea->nPackStealthKeys);
     
     fUpdateAcc = false;
-    if ((uint32_t)asckPak.size() >= MAX_KEY_PACK_SIZE)
+    if ((uint32_t)asckPak.size() >= MAX_KEY_PACK_SIZE-1)
     {
         sea->nPackStealthKeys++;
         fUpdateAcc = true;
@@ -8212,7 +8393,7 @@ int CWallet::NewStealthKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, 
         return errorN(1, "%s Save key pack %u failed.", __func__, sea->nPackStealth);
     };
     
-    if ((uint32_t)aksPak.size() >= MAX_KEY_PACK_SIZE)
+    if ((uint32_t)aksPak.size() >= MAX_KEY_PACK_SIZE-1)
         sea->nPackStealth++;
     
     if (!pwdb->WriteExtKey(sea->vExtKeyIDs[nChain], *sek))
@@ -8377,7 +8558,7 @@ int CWallet::ExtKeyGetDestination(const CExtKeyPair &ek, CScript &scriptPubKeyOu
         return 0;
     } else
     {
-        nKey = 1; // AddLookAhead starts from 1
+        nKey = 0; // AddLookAhead starts from 0
         for (uint32_t i = 0; i < MAX_DERIVE_TRIES; ++i)
         {
             if (ek.Derive(pkDest, nKey))
@@ -8416,7 +8597,7 @@ int CWallet::ExtKeyUpdateLooseKey(const CExtKeyPair &ek, uint32_t nKey, bool fAd
     {
         sek.kp = ek;
         sek.nGenerated = nKey;
-        if (0 != ExtKeyImportLoose(&wdb, sek))
+        if (0 != ExtKeyImportLoose(&wdb, sek, false, false))
             return errorN(1, "%s: ExtKeyImportLoose failed.", __func__);
     };
     

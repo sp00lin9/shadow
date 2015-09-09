@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_invalid)
         {
             BOOST_ERROR("Bad test: " << strTest);
             continue;
-        }
+        };
         std::string exp_base58string = test[0].get_str();
 
         // must be invalid as public and as private key

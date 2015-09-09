@@ -376,7 +376,7 @@ void RunSerialiseTests()
     
     // id
     CBitcoinAddress addr;
-    CKeyID id = sk.kp.GetID();
+    CKeyID id = sk.GetID();
     CKeyID idTest;
     
     
@@ -406,16 +406,29 @@ void RunSerialiseTests()
     
     id = ev.key.GetPubKey().GetID();
     addr.Set(id, CChainParams::EXT_KEY_HASH);
+    BOOST_CHECK_MESSAGE(addr.ToString() == "xS8vxP6PVm3ycqm4NqvUkhiDWqeBhhekzn", addr.ToString());
+    
+    sk.nGenerated = 1;
+    BOOST_CHECK(0 == sk.DeriveNextKey(ev, nChild));
+    id = ev.key.GetPubKey().GetID();
+    addr.Set(id, CChainParams::EXT_KEY_HASH);
     BOOST_CHECK_MESSAGE(addr.ToString() == "xRfAtU1u43VJBTt4agxpnPvXjf28hSmwrL", addr.ToString());
     
     sk.nHGenerated = 0;
     BOOST_CHECK(0 == sk.DeriveNextKey(ev, nChild, true));
     id = ev.key.GetPubKey().GetID();
     addr.Set(id, CChainParams::EXT_KEY_HASH);
-    BOOST_CHECK_MESSAGE(addr.ToString() == "xRfBk2tuann5qTVKyW2HmA9CJZBAE1sRvJ", addr.ToString());
+    BOOST_CHECK_MESSAGE(addr.ToString() == "xEcqVH3fRnNZabMHVctAeScJY9ySkg6BSF", addr.ToString());
     BOOST_CHECK_MESSAGE(1 == sk.nHGenerated, "nHGenerated " << sk.nHGenerated);
     
-    sk.nHGenerated = 0;
+    sk.nHGenerated = 1;
+    BOOST_CHECK(0 == sk.DeriveNextKey(ev, nChild, true));
+    id = ev.key.GetPubKey().GetID();
+    addr.Set(id, CChainParams::EXT_KEY_HASH);
+    BOOST_CHECK_MESSAGE(addr.ToString() == "xRfBk2tuann5qTVKyW2HmA9CJZBAE1sRvJ", addr.ToString());
+    BOOST_CHECK_MESSAGE(2 == sk.nHGenerated, "nHGenerated " << sk.nHGenerated);
+    
+    sk.nHGenerated = 1;
     BOOST_CHECK(0 == sk.DeriveNextKey(ep, nChild, true));
     id = ev.key.GetPubKey().GetID();
     addr.Set(id, CChainParams::EXT_KEY_HASH);
@@ -428,12 +441,19 @@ void RunSerialiseTests()
     skp.kp = skp.kp.Neutered();
     
     CKey k;
+    
     sk.nGenerated = 1;
+    BOOST_CHECK(0 == sk.DeriveNextKey(k, nChild, false));
+    BOOST_CHECK_MESSAGE(nChild == 1, "nChild " << nChild);
+    BOOST_CHECK_MESSAGE(HexStr(k.GetPubKey()) == "0245a12d2ce075d947b6232b3e424ffa5d2208b6ff69800a1f2501ac6392499bf8", "HexStr(k.GetPubKey()) " << HexStr(k.GetPubKey()));
+    
+    
+    sk.nGenerated = 2;
     BOOST_CHECK(0 == sk.DeriveNextKey(k, nChild, false));
     BOOST_CHECK_MESSAGE(nChild == 2, "nChild " << nChild);
     BOOST_CHECK_MESSAGE(HexStr(k.GetPubKey()) == "02f430d7efc4d1ecbac888fb49446ec0b13ec4196512be93054a9b5b30df238910", "HexStr(k.GetPubKey()) " << HexStr(k.GetPubKey()));
     
-    sk.nHGenerated = 1;
+    sk.nHGenerated = 2;
     BOOST_CHECK(0 == sk.DeriveNextKey(k, nChild, true));
     BOOST_CHECK_MESSAGE(nChild == 2147483650, "nChild " << nChild);
     BOOST_CHECK_MESSAGE(HexStr(k.GetPubKey()) == "0355825cbaf4365a2f7015d9c9bae4ecaf9b57a05e063237256f1565b20104c183", "HexStr(k.GetPubKey()) " << HexStr(k.GetPubKey()));
@@ -450,15 +470,15 @@ void RunSerialiseTests()
     CPubKey pk;
     sk.nGenerated = 1;
     BOOST_CHECK(0 == sk.DeriveNextKey(pk, nChild, false));
-    BOOST_CHECK_MESSAGE(nChild == 2, "nChild " << nChild);
-    BOOST_CHECK_MESSAGE(HexStr(pk) == "02f430d7efc4d1ecbac888fb49446ec0b13ec4196512be93054a9b5b30df238910", "HexStr(pk) " << HexStr(pk));
+    BOOST_CHECK_MESSAGE(nChild == 1, "nChild " << nChild);
+    BOOST_CHECK_MESSAGE(HexStr(pk) == "0245a12d2ce075d947b6232b3e424ffa5d2208b6ff69800a1f2501ac6392499bf8", "HexStr(pk) " << HexStr(pk));
     
-    sk.nHGenerated = 1;
+    sk.nHGenerated = 2;
     BOOST_CHECK(0 == sk.DeriveNextKey(pk, nChild, true));
     BOOST_CHECK_MESSAGE(nChild == 2147483650, "nChild " << nChild);
     BOOST_CHECK_MESSAGE(HexStr(pk) == "0355825cbaf4365a2f7015d9c9bae4ecaf9b57a05e063237256f1565b20104c183", "HexStr(pk) " << HexStr(pk));
     
-    skp.nGenerated = 1;
+    skp.nGenerated = 2;
     BOOST_CHECK(0 == skp.DeriveNextKey(pk, nChild, false));
     BOOST_CHECK_MESSAGE(nChild == 2, "nChild " << nChild);
     BOOST_CHECK_MESSAGE(HexStr(pk) == "02f430d7efc4d1ecbac888fb49446ec0b13ec4196512be93054a9b5b30df238910", "HexStr(pk) " << HexStr(pk));
@@ -495,7 +515,7 @@ void RunSerialiseTests()
     fTestNet = true;
     SelectParams(CChainParams::TESTNET);
     
-    id = sk.kp.GetID();
+    id = sk.GetID();
     BOOST_CHECK(true == addr.Set(id, CChainParams::EXT_KEY_HASH)
         && addr.IsValid(CChainParams::EXT_KEY_HASH)
         && addr.GetKeyID(idTest, CChainParams::EXT_KEY_HASH));

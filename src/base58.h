@@ -573,17 +573,28 @@ public:
     void SetKey(const CExtKeyPair &key, CChainParams::Base58Type type)
     {
         uint8_t vch[74];
-        if (type == CChainParams::EXT_SECRET_KEY)
-            key.EncodeV(vch);
-        else
-            key.EncodeP(vch);
+        
+        switch (type)
+        {
+            case CChainParams::EXT_SECRET_KEY:
+            case CChainParams::EXT_SECRET_KEY_BTC:
+                key.EncodeV(vch);
+                break;
+            //case CChainParams::EXT_PUBLIC_KEY:
+            //case CChainParams::EXT_PUBLIC_KEY_BTC:
+            default:
+                key.EncodeP(vch);
+                break;
+        };
+        
         SetData(Params().Base58Prefix(type), vch, vch+74);
     };
     
     CExtKeyPair GetKey()
     {
         CExtKeyPair ret;
-        if (vchVersion == Params().Base58Prefix(CChainParams::EXT_SECRET_KEY))
+        if (vchVersion == Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)
+            || vchVersion == Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC))
         {
             ret.DecodeV(&vchData[0]);
             return ret;
@@ -611,11 +622,23 @@ public:
         if (0 == memcmp(&vchBytes[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY)[0], 4))
             type = CChainParams::EXT_PUBLIC_KEY;
         else
+        if (0 == memcmp(&vchBytes[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4))
+            type = CChainParams::EXT_SECRET_KEY_BTC;
+        else
+        if (0 == memcmp(&vchBytes[0], &Params().Base58Prefix(CChainParams::EXT_PUBLIC_KEY_BTC)[0], 4))
+            type = CChainParams::EXT_PUBLIC_KEY_BTC;
+        else
             return 4;
         
         SetData(Params().Base58Prefix(type), &vchBytes[4], &vchBytes[4]+74);
         return 0;
     };
+    
+    bool IsValid(CChainParams::Base58Type prefix) const
+    {
+        return vchVersion == Params().Base58Prefix(prefix)
+            && vchData.size() == BIP32_KEY_N_BYTES;
+    }
 };
 
 #endif // BITCOIN_BASE58_H

@@ -977,7 +977,7 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB &txdb, bool *p
     
     {
         MapPrevTx mapInputs;
-        map<uint256, CTxIndex> mapUnused;
+        std::map<uint256, CTxIndex> mapUnused;
         bool fInvalid = false;
 
         int64_t nFees;
@@ -2165,6 +2165,55 @@ bool CTransaction::FetchInputs(CTxDB& txdb, const map<uint256, CTxIndex>& mapTes
     return true;
 }
 
+static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSize, std::vector<uint8_t> &vchImage, uint256 &preimage, int64_t &nCoinValue)
+{
+    const CScript &s = txin.scriptSig;
+    
+    CPubKey pkRingCoin;
+    CAnonOutput ao;
+    CTxIndex txindex;
+    
+    ec_point pSigC;
+    pSigC.resize(EC_SECRET_SIZE);
+    memcpy(&pSigC[0], &s[2], EC_SECRET_SIZE);
+    const unsigned char *pSigS    = &s[2 + EC_SECRET_SIZE];
+    const unsigned char *pPubkeys = &s[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
+    for (int ri = 0; ri < nRingSize; ++ri)
+    {
+        pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
+        if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+        {
+            LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+            return false;
+        };
+
+        if (nCoinValue == -1)
+        {
+            nCoinValue = ao.nValue;
+        } else
+        if (nCoinValue != ao.nValue)
+        {
+            LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
+            return false;
+        };
+
+        if (ao.nBlockHeight == 0
+            || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
+        {
+            LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+            return false;
+        };
+    };
+    
+    if (verifyRingSignatureAB(vchImage, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
+    {
+        LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignatureAB() failed.\n", i);
+        return false;
+    };
+    
+    return true;
+};
+
 bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists)
 {
     if (fDebugRingSig)
@@ -2190,7 +2239,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
     for (uint32_t i = 0; i < vin.size(); i++)
     {
-        const CTxIn& txin = vin[i];
+        const CTxIn &txin = vin[i];
 
         if (!txin.IsAnonInput())
             continue;
@@ -2235,6 +2284,19 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
             LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
             fInvalid = true; return false;
         };
+        
+        
+        if (s.size() == 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
+        {
+            // ringsig AB
+            if (!CheckAnonInputAB(txdb, txin, i, nRingSize, vchImage, preimage, nCoinValue))
+            {
+                fInvalid = true; return false;
+            };
+            
+            nSumValue += nCoinValue;
+            continue;
+        };
 
         if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
         {
@@ -2247,8 +2309,8 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
         CAnonOutput ao;
         CTxIndex txindex;
         const unsigned char* pPubkeys = &s[2];
-        const unsigned char* pSigc    = &txin.scriptSig[2 + EC_COMPRESSED_SIZE * nRingSize];
-        const unsigned char* pSigr    = &txin.scriptSig[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
+        const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
+        const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
         for (int ri = 0; ri < nRingSize; ++ri)
         {
             pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
