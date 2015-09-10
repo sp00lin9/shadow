@@ -39,7 +39,7 @@ script: |
   #  For now luckily there is a test mode that forces a fixed seed.
   export QT_RCC_TEST=1
   # Integrity Check
-  echo "bf3cfc54696fe7d77f2cf33ade46c2cc28841389e22a72f77bae606622998e82  qt-everywhere-opensource-src-5.4.2.tar.xz" | sha256sum -c
+  echo "8c6d070613b721452f8cffdea6bddc82ce4f32f96703e3af02abb91a59f1ea25  qt-everywhere-opensource-src-5.4.2.tar.xz" | sha256sum -c
   echo "80f7c7188d7611e47e47d2a70c8ef65026c1cf71ddeb4ace9b1be5b8a76ffbd2  flex-2.5.38.tar.gz" | sha256sum -c
   #
   export OLDPATH="$PATH"
@@ -90,7 +90,7 @@ script: |
     #
     cd $BUILDDIR
     #
-    tar xf $INDIR/qt-everywhere-opensource-src-5.4.2.tar.gz
+    tar xf $INDIR/qt-everywhere-opensource-src-5.4.2.tar.xz
     #
     cd qt-everywhere-opensource-src-5.4.2
     QTDIR=$BUILDDIR/qt-everywhere-opensource-src-5.4.2
