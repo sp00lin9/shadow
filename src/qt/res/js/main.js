@@ -634,6 +634,13 @@ var overviewPage = {
                      }
                  },
                  {
+                     name: 'Key Management',
+                     fa: 'fa-keyboard-o red fa-fw',
+                     fun: function () {
+                        $("#navitems [href=#keymanagement]").click();
+                     }                                                                                                                                
+                 },
+                 {
                      name: 'Options',
                      fa: 'fa-wrench red fa-fw',
                      fun: function () {
