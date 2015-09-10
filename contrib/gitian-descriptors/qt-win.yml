@@ -90,10 +90,10 @@ script: |
     #
     cd $BUILDDIR
     #
-    tar xzf $INDIR/qt-everywhere-opensource-src-5.3.2.tar.gz
+    tar xzf $INDIR/qt-everywhere-opensource-src-5.5.0.tar.gz
     #
-    cd qt-everywhere-opensource-src-5.3.2
-    QTDIR=$BUILDDIR/qt-everywhere-opensource-src-5.3.2
+    cd qt-everywhere-opensource-src-5.5.0
+    QTDIR=$BUILDDIR/qt-everywhere-opensource-src-5.5.0
     
     sed -i 's,\.exe,,' "$QTDIR/qtwebkit/Tools/qmake/mkspecs/features/functions.prf"
     sed -i 's,\win_flex,flex,' "$QTDIR/qtwebkit/Tools/qmake/mkspecs/features/default_pre.prf"
