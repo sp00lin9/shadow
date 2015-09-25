@@ -2034,10 +2034,12 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     }
 
     #announcements {
+         height: 100%;
 
     }
 
     #recenttxns {
+        height: 100%;
         width: 100%;
     }
 
@@ -2107,6 +2109,7 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     .content .flex-item {
         padding: 0;
         border: 0;
+        height: 100%;
     }
 
     .grow {
