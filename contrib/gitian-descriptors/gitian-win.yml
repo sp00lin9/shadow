@@ -22,8 +22,8 @@ remotes:
 - "url": "https://github.com/ShadowProject/shadowcoin.git"
   "dir": "shadowcoin"
 files:
-- "qt-win32-5.3.2-gitian-r3.zip"
-- "qt-win64-5.3.2-gitian-r3.zip"
+- "qt-win32-5.4.2-gitian-r3.zip"
+- "qt-win64-5.4.2-gitian-r3.zip"
 - "boost-win32-1.55.0-gitian-r6.zip"
 - "boost-win64-1.55.0-gitian-r6.zip"
 - "shadow-deps-win32-gitian-r11.zip"

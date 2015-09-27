@@ -121,6 +121,7 @@ script: |
     # 
     OPENSSL_LIBS="-L$DEPSDIR/lib -lssl -lcrypto -lgdi32" ./configure -prefix $INSTALLPREFIX -bindir $INSTALLPREFIX/host/bin -confirm-license -release -opensource -xplatform $SPECNAME -device-option CROSS_COMPILE="$HOST-" -no-audio-backend -no-sql-odbc -no-nis -no-cups -no-iconv -no-dbus -no-gif -no-opengl -no-compile-examples -no-feature-style-windowsce -no-feature-style-windowsmobile -no-qml-debug -skip qtsvg -skip qtwebkit-examples -skip qtserialport -skip qtdeclarative -skip qtmultimedia -skip qtimageformats -skip qtlocation -skip qtsensors -skip qtquick1 -skip qtquickcontrols -skip qtactiveqt -skip qtconnectivity -skip qtwinextras -skip qtxmlpatterns -skip qtscript -skip qtdoc -system-libpng -system-zlib -icu -v
     #
+    make
     make $MAKEOPTS install
     #
     cd $QTDIR/qtwebkit
