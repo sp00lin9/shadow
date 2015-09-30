@@ -39,8 +39,6 @@
         <file alias="history">src/qt/res/icons/history.png</file>
         <file alias="syncing">src/qt/res/icons/syncing.gif</file>
         <file alias="syncing_static">src/qt/res/icons/syncing_static.gif</file>
-        <file alias="backbtn">src/qt/res/icons/backbtn.png</file>
-        <file alias="fwdbtn">src/qt/res/icons/fwdbtn.png</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="about">src/qt/res/images/about.png</file>
@@ -48,9 +46,6 @@
         <file alias="sdc-vertical">src/qt/res/images/sdc-vertical.png</file>
         <file alias="graph">src/qt/res/images/graph.png</file>
         <file alias="default">src/qt/res/images/avatars/default.png</file>
-        <file alias="extkey_new">src/qt/res/images/extkey_new.png</file>
-        <file alias="extkey_open">src/qt/res/images/extkey_open.png</file>
-        <file alias="extkey_recover">src/qt/res/images/extkey_recover.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="ar">src/qt/locale/bitcoin_ar.qm</file>
