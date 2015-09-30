@@ -2385,8 +2385,9 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     width: 20px;
     height: 20px;
     padding-right: 4px;
-    top: 3px;
     padding-left: 1px;
+    top:0;
+    vertical-align: sub;
 }
 
 #network-alert {
