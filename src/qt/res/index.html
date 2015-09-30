@@ -1035,10 +1035,15 @@
                             <div validateJS="keyManagementPage.recoverKey();">
                                 <h3>Lets recover your account</h3>
 
-                                <label for="recover-account-label" class="recipient">Label: </label>
-                                <input id="recover-account-label"  class="recipient input_box" style="width: 550px; height: 40px;" data-title="Label for recovered account"></br>
-                                <label for="recover-passphrase" class="recipient">Passphrase (Optional): </label>
-                                <input id="recover-passphrase"  class="recipient input_box" style="width: 550px; height: 40px;" type="password" data-title="Enter the passphrase for the wallet you are trying to recover" ></br>
+                                <label for="recover-account-label" class="recipient">Label:
+                                    <input id="recover-account-label"  class="recipient input_box" style="width: 550px; height: 40px;" data-title="Label for recovered account"></br>
+                                </label>
+                                <label for="recover-passphrase" class="recipient">Passphrase (Optional):
+                                    <input id="recover-passphrase"  class="recipient input_box" style="width: 550px; height: 40px;" type="password" data-title="Enter the passphrase for the wallet you are trying to recover" ></br>
+                                </label>
+                                <label for="recover-bip44" class="recipient">BIP44:
+                                    <input id="recover-bip44" type="checkbox" data-title="Is this a bip44 path?" />
+                                </label>
                                 <textarea id="recover-key-mnemonic" style="line-height: 20px; width:90%; height:100px; font-family: 'Open Sans', 'NotoCJK Japanese', 'NotoCJK Chinese simplified', 'NotoCJK Chinese traditional';" class="input_box" placeholder="Your 24 word mnemonic for recovery" data-title="Your 24 word mnemonic for recovery"></textarea></br>
                             </div>
                             <div endWiz="keyManagementPage.gotoPage('overview');">

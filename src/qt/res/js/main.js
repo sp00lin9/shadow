@@ -2594,11 +2594,10 @@ var keyManagementPage = {
     },
     recoverKey: function()
     {
-        var recMnemonic = $("#recover-key-mnemonic").val().trim();
-        var recPassword = $("#recover-passphrase").val().trim();
-        var recLabel = $("#recover-account-label").val().trim();
-
-        result = bridge.importFromMnemonic(recMnemonic, recPassword , recLabel);
+        result = bridge.importFromMnemonic($("#recover-key-mnemonic").val().trim(),
+                                           $("#recover-passphrase").val().trim(),
+                                           $("#recover-account-label").val().trim(),
+                                           $("#recover-bip44").prop("checked"));
         
         if(result.error_msg != '' )
         { 

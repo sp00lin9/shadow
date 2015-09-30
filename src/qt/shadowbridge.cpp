@@ -1535,10 +1535,8 @@ QVariantMap ShadowBridge::getNewMnemonic(QString password, QString language)
     return result;
 }
 
-QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel)
+QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44)
 {
-
-    bool fBip44 = false;
     std::string sPassword = inPassword.toStdString();
     std::string sMnemonic = inMnemonic.toStdString();
     std::string sError;
@@ -1592,7 +1590,7 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
     // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
     //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
     //    OPENSSL_cleanse(&sPassword[0], sPassword.size());
-    return result = extKeyImport(QString::fromStdString(eKey58.ToString()),  inLabel);
+    return result = extKeyImport(QString::fromStdString(eKey58.ToString()), inLabel, fBip44);
 
 }
 
@@ -1866,15 +1864,13 @@ QVariantMap ShadowBridge::extKeyList() {
     return result;
 }
 
-QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel)
+QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44)
 {
     QVariantMap result;
     std::string sInKey = inKey.toStdString();
     CStoredExtKey sek;
     sek.sLabel = inLabel.toStdString();
 
-    bool fBip44 = false;
-    bool fSaveBip44 = false;
 
     std::vector<uint8_t> v;
     sek.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
@@ -1915,7 +1911,7 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel)
             return result;
         }
         int rv;
-        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fSaveBip44)))
+        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, false)))
         {
             wdb.TxnAbort();
             result.insert("error_msg", QString("ExtKeyImportLoose failed, %s").arg(ExtKeyGetString(rv)));
