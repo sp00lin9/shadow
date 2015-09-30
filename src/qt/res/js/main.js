@@ -2726,8 +2726,8 @@ function setupWizard(section) {
     // I just did this to make using 's and "s easier in the below prepend and append.
     backbtnjs = '$("#key-options").show(); $("#wizards").hide();';
     fwdbtnjs  = 'gotoWizard("new-key-wizard", 1);';
-    $("#" + section).prepend("<div id='backWiz'   class='wizardback' onclick='" + backbtnjs + "' ><img src='qrc:///icons/backbtn' alt='Back'/></div>")
-    $("#" + section).prepend("<div id='fwdWiz'    class='wizardfwd'  onclick='" + fwdbtnjs  + "' ><img src='qrc:///icons/fwdbtn' alt='Forward'/></div>")
+    $("#" + section).prepend("<div id='backWiz'   class='wizardback' onclick='" + backbtnjs + "' ></div>")
+    $("#" + section).prepend("<div id='fwdWiz'    class='wizardfwd'  onclick='" + fwdbtnjs  + "' ></div>")
 
     steps.each(function (i) {
             $(this).addClass("step" + i)
