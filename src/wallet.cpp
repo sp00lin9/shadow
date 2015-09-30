@@ -4308,7 +4308,13 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
 {
     if (fDebugRingSig)
-        LogPrintf("AddAnonInputs() %d, %d\n", nTotalOut, nRingSize);
+        LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
+
+    if(rsType == RING_SIG_2 && wtxNew.nTime < Params().RSABTime()) // Prevent use of new ringsigs before hardfork
+    {
+        sError = "Error: Trying to use Adam Back ringsignatures before hardfork!";
+        return false;
+    };
 
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
@@ -4566,7 +4572,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
                 // -- test verify
                 if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
                 {
-                    sError = "Error: verifyRingSignature() failed.";
+                    sError = "Error: verifyRingSignatureAB() failed.";
                     return false;
                 };
                 }
