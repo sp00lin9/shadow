@@ -4771,7 +4771,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed : " + sError2;
@@ -4880,7 +4880,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed: " + sError2;

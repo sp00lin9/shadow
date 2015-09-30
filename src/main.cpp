@@ -5489,125 +5489,133 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         
         CTxDB txdb("r");
 
-        if (nNodeMode == NT_FULL)
+        // Temp fix to remove unwanted transaction
+        if(tx.GetHash() == uint256("0x209e365b66621a3b4733bfe177f92ee481880f1363c2e3596280d3843b5577d1"))
         {
-            CInv inv(MSG_TX, tx.GetHash());
-            pfrom->AddInventoryKnown(inv);
-
-            bool fMissingInputs = false;
-            if (AcceptToMemoryPool(mempool, tx, txdb, &fMissingInputs))
-            {
-                SyncWithWallets(tx, NULL, true);
-                RelayTransaction(tx, inv.hash);
-                mapAlreadyAskedFor.erase(inv);
-                vWorkQueue.push_back(inv.hash);
-                vEraseQueue.push_back(inv.hash);
-
-                // Recursively process any orphan transactions that depended on this one
-                for (unsigned int i = 0; i < vWorkQueue.size(); i++)
-                {
-                    uint256 hashPrev = vWorkQueue[i];
-                    for (set<uint256>::iterator mi = mapOrphanTransactionsByPrev[hashPrev].begin();
-                         mi != mapOrphanTransactionsByPrev[hashPrev].end();
-                         ++mi)
-                    {
-                        const uint256& orphanTxHash = *mi;
-                        CTransaction& orphanTx = mapOrphanTransactions[orphanTxHash];
-                        bool fMissingInputs2 = false;
-
-                        if (AcceptToMemoryPool(mempool, orphanTx, txdb, &fMissingInputs2))
-                        {
-                            LogPrintf("   accepted orphan tx %s\n", orphanTxHash.ToString().substr(0,10).c_str());
-                            SyncWithWallets(tx, NULL, true);
-                            RelayTransaction(orphanTx, orphanTxHash);
-                            mapAlreadyAskedFor.erase(CInv(MSG_TX, orphanTxHash));
-                            vWorkQueue.push_back(orphanTxHash);
-                            vEraseQueue.push_back(orphanTxHash);
-                        } else
-                        if (!fMissingInputs2)
-                        {
-                            // invalid orphan
-                            vEraseQueue.push_back(orphanTxHash);
-                            LogPrintf("   removed invalid orphan tx %s\n", orphanTxHash.ToString().substr(0,10).c_str());
-                        };
-                    };
-                };
-
-                BOOST_FOREACH(uint256 hash, vEraseQueue)
-                    EraseOrphanTx(hash);
-            } else
-            if (fMissingInputs)
-            {
-                AddOrphanTx(tx);
-
-                // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
-                unsigned int nEvicted = LimitOrphanTxSize(MAX_ORPHAN_TRANSACTIONS);
-                if (nEvicted > 0)
-                    LogPrintf("mapOrphan overflow, removed %u tx\n", nEvicted);
-            };
+            LogPrintf("Warning: Peer sent banned transaction.\n", vRecv.size());
+            pfrom->Misbehaving(10);
         } else
         {
-            uint256 txHash = tx.GetHash();
-
-            CInv inv(MSG_TX, txHash);
-            pfrom->AddInventoryKnown(inv);
-
-            bool fProcessed = false;
-            std::vector<CMerkleBlockIncoming>::iterator it;
-            for (it = vIncomingMerkleBlocks.begin(); !fProcessed && it < vIncomingMerkleBlocks.end(); ++it)
+            if (nNodeMode == NT_FULL)
             {
-                for (uint32_t i = 0; i < it->vMatch.size(); ++i)
-                {
-                    if (it->vMatch[i] != txHash)
-                        continue;
-
-                    //LogPrintf("Found match.\n");
-                    uint256 blockhash = it->header.GetHash();
-
-                    BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
-                        pwallet->AddToWalletIfInvolvingMe(tx, txHash, (void*)&blockhash, true);
-
-                    it->nProcessed++;
-                    fProcessed = true;
-                    if (it->nProcessed == it->vMatch.size())
-                        vIncomingMerkleBlocks.erase(it);
-                    break;
-
-                    //LogPrintf("vMatch %d %s\n", i, it->vMatch[i].ToString().c_str());
-                };
-            };
-
-            if (!fProcessed)
-            {
-                if (fDebugChain)
-                    LogPrintf("txn %s not found in merkleblock, adding to mempool.\n", txHash.ToString().c_str());
-
-                // TODO: this is wasteful, test timedout first?
+                CInv inv(MSG_TX, tx.GetHash());
+                pfrom->AddInventoryKnown(inv);
 
                 bool fMissingInputs = false;
                 if (AcceptToMemoryPool(mempool, tx, txdb, &fMissingInputs))
                 {
-                    //SyncWithWallets(tx, NULL, true);
-                    
-                    bool added = false;
-                    uint256 hash = tx.GetHash();
-                    BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
+                    SyncWithWallets(tx, NULL, true);
+                    RelayTransaction(tx, inv.hash);
+                    mapAlreadyAskedFor.erase(inv);
+                    vWorkQueue.push_back(inv.hash);
+                    vEraseQueue.push_back(inv.hash);
+
+                    // Recursively process any orphan transactions that depended on this one
+                    for (unsigned int i = 0; i < vWorkQueue.size(); i++)
                     {
-                        added = added | pwallet->AddToWalletIfInvolvingMe(tx, hash, NULL, true);
+                        uint256 hashPrev = vWorkQueue[i];
+                        for (set<uint256>::iterator mi = mapOrphanTransactionsByPrev[hashPrev].begin();
+                             mi != mapOrphanTransactionsByPrev[hashPrev].end();
+                             ++mi)
+                        {
+                            const uint256& orphanTxHash = *mi;
+                            CTransaction& orphanTx = mapOrphanTransactions[orphanTxHash];
+                            bool fMissingInputs2 = false;
+
+                            if (AcceptToMemoryPool(mempool, orphanTx, txdb, &fMissingInputs2))
+                            {
+                                LogPrintf("   accepted orphan tx %s\n", orphanTxHash.ToString().substr(0,10).c_str());
+                                SyncWithWallets(tx, NULL, true);
+                                RelayTransaction(orphanTx, orphanTxHash);
+                                mapAlreadyAskedFor.erase(CInv(MSG_TX, orphanTxHash));
+                                vWorkQueue.push_back(orphanTxHash);
+                                vEraseQueue.push_back(orphanTxHash);
+                            } else
+                            if (!fMissingInputs2)
+                            {
+                                // invalid orphan
+                                vEraseQueue.push_back(orphanTxHash);
+                                LogPrintf("   removed invalid orphan tx %s\n", orphanTxHash.ToString().substr(0,10).c_str());
+                            };
+                        };
                     };
-                    
-                    if (added)
+
+                    BOOST_FOREACH(uint256 hash, vEraseQueue)
+                        EraseOrphanTx(hash);
+                } else
+                if (fMissingInputs)
+                {
+                    AddOrphanTx(tx);
+
+                    // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
+                    unsigned int nEvicted = LimitOrphanTxSize(MAX_ORPHAN_TRANSACTIONS);
+                    if (nEvicted > 0)
+                        LogPrintf("mapOrphan overflow, removed %u tx\n", nEvicted);
+                };
+            } else
+            {
+                uint256 txHash = tx.GetHash();
+
+                CInv inv(MSG_TX, txHash);
+                pfrom->AddInventoryKnown(inv);
+
+                bool fProcessed = false;
+                std::vector<CMerkleBlockIncoming>::iterator it;
+                for (it = vIncomingMerkleBlocks.begin(); !fProcessed && it < vIncomingMerkleBlocks.end(); ++it)
+                {
+                    for (uint32_t i = 0; i < it->vMatch.size(); ++i)
                     {
-                        RelayTransaction(tx, inv.hash);
-                        mapAlreadyAskedFor.erase(inv);
-                    } else
+                        if (it->vMatch[i] != txHash)
+                            continue;
+
+                        //LogPrintf("Found match.\n");
+                        uint256 blockhash = it->header.GetHash();
+
+                        BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
+                            pwallet->AddToWalletIfInvolvingMe(tx, txHash, (void*)&blockhash, true);
+
+                        it->nProcessed++;
+                        fProcessed = true;
+                        if (it->nProcessed == it->vMatch.size())
+                            vIncomingMerkleBlocks.erase(it);
+                        break;
+
+                        //LogPrintf("vMatch %d %s\n", i, it->vMatch[i].ToString().c_str());
+                    };
+                };
+
+                if (!fProcessed)
+                {
+                    if (fDebugChain)
+                        LogPrintf("txn %s not found in merkleblock, adding to mempool.\n", txHash.ToString().c_str());
+
+                    // TODO: this is wasteful, test timedout first?
+
+                    bool fMissingInputs = false;
+                    if (AcceptToMemoryPool(mempool, tx, txdb, &fMissingInputs))
                     {
-                        // -- not interested in txn if not for this wallet
-                        mempool.remove(tx);
+                        //SyncWithWallets(tx, NULL, true);
+
+                        bool added = false;
+                        uint256 hash = tx.GetHash();
+                        BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
+                        {
+                            added = added | pwallet->AddToWalletIfInvolvingMe(tx, hash, NULL, true);
+                        };
+
+                        if (added)
+                        {
+                            RelayTransaction(tx, inv.hash);
+                            mapAlreadyAskedFor.erase(inv);
+                        } else
+                        {
+                            // -- not interested in txn if not for this wallet
+                            mempool.remove(tx);
+                        };
                     };
                 };
             };
-        };
+        }
 
         if (tx.nDoS)
             pfrom->Misbehaving(tx.nDoS);

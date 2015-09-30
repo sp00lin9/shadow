@@ -1573,7 +1573,6 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
     {
         eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY_BTC);
 
-
         //result.push_back(Pair("master", eKey58.ToString()));
 
         // m / purpose' / coin_type' / account' / change / address_index
@@ -1582,6 +1581,7 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
         ekDerived.Derive(ekDerived, Params().BIP44ID());
 
         eKey58.SetKey(ekDerived, CChainParams::EXT_SECRET_KEY);
+
         //result.push_back(Pair("derived", eKey58.ToString()));
     } else
     {
@@ -1589,11 +1589,9 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
         //result.push_back(Pair("master", eKey58.ToString()));
     };
 
-        // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
-        //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
-        //    OPENSSL_cleanse(&sPassword[0], sPassword.size());
-
-
+    // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
+    //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
+    //    OPENSSL_cleanse(&sPassword[0], sPassword.size());
     return result = extKeyImport(QString::fromStdString(eKey58.ToString()),  inLabel);
 
 }
@@ -1678,7 +1676,6 @@ int KeyInfo(CKeyID &idMaster, CKeyID &idKey, CStoredExtKey &sek, int nShowKeys, 
         GetCompressedInt64(mi->second, (uint64_t&)nCreatedAt);
         obj.insert("created_at", QString::number(nCreatedAt));
     };
-
 
     addr.Set(idKey, CChainParams::EXT_KEY_HASH);
     obj.insert("id", QString::fromStdString(addr.ToString()));
@@ -1800,7 +1797,7 @@ int AccountInfo(CExtKeyAccount *pa, int nShowKeys, QVariantMap &obj, std::string
     return 0;
 };
 
-class GUIListExtCallback : public   LoopExtKeyCallback
+class GUIListExtCallback : public LoopExtKeyCallback
 {
 public:
     GUIListExtCallback(QVariantMap *resMap, int _nShowKeys)
@@ -1841,28 +1838,30 @@ public:
 
 QVariantMap ShadowBridge::extKeyAccList() {
     QVariantMap result;
-    int i_result;
 
-    GUIListExtCallback bas(&result, 10 );
+    GUIListExtCallback extKeys(&result, 10 );
 
-    LOCK(pwalletMain->cs_wallet);
-    i_result = LoopExtAccountsInDB(true, bas);
+    {
+        LOCK(pwalletMain->cs_wallet);
+        LoopExtAccountsInDB(true, extKeys);
+    } //cs_wallet
 
     CBitcoinAddress addr;
 
-    addr.GetKeyID(bas.idMaster);
+    addr.GetKeyID(extKeys.idMaster);
 
     return result;
 }
 
 QVariantMap ShadowBridge::extKeyList() {
     QVariantMap result;
-    int i_result;
 
-    GUIListExtCallback bas(&result, 10 );
+    GUIListExtCallback extKeys(&result, 10 );
 
-    LOCK(pwalletMain->cs_wallet);
-    i_result = LoopExtKeysInDB(true, false, bas);
+    {
+        LOCK(pwalletMain->cs_wallet);
+        LoopExtKeysInDB(true, false, extKeys);
+    } //cs_wallet
 
     return result;
 }
@@ -1887,7 +1886,7 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel)
         {
             if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
             {
-                result.insert("error_msg"       , "Import failed - BIP44 key must begin with Bitcoin secret key prefix.");
+                result.insert("error_msg", "Import failed - BIP44 key must begin with Bitcoin secret key prefix.");
                 return result;
             }
         } else
@@ -1895,7 +1894,7 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel)
             if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
                 && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
             {
-                result.insert("error_msg"       , "Import failed - Key must begin with Shadowcoin prefix.");
+                result.insert("error_msg", "Import failed - Key must begin with Shadowcoin prefix.");
                 return result;
             }
         };
@@ -1903,35 +1902,64 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel)
         sek.kp = eKey58.GetKey();
     } else
     {
-        result.insert("error_msg"       , "Import failed - Invalid key.");
+        result.insert("error_msg", "Import failed - Invalid key.");
         return result;
     };
 
-    LOCK(pwalletMain->cs_wallet);
-    CWalletDB wdb(pwalletMain->strWalletFile, "r+");
-    if (!wdb.TxnBegin())
     {
-        result.insert("error_msg"       , "TxnBegin failed.");
-        return result;
-    }
-
-    int rv;
-    if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fSaveBip44)))
-    {
-        wdb.TxnAbort();
-        result.insert("error_msg"       , QString::fromStdString(strprintf("ExtKeyImportLoose failed, %s", ExtKeyGetString(rv))));
-        return result;
-    } else
-    {
-        if (!wdb.TxnCommit())
+        LOCK(pwalletMain->cs_wallet);
+        CWalletDB wdb(pwalletMain->strWalletFile, "r+");
+        if (!wdb.TxnBegin())
         {
-            result.insert("error_msg"       , "TxnCommit failed.");
+            result.insert("error_msg", "TxnBegin failed.");
             return result;
         }
-    };
+        int rv;
+        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fSaveBip44)))
+        {
+            wdb.TxnAbort();
+            result.insert("error_msg", QString("ExtKeyImportLoose failed, %s").arg(ExtKeyGetString(rv)));
+            return result;
+        } else
+            if (!wdb.TxnCommit())
+            {
+                result.insert("error_msg", "TxnCommit failed.");
+                return result;
+            };
+    } // cs_wallet
+
+
+    // set new key as master
+    CBitcoinAddress addr;
+    addr.Set(sek.GetID(), CChainParams::EXT_KEY_HASH);
+    extKeySetMaster(QString::fromStdString(addr.ToString()));
+
+    CExtKeyAccount *sea = new CExtKeyAccount();
+
+    {
+        std::string sPath = "";
+        LOCK(pwalletMain->cs_wallet);
+        CWalletDB wdb(pwalletMain->strWalletFile, "r+");
+        if (!wdb.TxnBegin())
+            throw std::runtime_error("TxnBegin failed.");
+
+        if (pwalletMain->ExtKeyDeriveNewAccount(&wdb, sea, sek.sLabel, sPath) != 0)
+        {
+            wdb.TxnAbort();
+            result.insert("error_msg", "ExtKeyDeriveNewAccount failed!");
+        } else
+            if (!wdb.TxnCommit())
+            {
+                result.insert("error_msg", "TxnCommit failed!");
+                return result;
+            };
+    } // cs_wallet
+
+    addr.Set(sea->GetID(), CChainParams::EXT_ACC_HASH);
+    extKeySetDefault(QString::fromStdString(addr.ToString()));
 
     // If we get here all went well and the message is valid
-    result.insert("error_msg"       , "");
+    result.insert("error_msg" , "");
     return result;
 }
 
@@ -1942,7 +1970,7 @@ QVariantMap ShadowBridge::extKeySetDefault(QString extKeyID)
     std::string sInKey = extKeyID.toStdString();
     if (extKeyID.length() == 0)
     {
-        result.insert("error_msg"       , "Must specify ext key or id.");
+        result.insert("error_msg", "Must specify ext key or id.");
         return result;
     };
 
