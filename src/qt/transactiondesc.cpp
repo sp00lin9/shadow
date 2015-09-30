@@ -35,7 +35,7 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 {
     QString strHTML;
-    QString explorer(fTestNet ? "http://vps2.shadow.cash:3001/" : "http://explorer.shadow.cash/");
+    QString explorer(fTestNet ? "http://testnet.shadowchain.info/" : "http://explorer.shadow.cash/");
 
     LOCK2(cs_main, wallet->cs_wallet);
     strHTML.reserve(4000);
@@ -103,7 +103,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
                 if (wallet->IsMine(txout))
                 {
                     CTxDestination address;
-                    if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
+                    if (ExtractDestination(txout.scriptPubKey, address) && IsDestMine(*wallet, address))
                     {
                         if (wallet->mapAddressBook.count(address))
                         {

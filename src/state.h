@@ -57,6 +57,7 @@ static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
 static const int64_t MAX_MONEY = 2000000000 * COIN;
 static const int64_t COIN_YEAR_REWARD = 2 * CENT; // 2% per year
 
+static const int64_t MBLK_RECEIVE_TIMEOUT = 60; // seconds
 
 extern int nNodeMode;
 extern int nNodeState;
@@ -100,6 +101,8 @@ extern bool fThinFullIndex;
 extern bool fReindexing;
 extern bool fHaveGUI;
 extern volatile bool fIsStaking;
+extern bool fMakeExtKeyInitials;
+extern volatile bool fPassGuiAddresses;
 
 extern bool fConfChange;
 extern bool fEnforceCanonical;
@@ -113,6 +116,9 @@ extern int64_t nMinTxFee;
 
 extern unsigned int nStakeSplitAge;
 extern int64_t nStakeCombineThreshold;
+
+extern uint32_t nExtKeyLookAhead;
+extern int64_t nTimeLastMblkRecv;
 
 
 #endif /* COIN_STATE_H */
