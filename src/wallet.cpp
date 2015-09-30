@@ -7258,7 +7258,7 @@ int CWallet::ExtKeyCreateAccount(CStoredExtKey *sekAccount, CKeyID &idMaster, CE
     vSubKeyPath = vAccountPath;
     sekExternal->mapValue[EKVT_PATH] = PushUInt32(vSubKeyPath, nExternal);
     sekExternal->nFlags |= EAF_ACTIVE | EAF_RECEIVE_ON | EAF_IN_ACCOUNT;
-    sekExternal->mapValue[EKVT_N_LOOKAHEAD] = SetCompressedInt64(v, 10);
+    sekExternal->mapValue[EKVT_N_LOOKAHEAD] = SetCompressedInt64(v, N_DEFAULT_EKVT_LOOKAHEAD);
     
     CStoredExtKey *sekInternal = new CStoredExtKey();
     sekInternal->kp = evInternal;
