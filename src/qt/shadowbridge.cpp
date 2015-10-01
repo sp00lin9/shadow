@@ -1567,8 +1567,11 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
         return result;
     }
 
+    eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY);
+    /*
     if (fBip44)
     {
+
         eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY_BTC);
 
         //result.push_back(Pair("master", eKey58.ToString()));
@@ -1585,7 +1588,7 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
     {
         eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY);
         //result.push_back(Pair("master", eKey58.ToString()));
-    };
+    };*/
 
     // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
     //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
@@ -1864,6 +1867,7 @@ QVariantMap ShadowBridge::extKeyList() {
     return result;
 }
 
+#include <QDebug>
 QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44)
 {
     QVariantMap result;
@@ -1878,22 +1882,12 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip
     CExtKey58 eKey58;
     if (eKey58.Set58(sInKey.c_str()) == 0)
     {
-        if (fBip44)
+        if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
+            && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
         {
-            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
-            {
-                result.insert("error_msg", "Import failed - BIP44 key must begin with Bitcoin secret key prefix.");
-                return result;
-            }
-        } else
-        {
-            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
-                && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
-            {
-                result.insert("error_msg", "Import failed - Key must begin with Shadowcoin prefix.");
-                return result;
-            }
-        };
+            result.insert("error_msg", "Import failed - Key must begin with Shadowcoin prefix.");
+            return result;
+        }
 
         sek.kp = eKey58.GetKey();
     } else
@@ -1924,11 +1918,15 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip
             };
     } // cs_wallet
 
-
     // set new key as master
-    CBitcoinAddress addr;
-    addr.Set(sek.GetID(), CChainParams::EXT_KEY_HASH);
-    extKeySetMaster(QString::fromStdString(addr.ToString()));
+    if(fBip44)
+    {
+        CExtKey ekDerived;
+        sek.kp.Derive(ekDerived, BIP44_PURPOSE);
+        ekDerived.Derive(ekDerived, Params().BIP44ID());
+        sek.kp = ekDerived;
+    }
+    extKeySetMaster(QString::fromStdString(sek.GetIDString58()));
 
     CExtKeyAccount *sea = new CExtKeyAccount();
 
@@ -1951,8 +1949,7 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip
             };
     } // cs_wallet
 
-    addr.Set(sea->GetID(), CChainParams::EXT_ACC_HASH);
-    extKeySetDefault(QString::fromStdString(addr.ToString()));
+    extKeySetDefault(QString::fromStdString(sea->GetIDString58()));
 
     // If we get here all went well and the message is valid
     result.insert("error_msg" , "");

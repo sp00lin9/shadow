@@ -666,7 +666,7 @@ var overviewPage = {
                  },
                  {
                      name: ' About&nbsp;Shadow...',
-                     img: 'icons/shadowcoin.png',
+                     img: 'qrc:///icons/shadow',
                      fun: function () {
                         bridge.userAction(['aboutClicked']);
                      }
