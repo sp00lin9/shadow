@@ -5665,7 +5665,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
 	            mapAlreadyAskedFor.erase(inv);
 
-	            ProcessBlock(pfrom, &block, hashBlock)
+                ProcessBlock(pfrom, &block, hashBlock);
 
 	            if (block.nDoS)
 	                pfrom->Misbehaving(block.nDoS);
