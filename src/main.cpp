@@ -4419,7 +4419,6 @@ static void ProcessGetData(CNode* pfrom)
     vector<CInv> vNotFound;
     vector<CInv> vMerkleBlocks;
 
-    LOCK(cs_main);
     std::vector<CBlock> vMultiBlock;
     std::vector<CMBlkThinElement> vMultiBlockThin; // TODO: split ProcessGetDataThinPeer from ProcessGetData
     uint32_t nMultiBlockBytes = 0;
@@ -4446,6 +4445,7 @@ static void ProcessGetData(CNode* pfrom)
         if (inv.type == MSG_BLOCK
             || inv.type == MSG_FILTERED_BLOCK)
         {
+            LOCK(cs_main);
             bool send = false;
             CBlockIndex *pBlockIndex;
             
@@ -4494,6 +4494,7 @@ static void ProcessGetData(CNode* pfrom)
 
                 if (inv.type == MSG_BLOCK)
                 {
+                    LOCK(cs_main);
                     if (pfrom->nVersion >= MIN_MBLK_VERSION)
                     {
                         uint32_t nBlockBytes = ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION);
@@ -4608,6 +4609,7 @@ static void ProcessGetData(CNode* pfrom)
 
             if (!pushed && inv.type == MSG_TX)
             {
+                LOCK(cs_main);
                 CTransaction tx;
                 if (mempool.lookup(inv.hash, tx))
                 {
@@ -5670,8 +5672,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 	                SecureMsgScanBlock(block);
 	        };
         } // cs_main
-
-
     } else
     if (strCommand == "mblkt")
     {
@@ -5698,13 +5698,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         LogPrintf("Received mblkt %d\n", nBlocks);
 
         std::vector<CTransaction> vTxns;
-        for (uint32_t i = 0; i < nBlocks; ++i)
         {
             LOCK(cs_main);
-            CMerkleBlockIncoming mbi = CMerkleBlockIncoming(vMultiBlockThin[i].merkleBlock);
-            vTxns = vMultiBlockThin[i].vtx;
-            ProcessMerkleBlock(pfrom, mbi, &vTxns);
-        };
+            for (uint32_t i = 0; i < nBlocks; ++i)
+            {
+                CMerkleBlockIncoming mbi = CMerkleBlockIncoming(vMultiBlockThin[i].merkleBlock);
+                vTxns = vMultiBlockThin[i].vtx;
+                ProcessMerkleBlock(pfrom, mbi, &vTxns);
+            };
+        } // cs_main
     } else
     if (strCommand == "block")
     {
@@ -5717,9 +5719,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CBlock block;
         vRecv >> block;
         uint256 hashBlock = block.GetHash();
-        
-        LOCK(cs_main);
-        
+
         LogPrintf("Received block %s\n", hashBlock.ToString().substr(0,20).c_str());
         // block.print();
 
@@ -5729,7 +5729,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (pfrom->nTypeInd == NT_FULL)
             pfrom->AddInventoryKnown(inv);
 
-        ProcessBlock(pfrom, &block, hashBlock);
+        {
+            LOCK(cs_main);
+            ProcessBlock(pfrom, &block, hashBlock);
+        } // cs_main
 
         if (block.nDoS)
             pfrom->Misbehaving(block.nDoS);
@@ -5764,9 +5767,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         vector<CBlockThin> vHeaders;
         vRecv >> vHeaders;
-        
-        LOCK(cs_main);
-        
+
         if (fDebugChain)
             LogPrintf("Received %u headers\n", vHeaders.size());
 
@@ -5795,6 +5796,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 pfrom->Misbehaving(10);
             } else
             {
+                LOCK(cs_main);
                 ProcessBlockThin(pfrom, &(*it));
             };
         };
