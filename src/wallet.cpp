@@ -7344,18 +7344,14 @@ int CWallet::ExtKeyDeriveNewAccount(CWalletDB *pwdb, CExtKeyAccount *sea, const 
         CExtKey vkWork = pEkMaster->kp.GetExtKey();
         for (std::vector<uint32_t>::iterator it = vPath.begin(); it != vPath.end(); ++it)
         {
-            if (*it == 0)
+
+            if (!vkWork.Derive(vkOut, *it))
             {
-                vkOut = vkWork;
-            } else
-            {
-                if (!vkWork.Derive(vkOut, *it))
-                {
-                    delete sekAccount;
-                    return errorN(1, "%s: CExtKey Derive failed %s, %d.", __func__, sPath.c_str(), *it);
-                };
-                PushUInt32(vAccountPath, *it);
+                delete sekAccount;
+                return errorN(1, "%s: CExtKey Derive failed %s, %d.", __func__, sPath.c_str(), *it);
             };
+            PushUInt32(vAccountPath, *it);
+
             vkWork = vkOut;
         };
         

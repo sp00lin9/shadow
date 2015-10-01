@@ -2656,7 +2656,7 @@ var keyManagementPage = {
             }
             else
             {
-                keyManagementPage.updateKeyList();
+                keyManagementPage.updateAccountList();
             }
         }
         else
