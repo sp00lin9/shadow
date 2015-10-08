@@ -1,0 +1,37 @@
+---
+name: "osxcross"
+suites:
+- "trusty"
+architectures:
+- "amd64"
+packages:
+- "clang"
+- "llvm-dev"
+- "libxml2-dev"
+- "uuid-dev"
+- "libssl-dev"
+- "bsdmainutils"
+- "zip"
+reference_datetime: "2013-06-01 00:00:00"
+remotes:
+- "url": "https://github.com/tpoechtrager/osxcross.git"
+  "dir": "osxcross"
+files:
+- "MacOSX10.9.sdk.tar.xz"
+script: |
+  # Defines
+  export TZ=UTC
+  export TAR_OPTIONS="-m --mtime="$REFERENCE_DATE\\\ $REFERENCE_TIME""
+  BUILDDIR=$HOME/build
+  mkdir -p $BUILDDIR
+  cd $BUILDDIR
+  PATH=$PATH:$BUILDDIR
+
+  cd osxcross
+  ln -s $HOME/build/MacOSX10.9.sdk.tar.xz tarballs/
+  UNATTENDED=1 ./build.sh
+  cd target
+  #give build.sh some time to finish any background processing
+  sleep 2
+  find . -print0 | xargs -r0 touch -t 200001010000
+  find | sort | tar --no-recursion -cJf $OUTDIR/osxcross.tar.xz -T -
