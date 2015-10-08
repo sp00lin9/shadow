@@ -124,9 +124,9 @@ script: |
   QMAKE_MAC_SDK.macosx.platform_name = macosx
   QMAKE_CFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
   QMAKE_OBJECTIVE_CFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
-  QMAKE_CXXFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
+  QMAKE_CXXFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242 -I/home/ubuntu/deps/SDK/MacOSX10.9.sdk/usr/include -DBOOST_HAS_INT128=1
   #QMAKE_LFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
-  QMAKE_AR = ${HOST}-ar cq
+  QMAKE_AR = ${HOST}-ar
   QMAKE_LD = ${HOST}-ld
   QMAKE_RANLIB=${HOST}-ranlib
   QMAKE_LIBTOOL=${HOST}-libtool
