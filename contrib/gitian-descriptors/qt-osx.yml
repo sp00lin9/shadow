@@ -124,9 +124,9 @@ script: |
   QMAKE_MAC_SDK.macosx.platform_name = macosx
   QMAKE_CFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
   QMAKE_OBJECTIVE_CFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
-  QMAKE_CXXFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242 -I/home/ubuntu/deps/SDK/MacOSX10.9.sdk/usr/include -DBOOST_HAS_INT128=1
-  #QMAKE_LFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
-  QMAKE_AR = ${HOST}-ar
+  QMAKE_CXXFLAGS += -target ${HOST} -mmacosx-version-min=${MIN_VERSION} --sysroot ${SDK} -mlinker-version=242
+  QMAKE_AR = ${HOST}-ar cq
+  QMAKE_HOST = ${HOST}
   QMAKE_LD = ${HOST}-ld
   QMAKE_RANLIB=${HOST}-ranlib
   QMAKE_LIBTOOL=${HOST}-libtool
@@ -243,6 +243,15 @@ script: |
   cd $INSTALLPREFIX
   # Remove unused non-deterministic stuff
   rm host/bin/qtpaths lib/libQt5Bootstrap.a lib/libQt5Bootstrap.la
+  rm -f ${INSTALLPREFIX}/lib/Qt*.framework/Qt*.prl
+  cd include
+  ln -sf ../lib/QtNetwork.framework/Headers/ QtNetwork
+  ln -sf ../lib/QtWidgets.framework/Headers/ QtWidgets
+  ln -sf ../lib/QtGui.framework/Headers/ QtGui
+  ln -sf ../lib/QtCore.framework/Headers/ QtCore
+  ln -sf ../lib/QtTest.framework/Headers/ QtTest
+  ln -sf ../lib/QtWebKitWidgets.framework/Headers/ QtWebKitWidgets
+  cd ..
   # as zip stores file timestamps, use faketime to intercept stat calls to set dates for all files to reference date
   export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
