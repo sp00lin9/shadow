@@ -414,13 +414,6 @@ public:
         return !(a == b);
     }
 
-    std::string ToStringShort() const
-    {
-        std::string str;
-        str += strprintf("%s %s", GetHash().ToString().c_str(), IsCoinBase()? "base" : (IsCoinStake()? "stake" : "user"));
-        return str;
-    }
-
     std::string ToString() const
     {
         std::string str;
