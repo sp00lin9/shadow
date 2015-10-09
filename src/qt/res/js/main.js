@@ -572,7 +572,7 @@ var overviewPage = {
 
         var menu = [{
                 name: 'Backup&nbsp;Wallet...',
-                fa: 'fa-save red fa-fw',
+                fa: 'fa-save red fa-fw font-20px',
                 fun: function () {
                    bridge.userAction(['backupWallet']);
                 }
@@ -586,7 +586,7 @@ var overviewPage = {
                 }, */
                 {
                     name: 'Sign&nbsp;Message...',
-                    fa: 'fa-pencil-square-o red fa-fw',
+                    fa: 'fa-pencil-square-o red fa-fw font-20px',
                     fun: function () {
 
                        $('#sign-message-button').click();
@@ -594,14 +594,14 @@ var overviewPage = {
                 },
                 {
                     name: 'Verify&nbsp;Message...',
-                    fa: 'fa-check red fa-fw',
+                    fa: 'fa-check red fa-fw font-20px',
                     fun: function () {
                         $('#verify-message-button').click();
                     }
                 },
                 {
                     name: 'Exit',
-                    fa: 'fa-times red fa-fw',
+                    fa: 'fa-times red fa-fw font-20px',
                     fun: function () {
                        bridge.userAction(['close']);
                     }
@@ -612,7 +612,7 @@ var overviewPage = {
         menu = [{
                      id: 'encryptWallet',
                      name: 'Encrypt&nbsp;Wallet...',
-                     fa: 'fa-lock red fa-fw',
+                     fa: 'fa-lock red fa-fw font-20px',
                      fun: function () {
                         bridge.userAction(['encryptWallet']);
                      }
@@ -620,7 +620,7 @@ var overviewPage = {
                  {
                      id: 'changePassphrase',
                      name: 'Change&nbsp;Passphrase...',
-                     fa: 'fa-key red fa-fw',
+                     fa: 'fa-user-secret red fa-fw font-20px',
                      fun: function () {
                         bridge.userAction(['changePassphrase']);
                      }
@@ -628,21 +628,21 @@ var overviewPage = {
                  {
                      id: 'toggleLock',
                      name: '(Un)Lock&nbsp;Wallet...',
-                     fa: 'fa-unlock red pad fa-fw',
+                     fa: 'fa-unlock red pad fa-fw font-20px',
                      fun: function () {
                         bridge.userAction(['toggleLock']);
                      }
                  },
                  {
                      name: 'Key Management',
-                     fa: 'fa-keyboard-o red fa-fw',
+                     fa: 'fa-key red fa-fw font-20px',
                      fun: function () {
                         $("#navitems [href=#keymanagement]").click();
                      }                                                                                                                                
                  },
                  {
                      name: 'Options',
-                     fa: 'fa-wrench red fa-fw',
+                     fa: 'fa-wrench red fa-fw font-20px',
                      fun: function () {
                         $("#navitems [href=#options]").click();
                      }
@@ -652,14 +652,14 @@ var overviewPage = {
 
         menu = [{
                      name: 'Debug&nbsp;Window...',
-                     fa: 'fa-bug red fa-fw',
+                     fa: 'fa-bug red fa-fw font-20px',
                      fun: function () {
                         bridge.userAction(['debugClicked']);
                      }
                  },
                  {
                      name: 'Developer&nbsp;Tools...',
-                     fa: 'fa-edit red fa-fw',
+                     fa: 'fa-edit red fa-fw font-20px',
                      fun: function () {
                         bridge.userAction(['developerConsole']);
                      }
@@ -673,7 +673,7 @@ var overviewPage = {
                  },
                  {
                      name: 'About&nbsp;Qt...',
-                     fa: 'fa-question red fa-fw',
+                     fa: 'fa-question red fa-fw font-20px',
                      fun: function () {
                         bridge.userAction(['aboutQtClicked']);
                      }
@@ -2594,11 +2594,10 @@ var keyManagementPage = {
     },
     recoverKey: function()
     {
-        var recMnemonic = $("#recover-key-mnemonic").val().trim();
-        var recPassword = $("#recover-passphrase").val().trim();
-        var recLabel = $("#recover-account-label").val().trim();
-
-        result = bridge.importFromMnemonic(recMnemonic, recPassword , recLabel);
+        result = bridge.importFromMnemonic($("#recover-key-mnemonic").val().trim(),
+                                           $("#recover-passphrase").val().trim(),
+                                           $("#recover-account-label").val().trim(),
+                                           $("#recover-bip44").prop("checked"));
         
         if(result.error_msg != '' )
         { 
@@ -2657,7 +2656,7 @@ var keyManagementPage = {
             }
             else
             {
-                keyManagementPage.updateKeyList();
+                keyManagementPage.updateAccountList();
             }
         }
         else
@@ -2726,8 +2725,8 @@ function setupWizard(section) {
     // I just did this to make using 's and "s easier in the below prepend and append.
     backbtnjs = '$("#key-options").show(); $("#wizards").hide();';
     fwdbtnjs  = 'gotoWizard("new-key-wizard", 1);';
-    $("#" + section).prepend("<div id='backWiz'   class='wizardback' onclick='" + backbtnjs + "' ><img src='qrc:///icons/backbtn' alt='Back'/></div>")
-    $("#" + section).prepend("<div id='fwdWiz'    class='wizardfwd'  onclick='" + fwdbtnjs  + "' ><img src='qrc:///icons/fwdbtn' alt='Forward'/></div>")
+    $("#" + section).prepend("<div id='backWiz' class='wizardback' onclick='" + backbtnjs + "' ></div>")
+    $("#" + section).prepend("<div id='fwdWiz'  class='wizardfwd'  onclick='" + fwdbtnjs  + "' ></div>")
 
     steps.each(function (i) {
             $(this).addClass("step" + i)

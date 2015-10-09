@@ -559,8 +559,8 @@ Value extkey(const Array &params, bool fHelp)
         "    Warning: It is recommended to not use the passphrase\n"
         "extkey import <key> [label] [bip44] [save_bip44_key]\n"
         "    Add loose key to wallet.\n"
-        "    If bip44 is set import will add the key derived from <key> on the bip44 path."
-        "    If save_bip44_key is set import will save the bip44 key to the wallet."
+        "    If bip44 is set import will add the key derived from <key> on the bip44 path.\n"
+        "    If save_bip44_key is set import will save the bip44 key to the wallet.\n"
         "extkey importAccount <key> [time_scan_from] [label] \n"
         "    Add account key to wallet.\n"
         "        time_scan_from: N no check, Y-m-d date to start scanning the blockchain for owned txns.\n"
@@ -571,8 +571,8 @@ Value extkey(const Array &params, bool fHelp)
         "    Set an account as the default.\n"
         "extkey deriveAccount [label] [path]\n"
         "    Make a new account from the current master key, saves to wallet.\n"
-        "extkey options <key> [optionName] [newValue]"
-        "    Manage keys and accounts"
+        "extkey options <key> [optionName] [newValue]\n"
+        "    Manage keys and accounts\n"
         "\n"
         "";
     

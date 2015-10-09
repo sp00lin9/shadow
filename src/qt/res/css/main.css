@@ -37,18 +37,21 @@
     src: url("qrc:///fonts/OpenSans-BoldItalic.ttf");
     font-style: italic;
 }
+
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400italic);
+
 @font-face { 
-    font-family: "NotoCJK"; 
+    font-family: "NotoCJK Japanese"; 
     font-weight: 400; 
     src: url("qrc:///fonts/japanese.otf"); 
 }
 @font-face { 
-    font-family: "NotoCJK"; 
+    font-family: "NotoCJK Chinese simplified"; 
     font-weight: 400; 
     src: url("qrc:///fonts/chinese_s.otf"); 
 }
 @font-face { 
-    font-family: "NotoCJK"; 
+    font-family: "NotoCJK Chinese traditional"; 
     font-weight: 400; 
     src: url("qrc:///fonts/chinese_t.otf"); 
 }
@@ -100,7 +103,7 @@ p {
     margin: 2px;
 }
 
-.content input, textarea {
+.content input {
     color:#3c3c3c;
     font-weight:500;
     border-radius: 0;
@@ -1986,12 +1989,20 @@ label.recipient {
 .font-16px {
     font-size: 16px !important;
 }
+.font-20px {
+    font-size: 20px !important;
+}
 .font-26px {
     font-size: 26px !important;
 }
 .font-32px {
     font-size: 32px !important;
 }
+
+.font-150px {
+    font-size: 150px !important;
+}
+
 
 
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
@@ -2063,10 +2074,12 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     }
 
     #announcements {
+         height: 100%;
 
     }
 
     #recenttxns {
+        height: 100%;
         width: 100%;
     }
 
@@ -2136,6 +2149,7 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     .content .flex-item {
         padding: 0;
         border: 0;
+        height: 100%;
     }
 
     .grow {
@@ -2280,7 +2294,6 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     margin-bottom:10px;
 }
 
-
 #qrcode-modal {
     margin: auto;
     padding: 20px;
@@ -2364,12 +2377,17 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     display: none;
 }
 
+.iw-contextMenu {
+    font-size: 0.9em;
+}
+
 .iw-mIcon {
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
     padding-right: 4px;
-    top: 3px;
     padding-left: 1px;
+    top:0;
+    vertical-align: sub;
 }
 
 #network-alert {
@@ -2532,11 +2550,12 @@ input[type=checkbox]:checked + label:before {
 }
 
 .optionblock {
-    width: 300px;
+    width: 150px;
     height: 350px;
     float: left;   
     text-align: center;
-    margin: 5px;
+    margin: 50px;
+    cursor: pointer;
 }
 
 .wizardback {
@@ -2546,12 +2565,16 @@ input[type=checkbox]:checked + label:before {
     width: 40px;
     height:100%;
     top:0;
-    margin-right: 5px
+    margin-right: 5px;
+    cursor: pointer;
 }
 
-.wizardback img {
-    position: relative;
-    top: 25%;
+.wizardback:before {
+    content: "\f053";
+    font-family: "FontAwesome";
+    font-size: 30px;
+    margin-top: 100px;
+    float: left;
 }
 
 .wizardfwd {
@@ -2561,11 +2584,16 @@ input[type=checkbox]:checked + label:before {
     width: 40px;
     height:100%;
     top:0;
-    margin-left: 5px
+    margin-left: 5px;
+    cursor: pointer;
 }
-.wizardfwd img {
-    position: relative;
-    top: 25%;
+
+.wizardfwd:after {
+    content: "\f054";
+    font-family: "FontAwesome";
+    font-size: 30px;
+    margin-top: 100px;
+    float: left;
 }
 
 .wizardblock {
@@ -2574,6 +2602,10 @@ input[type=checkbox]:checked + label:before {
     height: 600px;
     width: 800px;
     margin: 0px 25px 0px 25px;
+}
+
+#wizards p {
+    line-height: 20px;
 }
 
 .wizardblock label {
@@ -2601,4 +2633,14 @@ input[type=checkbox]:checked + label:before {
     border-radius: 20px;   
     text-align: center;
 
+}
+
+.fa.green {
+    color: rgb(73, 151, 73);
+}
+.fa.red {
+    color: rgb(187, 53, 53);
+}
+.fa.blue {
+    color: rgb(86, 86, 165);
 }

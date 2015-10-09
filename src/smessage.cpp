@@ -757,10 +757,7 @@ void ThreadSecureMsgPow()
             };
         };
 
-        {
-            LOCK(cs_smsg);
-            delete it;
-        }
+        delete it;
 
         // -- shutdown thread waits 5 seconds, this should be less
         MilliSleep(2000); // seconds

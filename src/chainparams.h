@@ -79,13 +79,14 @@ public:
     std::string NetworkIDString() const { return strNetworkID; }
     
     int RPCPort() const { return nRPCPort; }
-    
+
     int BIP44ID() const { return nBIP44ID; }
     
     
     int LastPOWBlock() const { return nLastPOWBlock; }
     int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
-    
+
+    int64_t RSABTime() const { return nRSABTime; }
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees) const;
     
@@ -102,6 +103,7 @@ protected:
     int nBIP44ID;
     
     int nFirstPosv2Block;
+    int64_t nRSABTime;
     CBigNum bnProofOfWorkLimit;
     CBigNum bnProofOfStakeLimit;
     CBigNum bnProofOfStakeLimitV2;

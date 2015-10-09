@@ -4308,7 +4308,13 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
 {
     if (fDebugRingSig)
-        LogPrintf("AddAnonInputs() %d, %d\n", nTotalOut, nRingSize);
+        LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
+
+    if(rsType == RING_SIG_2 && wtxNew.nTime < Params().RSABTime()) // Prevent use of new ringsigs before hardfork
+    {
+        sError = "Error: Trying to use Adam Back ringsignatures before hardfork!";
+        return false;
+    };
 
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
@@ -4566,7 +4572,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
                 // -- test verify
                 if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
                 {
-                    sError = "Error: verifyRingSignature() failed.";
+                    sError = "Error: verifyRingSignatureAB() failed.";
                     return false;
                 };
                 }
@@ -4771,7 +4777,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed : " + sError2;
@@ -4880,7 +4886,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed: " + sError2;
@@ -7252,7 +7258,7 @@ int CWallet::ExtKeyCreateAccount(CStoredExtKey *sekAccount, CKeyID &idMaster, CE
     vSubKeyPath = vAccountPath;
     sekExternal->mapValue[EKVT_PATH] = PushUInt32(vSubKeyPath, nExternal);
     sekExternal->nFlags |= EAF_ACTIVE | EAF_RECEIVE_ON | EAF_IN_ACCOUNT;
-    sekExternal->mapValue[EKVT_N_LOOKAHEAD] = SetCompressedInt64(v, 10);
+    sekExternal->mapValue[EKVT_N_LOOKAHEAD] = SetCompressedInt64(v, N_DEFAULT_EKVT_LOOKAHEAD);
     
     CStoredExtKey *sekInternal = new CStoredExtKey();
     sekInternal->kp = evInternal;
@@ -7338,18 +7344,14 @@ int CWallet::ExtKeyDeriveNewAccount(CWalletDB *pwdb, CExtKeyAccount *sea, const 
         CExtKey vkWork = pEkMaster->kp.GetExtKey();
         for (std::vector<uint32_t>::iterator it = vPath.begin(); it != vPath.end(); ++it)
         {
-            if (*it == 0)
+
+            if (!vkWork.Derive(vkOut, *it))
             {
-                vkOut = vkWork;
-            } else
-            {
-                if (!vkWork.Derive(vkOut, *it))
-                {
-                    delete sekAccount;
-                    return errorN(1, "%s: CExtKey Derive failed %s, %d.", __func__, sPath.c_str(), *it);
-                };
-                PushUInt32(vAccountPath, *it);
+                delete sekAccount;
+                return errorN(1, "%s: CExtKey Derive failed %s, %d.", __func__, sPath.c_str(), *it);
             };
+            PushUInt32(vAccountPath, *it);
+
             vkWork = vkOut;
         };
         

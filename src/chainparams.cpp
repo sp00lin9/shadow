@@ -149,6 +149,7 @@ public:
         nBIP44ID = 0x80000023;
         
         nFirstPosv2Block = 453000;
+        nRSABTime = 1445212800; // 19 October 2015 00:00:00
         
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
@@ -210,7 +211,8 @@ public:
         nBIP44ID = 0x80000001;
         
         nFirstPosv2Block = 91400;
-        
+        nRSABTime = 1438473600; // 2 August 2015 00:00:00
+
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 16);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
