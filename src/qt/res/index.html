@@ -987,7 +987,7 @@
                 <div class="content">
                     <div id="key-options"> 
                         <h3> Please select one of the following options: </h3>
-                        <div class="optionblock" alt="New Account"     onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('new-key-wizard', 0, true);resizeFooter();"/><i class="fa green font-150px fa-plus-square"></i>New Account </div>
+                        <div class="optionblock" alt="New Key"     onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('new-key-wizard', 0, true);resizeFooter();"/><i class="fa green font-150px fa-plus-square"></i>New Key </div>
                         <div class="optionblock" onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('recover-key-wizard', 0, true);resizeFooter();"/><i class="fa red font-150px fa-ambulance"></i>Recover     </div>
                         <div class="optionblock" onclick="$('#key-options').hide(); $('#wizards').hide(); $('#keymanagement-advanced').show(); keyManagementPage.updateKeyList(); keyManagementPage.updateAccountList(); resizeFooter(); "/><i class="fa blue font-150px fa-laptop"></i> Advanced management</div>
                     </div>
@@ -1042,7 +1042,7 @@
 
                                 <div class="option">
                                     <label for="recover-bip44" class="recipient">BIP44:</label>
-                                    <input  id="recover-bip44" class="option" type="checkbox" data-title="Is this a bip44 path?" />
+                                    <input  id="recover-bip44" class="option" type="checkbox" data-title="Is this a bip44 path?" checked />
                                     <label for="recover-bip44" style="vertical-align: initial;">Is this a Multi-Account HD Key?</label><!-- checkbox / FontAwesome hack -->
                                 </div>
                                 <textarea id="recover-key-mnemonic" style="line-height: 20px; width:90%; height:100px; font-family: 'Open Sans', 'NotoCJK Japanese', 'NotoCJK Chinese simplified', 'NotoCJK Chinese traditional';" class="input_box" placeholder="Your 24 word mnemonic for recovery" data-title="Your 24 word mnemonic for recovery"></textarea></br>
