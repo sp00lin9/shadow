@@ -37,7 +37,7 @@ script: |
   TEMPDIR="$HOME/tempdir"
   BUILDDIR=$HOME/build
   DEPSDIR=$HOME/deps
-  HOST=x86_64-apple-darwin
+  HOST=x86_64-apple-darwin13
   DISTNAME=x86_64-darwin
   export PATH=$DEPSDIR/host/bin:$DEPSDIR:$DEPSDIR/bin:$PATH
   NEEDDIST=1
@@ -75,8 +75,14 @@ script: |
   export OTOOL=${HOST}-otool
   export INSTALLNAMETOOL=${HOST}-install_name_tool
   export STRIP=${HOST}-strip
-  ./contrib/macdeploy/macdeployqtplus Shadow.app
+  chmod +x contrib/macdeploy/macdeployqtplus
+  OTOOL=${HOST}-otool INSTALLNAMETOOL=${HOST}-install_name_tool STRIP=${HOST}-strip contrib/macdeploy/macdeployqtplus Shadow.app
+  mkdir -p  dist/.background
+  install contrib/macdeploy/background.png dist/.background
+  install contrib/macdeploy/DS_Store dist/.DS_Store
   cd dist
-  tar cfz Shadow.app.tar.gz Shadow.app
-  mv Shadow.app.tar.gz $OUTDIR/
+  ln -sf /Applications Applications
+  cd ..
+  genisoimage -no-cache-inodes -l -probe -V "Shadow" -no-pad -r -apple -o Shadow.tmp.dmg dist
+  dmg dmg Shadow.tmp.dmg $OUTDIR/Shadow.dmg
   #
