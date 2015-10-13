@@ -7,8 +7,6 @@ architectures:
 packages: 
 - "mingw-w64"
 - "g++-mingw-w64"
-- "zip"
-- "unzip"
 - "faketime"
 - "libz-dev"
 - "ruby-full"
@@ -18,14 +16,21 @@ packages:
 - "bison"
 - "gperf"
 - "sharutils"
+- "zip"
+- "unzip"
 reference_datetime: "2011-01-30 00:00:00"
 remotes: []
 files:
-- "qt-everywhere-opensource-src-5.4.2.tar.xz"
-- "shadow-deps-win32-gitian-r11.zip"
-- "shadow-deps-win64-gitian-r11.zip"
+- "qt-everywhere-opensource-src-5.5.0.tar.xz"
+- "shadow-deps-win32-gitian.tar.xz"
+- "shadow-deps-win64-gitian.tar.xz"
 - "flex-2.5.38.tar.gz"
 script: |
+  # Integrity Check
+  echo "7ea2a16ecb8088e67db86b0835b887d5316121aeef9565d5d19be3d539a2c2af  qt-everywhere-opensource-src-5.5.0.tar.xz" | sha256sum -c
+  echo "306264166531eecbb35ec645c425b1b5538e8ce3035d7bf599db0b2cc76c730f  shadow-deps-win32-gitian.tar.xz"           | sha256sum -c 
+  echo "1c7c36ca02624fc2e0f026a84853217e84a9f27f8542a5b18d13164ea48edea7  shadow-deps-win64-gitian.tar.xz"           | sha256sum -c 
+  echo "80f7c7188d7611e47e47d2a70c8ef65026c1cf71ddeb4ace9b1be5b8a76ffbd2  flex-2.5.38.tar.gz"                        | sha256sum -c
   # Defines
   export TZ=UTC
   INDIR=$HOME/build
@@ -38,9 +43,6 @@ script: |
   #  The thorough solution would be to use QMap instead of QHash, but this requires patching Qt.
   #  For now luckily there is a test mode that forces a fixed seed.
   export QT_RCC_TEST=1
-  # Integrity Check
-  echo "8c6d070613b721452f8cffdea6bddc82ce4f32f96703e3af02abb91a59f1ea25  qt-everywhere-opensource-src-5.4.2.tar.xz" | sha256sum -c
-  echo "80f7c7188d7611e47e47d2a70c8ef65026c1cf71ddeb4ace9b1be5b8a76ffbd2  flex-2.5.38.tar.gz" | sha256sum -c
   #
   export OLDPATH="$PATH"
   export OLDINCLUDE="$INCLUDE"
@@ -77,7 +79,7 @@ script: |
     #
     # Need mingw-compiled openssl from shadow-deps:
     cd $DEPSDIR
-    unzip $INDIR/shadow-deps-win${BITS}-gitian-r11.zip
+    tar xf $INDIR/shadow-deps-win${BITS}-gitian.tar.xz
     #
     ln -s $DEPSDIR/lib/libsicudt.a $DEPSDIR/lib/libicudt.a
     ln -s $DEPSDIR/lib/libsicuin.a $DEPSDIR/lib/libicuin.a
@@ -90,10 +92,10 @@ script: |
     #
     cd $BUILDDIR
     #
-    tar xf $INDIR/qt-everywhere-opensource-src-5.4.2.tar.xz
+    tar xf $INDIR/qt-everywhere-opensource-src-5.5.0.tar.xz
     #
-    cd qt-everywhere-opensource-src-5.4.2
-    QTDIR=$BUILDDIR/qt-everywhere-opensource-src-5.4.2
+    cd qt-everywhere-opensource-src-5.5.0
+    QTDIR=$BUILDDIR/qt-everywhere-opensource-src-5.5.0
     
     sed -i 's,\.exe,,' "$QTDIR/qtwebkit/Tools/qmake/mkspecs/features/functions.prf"
     sed -i 's,\win_flex,flex,' "$QTDIR/qtwebkit/Tools/qmake/mkspecs/features/default_pre.prf"
@@ -118,18 +120,99 @@ script: |
     #export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
     #export FAKETIME=$REFERENCE_DATETIME
     #
-    # 
-    OPENSSL_LIBS="-L$DEPSDIR/lib -lssl -lcrypto -lgdi32" ./configure -prefix $INSTALLPREFIX -bindir $INSTALLPREFIX/host/bin -confirm-license -release -opensource -xplatform $SPECNAME -device-option CROSS_COMPILE="$HOST-" -no-audio-backend -no-sql-odbc -no-nis -no-cups -no-iconv -no-dbus -no-gif -no-opengl -no-compile-examples -no-feature-style-windowsce -no-feature-style-windowsmobile -no-qml-debug -skip qtsvg -skip qtwebkit-examples -skip qtserialport -skip qtdeclarative -skip qtmultimedia -skip qtimageformats -skip qtlocation -skip qtsensors -skip qtquick1 -skip qtquickcontrols -skip qtactiveqt -skip qtconnectivity -skip qtwinextras -skip qtxmlpatterns -skip qtscript -skip qtdoc -system-libpng -system-zlib -icu -v
+    # fputs not in std namespace?
+    #sed 's/std::fputs/fputs/' -i $QTDIR/qttools/src/windeployqt/main.cpp
+    #
+    CONFIG_OPTS="
+    -opensource
+    -confirm-license
+    -release
+    -xplatform $SPECNAME
+    -no-audio-backend
+    -no-glib
+    -no-dbus
+    -no-cups
+    -no-iconv
+    -no-gif
+    -no-freetype
+    -no-nis
+    -no-pch
+    -no-qml-debug
+    -nomake examples
+    -nomake tests
+    -no-feature-style-windowsmobile
+    -no-feature-style-windowsce
+    -no-sql-db2
+    -no-sql-ibase
+    -no-sql-oci
+    -no-sql-tds
+    -no-sql-mysql
+    -no-sql-odbc
+    -no-sql-psql
+    -no-sql-sqlite
+    -no-sql-sqlite2
+    -prefix $INSTALLPREFIX
+    -bindir ${INSTALLPREFIX}/host/bin
+    -device-option CROSS_COMPILE=${HOST}-
+    -icu
+    -v
+    -qt-libpng
+    -qt-libjpeg
+    -system-zlib
+    -qt-pcre
+    -no-pulseaudio
+    -no-openvg
+    -no-opengl
+    -no-xrender
+    -no-alsa
+    -no-mtdev
+    -no-mitshm
+    -no-kms
+    -no-reduce-relocations
+    -no-egl
+    -no-eglfs
+    -no-linuxfb
+    -no-xinput2
+    -no-libudev
+    -no-gstreamer
+    -optimized-qmake
+    -skip qtwinextras
+    -skip qtandroidextras
+    -skip qtmacextras
+    -skip qtx11extras
+    -skip qtsvg
+    -skip qtxmlpatterns
+    -skip qtdeclarative
+    -skip qtquickcontrols
+    -skip qtmultimedia
+    -skip qtactiveqt
+    -skip qtlocation
+    -skip qtsensors
+    -skip qtconnectivity
+    -skip qtwebsockets
+    -skip qtwebchannel
+    -skip qtwebkit-examples
+    -skip qtimageformats
+    -skip qtgraphicaleffects
+    -skip qtscript
+    -skip qtquick1
+    -skip qtwayland
+    -skip qtserialport
+    -skip qtenginio
+    -skip qtwebengine
+    -skip qt3d
+    -skip qtcanvas3d
+    -skip qtdoc"
+    OPENSSL_LIBS="-L$DEPSDIR/lib -lssl -lcrypto -lgdi32" ./configure $CONFIG_OPTS
     #
     make
     make $MAKEOPTS install
     #
     cd $QTDIR/qtwebkit
+    sed 's,type nul,cat /dev/null,' -i Source/WebCore/DerivedSources.pri
     $INSTALLPREFIX/host/bin/qmake
-    #
     make
     make install
-    cd $BUILDDIR
     #
     # post-process all generated libraries and plugins to be deterministic
     # extract them to a temporary directory then re-build them deterministically
@@ -147,7 +230,8 @@ script: |
     export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1
     export FAKETIME=$REFERENCE_DATETIME
     find -print0 | xargs -r0 touch # fix up timestamps before packaging
-    find | sort | zip -X@ $OUTDIR/qt-win${BITS}-5.4.2-gitian-r3.zip
+    find | sort | tar --no-recursion -cJf $OUTDIR/qt-win${BITS}-5.5.0-gitian.tar.xz -T -
     unset LD_PRELOAD
     unset FAKETIME
+    rm -rf $BUILDDIR
   done # for BITS in
