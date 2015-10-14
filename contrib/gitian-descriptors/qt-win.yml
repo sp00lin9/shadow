@@ -112,6 +112,8 @@ script: |
     sed --posix "s|QMAKE_CFLAGS            = -pipe -fno-keep-inline-dllexport|QMAKE_CFLAGS\t\t= -pipe -fno-keep-inline-dllexport -isystem /usr/$HOST/include/ -frandom-seed=qtbuild -I$DEPSDIR/include|" -i ${SPECFILE}
     #sed --posix "s|QMAKE_LFLAGS            =|QMAKE_LFLAGS\t\t= -L$DEPSDIR/lib --enable-deterministic-ld|" -i ${SPECFILE}
     sed --posix "s|QMAKE_LFLAGS            =|QMAKE_LFLAGS\t\t= -L$DEPSDIR/lib|" -i ${SPECFILE}
+    sed "s/src_plugins.depends = src_sql src_xml src_network/src_plugins.depends = src_xml src_network/" -i qtbase/src/src.pro
+    #sed "s|X11/extensions/XIproto.h|X11/X.h|"     -i qtbase/src/plugins/platforms/xcb/qxcbxsettings.cpp
     # Before we tried to pass arguments to ar (static linking) in using QMAKE_LIB, however
     #  qt removes the arguments for ar and provides a script which makes it impossible to pass the determinism flag -
     #  so rather than try to replace ar, post-process all libraries and plugins at the end.
@@ -127,6 +129,7 @@ script: |
     -opensource
     -confirm-license
     -release
+    -static
     -xplatform $SPECNAME
     -no-audio-backend
     -no-glib
@@ -205,12 +208,28 @@ script: |
     -skip qtdoc"
     OPENSSL_LIBS="-L$DEPSDIR/lib -lssl -lcrypto -lgdi32" ./configure $CONFIG_OPTS
     #
-    make
+    #make qmake_all
+    #cd qtbase
+    #make -C src sub-corelib sub-network sub-widgets sub-gui sub-plugins sub-testlib
+    #make -C src sub-corelib-install_subtargets sub-network-install_subtargets sub-widgets-install_subtargets sub-gui-install_subtargets sub-plugins-install_subtargets sub-testlib-install_subtargets
+    #make -C ../qttools/src/linguist/lrelease
+    #make -C ../qttools/src/linguist/lrelease install_target
+    #make -C ../qttranslations
+    #make -C ../qttranslations install_subtargets
+    make $MAKEOPTS
     make $MAKEOPTS install
     #
     cd $QTDIR/qtwebkit
     sed 's,type nul,cat /dev/null,' -i Source/WebCore/DerivedSources.pri
-    $INSTALLPREFIX/host/bin/qmake
+    for TARGET in Source/WebCore/Target.pri Source/WebKit2/Target.pri Source/JavaScriptCore/Target.pri Source/ThirdParty/leveldb/Target.pri Source/ThirdParty/ANGLE/Target.pri Source/WebKit/WebKit1.pro
+    do
+       sed 's/^CONFIG += staticlib/CONFIG(shared, static|shared): CONFIG += staticlib/' -i $TARGET
+       echo "CONFIG(static, static|shared) {
+             target.path = $$[QT_INSTALL_LIBS]
+             INSTALLS += target
+             }" >> $TARGET
+    done
+    $INSTALLPREFIX/host/bin/qmake CONFIG+="release static"
     make
     make install
     #
