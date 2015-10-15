@@ -221,11 +221,11 @@ script: |
     #
     cd $QTDIR/qtwebkit
     sed 's,type nul,cat /dev/null,' -i Source/WebCore/DerivedSources.pri
-    for TARGET in Source/WebCore/Target.pri Source/WebKit2/Target.pri Source/JavaScriptCore/Target.pri Source/ThirdParty/leveldb/Target.pri Source/ThirdParty/ANGLE/Target.pri Source/WebKit/WebKit1.pro
+    for TARGET in Source/WebCore/Target.pri Source/WebKit2/Target.pri Source/JavaScriptCore/Target.pri Source/ThirdParty/leveldb/Target.pri Source/ThirdParty/ANGLE/Target.pri Source/WebKit/WebKit1.pro Source/WTF/WTF.pro
     do
        sed 's/^CONFIG += staticlib/CONFIG(shared, static|shared): CONFIG += staticlib/' -i $TARGET
        echo "CONFIG(static, static|shared) {
-             target.path = $$[QT_INSTALL_LIBS]
+             target.path = \$\$[QT_INSTALL_LIBS]
              INSTALLS += target
              }" >> $TARGET
     done
