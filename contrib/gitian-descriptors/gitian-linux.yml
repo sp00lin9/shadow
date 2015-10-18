@@ -23,11 +23,12 @@ remotes:
 - "url": "https://github.com/ShadowProject/shadowcoin.git"
   "dir": "shadowcoin"
 files:
-- "shadow-deps-linux32-gitian-r4.zip"
-- "shadow-deps-linux64-gitian-r4.zip"
-- "boost-linux32-1.55.0-gitian-r1.zip"
-- "boost-linux64-1.55.0-gitian-r1.zip"
+- "shadow-deps-linux32-gitian.zip"
+- "shadow-deps-linux64-gitian.zip"
 script: |
+  #Integrity check
+  echo "03319496b897507fe0c49a13bd96a09edb795ed0b54528459acd760d8c2c763a  shadow-deps-linux32-gitian.zip" |sha256sum -c
+  echo "7710a73c4b965b59de099ab33c982e3c113b14faf21786f018ad01f01f7b84b3  shadow-deps-linux64-gitian.zip" |sha256sum -c
   STAGING="$HOME/install"
   OPTFLAGS='-O2'
   BINDIR="${OUTDIR}/bin/${GBUILD_BITS}" # 32/64 bit build specific output directory
