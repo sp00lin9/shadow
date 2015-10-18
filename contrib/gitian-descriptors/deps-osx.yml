@@ -8,15 +8,14 @@ packages:
 - "git-core"
 - "clang"
 - "llvm-dev"
-- "zip"
 - "faketime"
 - "psmisc"
 reference_datetime: "2011-01-30 00:00:00"
 remotes: []
 files:
-- "openssl-1.0.1h.tar.gz"
+- "openssl-1.0.2d.tar.gz"
 - "db-4.8.30.NC.tar.gz"
-- "miniupnpc-1.9.tar.gz"
+- "miniupnpc-1.9.20151008.tar.gz"
 - "zlib-1.2.8.tar.gz"
 - "icu4c-55_1-src.tgz"
 - "boost_1_55_0.tar.bz2"
@@ -24,12 +23,12 @@ files:
 script: |
   #
   # Input Integrity Check
-  echo "9d1c8a9836aa63e2c6adb684186cbd4371c9e9dcc01d6e3bb447abf2d4d3d093  openssl-1.0.1h.tar.gz"  | sha256sum -c
-  echo "12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz"    | sha256sum -c
-  echo "2923e453e880bb949e3d4da9f83dd3cb6f08946d35de0b864d0339cf70934464  miniupnpc-1.9.tar.gz"   | sha256sum -c
-  echo "36658cb768a54c1d4dec43c3116c27ed893e88b02ecfcb44f2166f9c0b7f2a0d  zlib-1.2.8.tar.gz"      | sha256sum -c
-  echo "e16b22cbefdd354bec114541f7849a12f8fc2015320ca5282ee4fd787571457b  icu4c-55_1-src.tgz"     | sha256sum -c
-  echo "fff00023dd79486d444c8e29922f4072e1d451fc5a4d2b6075852ead7f2b7b52  boost_1_55_0.tar.bz2"   | shasum -c
+  echo "671c36487785628a703374c652ad2cebea45fa920ae5681515df25d9f2c9a8c8  openssl-1.0.2d.tar.gz"         | sha256sum -c
+  echo "12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz"           | sha256sum -c
+  echo "e444ac3b587ce82709c4d0cfca1fe71f44f9fc433e9f946b12b9e1bfe667a633  miniupnpc-1.9.20151008.tar.gz" | sha256sum -c
+  echo "36658cb768a54c1d4dec43c3116c27ed893e88b02ecfcb44f2166f9c0b7f2a0d  zlib-1.2.8.tar.gz"             | sha256sum -c
+  echo "e16b22cbefdd354bec114541f7849a12f8fc2015320ca5282ee4fd787571457b  icu4c-55_1-src.tgz"            | sha256sum -c
+  echo "fff00023dd79486d444c8e29922f4072e1d451fc5a4d2b6075852ead7f2b7b52  boost_1_55_0.tar.bz2"          | shasum -c
   #
   export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
@@ -48,8 +47,8 @@ script: |
   PATH=$PATH:$DEPSDIR/bin
   #
   cd $BUILDDIR
-  tar xzf openssl-1.0.1h.tar.gz
-  cd openssl-1.0.1h
+  tar xzf openssl-1.0.2d.tar.gz
+  cd openssl-1.0.2d
   CC=cc ./Configure --cross-compile-prefix=$HOST- darwin64-x86_64-cc no-shared no-dso --openssldir=$INSTALLPREFIX
   make
   make install_sw
@@ -63,9 +62,8 @@ script: |
   make install_lib install_include
   cd ../..
   #
-  tar xzf miniupnpc-1.9.tar.gz
-  cd miniupnpc-1.9
-  mkdir -p dll
+  tar xzf miniupnpc-1.9.20151008.tar.gz
+  cd miniupnpc-1.9.20151008
   make -f Makefile OS=Darwin CC=$HOST-cc AR=$HOST-ar libminiupnpc.a
   install -d $INSTALLPREFIX/include/miniupnpc
   install *.h $INSTALLPREFIX/include/miniupnpc
@@ -111,4 +109,4 @@ script: |
   #done
   #
   cd $INSTALLPREFIX
-  find include lib | sort | zip -X@ $OUTDIR/shadow-deps-osx-gitian.zip
+  find include lib | sort | tar --no-recursion -cJf $OUTDIR/shadow-deps-osx-gitian.tar.xz -T -
