@@ -995,13 +995,17 @@
                     <div id="wizards" style="display:none">    
                         <div id="new-key-wizard" class="wizardblock" style="display:none">
                             <div>
-                                <h3>Lets create a new account</h3>
-                                <h2>Give your new account a label and a password</h2>
+                                <h3>Lets create a new key and account</h3>
+                                <h2>Give your new key and account a label and a password</h2>
                                 <label for="new-account-label" class="recipient">Label: </label>
-                                <input id="new-account-label"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Label for account" ></br>
+                                <input id="new-account-label"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Label for key/account" ></br>
                                 <label for="new-account-passphrase" class="recipient">Passphrase (Optional): </label>
                                 <input id="new-account-passphrase" type="password"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Enter a passphrase for the bip39 mnemonic" ></br>
-
+                                <div class="option">
+                                    <label for="new-account-bip44" class="recipient">BIP44:</label>
+                                    <input  id="new-account-bip44" class="option" type="checkbox" data-title="Would you like to create a bip44 path?" checked />
+                                    <label for="new-account-bip44" style="vertical-align: initial;">Would you like to create a Multi-Account HD Key?</label><!-- checkbox / FontAwesome hack -->
+                                </div>
                                 <label for="new-account-language" class="recipient">Language: </label>
                                 <select id="new-account-language" class="button is-inverse has-fixed-icon"  style="width:25%;height:40px;padding:0 10px;margin-bottom:10px;">
                                     <option value="1" title="English">English</option>
@@ -1024,7 +1028,7 @@
                             </div>
                             <div stepJS="keyManagementPage.newKey();" endWiz=" keyManagementPage.gotoPage('overview'); " >
                                 <h3>Congratulations! You have successfully created a new wallet account</h3>
-                                <p>You can now use your account to send and receive funds :) Remember to keep your 24 work mnemonic and passphase safe in case you ever need to recover your wallet </p></br>
+                                <p>You can now use your account to send and receive funds :) Remember to keep your 24 word mnemonic and passphase safe in case you ever need to recover your wallet </p></br>
 
 <!-- TODO: Implement a SET DEFAULT / SET MASTER option at the end of the wizard -->                                 
 <!--                                <input id="new-key-make-default" type="checkbox" checked>

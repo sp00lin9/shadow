@@ -2580,11 +2580,10 @@ var keyManagementPage = {
     },
     newKey: function()
     {
-        newMnemonic   = $('#new-key-mnemonic').val().trim();
-        newPassphrase = $('#new-account-passphrase').val().trim();
-        newLabel      = $('#new-account-label').val().trim();
-
-        result = bridge.importFromMnemonic(newMnemonic, newPassphrase, newLabel);
+        result = bridge.importFromMnemonic($('#new-key-mnemonic').val().trim(),
+                                           $('#new-account-passphrase').val().trim(),
+                                           $('#new-account-label').val().trim(),
+                                           $('#new-account-bip44').prop("checked"));
         
         if(result.error_msg != '' )
         { 
