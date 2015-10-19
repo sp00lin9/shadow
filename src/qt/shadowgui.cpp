@@ -110,7 +110,7 @@ ShadowGUI::ShadowGUI(QWidget *parent):
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
-    
+
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
@@ -773,7 +773,7 @@ void ShadowGUI::setEncryptionStatus(int status)
         toggleLockIcon.removeClass("fa-unlock");
         toggleLockIcon.   addClass("fa-lock");
         encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
-        
+
         if (fWalletUnlockStakingOnly)
         {
             encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
@@ -785,7 +785,7 @@ void ShadowGUI::setEncryptionStatus(int status)
             encryptionIcon.addClass("red");
             encryptionIcon.removeClass("orange");
         };
-        
+
         encryptButton.addClass("none");
         changePassphrase.removeClass("none");
         toggleLock.removeClass("none");
@@ -802,7 +802,7 @@ void ShadowGUI::setEncryptionStatus(int status)
         toggleLockIcon.removeClass("fa-lock");
         toggleLockIcon.   addClass("fa-unlock");
         encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
-        
+
         encryptionIcon.addClass("red");
         encryptionIcon.removeClass("orange");
         encryptButton.addClass("none");
@@ -853,11 +853,11 @@ void ShadowGUI::unlockWallet()
 {
     if(!walletModel)
         return;
-    
+
     // Unlock wallet when requested by wallet model
     if(walletModel->getEncryptionStatus() == WalletModel::Locked)
     {
-        
+
         AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
               AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
         AskPassphraseDialog dlg(mode, this);
@@ -879,7 +879,7 @@ void ShadowGUI::toggleLock()
     if(!walletModel)
         return;
     WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
-    
+
     switch(status)
     {
         case WalletModel::Locked:       unlockWalletAction->trigger(); break;
@@ -890,7 +890,7 @@ void ShadowGUI::toggleLock()
                 QMessageBox::Ok, QMessageBox::Ok);
             break;
     };
-    
+
 }
 
 void ShadowGUI::showNormalIfMinimized(bool fToggleHidden)
@@ -945,11 +945,6 @@ void ShadowGUI::updateStakingIcon()
     {
         updateWeight();
         nNetworkWeight = GetPoSKernelPS();
-
-        // PoSV1
-        if(nNetworkWeight < COIN)
-            nWeight /= COIN;
-
     } else
         nWeight = 0;
 
@@ -969,11 +964,8 @@ void ShadowGUI::updateStakingIcon()
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
-        // PoSV2
-        if(nNetworkWeight > COIN) {
-            nWeight /= COIN;
-            nNetworkWeight /= COIN;
-        }
+        nWeight        /= COIN,
+        nNetworkWeight /= COIN;
 
         stakingIcon.setAttribute("data-title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
     } else
@@ -983,12 +975,12 @@ void ShadowGUI::updateStakingIcon()
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
-                                          (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
-                                          (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
-                                          (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-                                          (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
-                                          (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
-                                                                                     tr("Not staking"));
+                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
+                                               (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
+                                               (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
+                                               (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
+                                               (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
+                                                                                          tr("Not staking"));
     }
 }
 
