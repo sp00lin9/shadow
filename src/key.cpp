@@ -379,7 +379,7 @@ CExtPubKey CExtKey::Neutered() const
     ret.nDepth = nDepth;
     memcpy(&ret.vchFingerprint[0], &vchFingerprint[0], 4);
     ret.nChild = nChild;
-    ret.pubkey = key.GetPubKey();
+    ret.pubkey = key.GetPubKey(true);
     memcpy(&ret.vchChainCode[0], &vchChainCode[0], 32);
     return ret;
 }
@@ -457,7 +457,7 @@ void CExtKeyPair::DecodeV(const unsigned char code[74])
     nChild = (code[5] << 24) | (code[6] << 16) | (code[7] << 8) | code[8];
     memcpy(vchChainCode, code+9, 32);
     key.Set(code+42, code+74, true);
-    pubkey = key.GetPubKey();
+    pubkey = key.GetPubKey(true);
 };
 
 void CExtKeyPair::EncodeP(unsigned char code[74]) const
@@ -513,7 +513,7 @@ bool CExtKeyPair::Derive(CExtPubKey &out, unsigned int nChild) const
     if (!key.Derive(tkey, out.vchChainCode, nChild, vchChainCode))
         return false;
     
-    out.pubkey = tkey.GetPubKey();
+    out.pubkey = tkey.GetPubKey(true);
     return true;
 };
 
@@ -539,7 +539,7 @@ bool CExtKeyPair::Derive(CPubKey &out, unsigned int nChild) const
     CKey tkey;
     if (!key.Derive(tkey, temp, nChild, vchChainCode))
         return false;
-    out = tkey.GetPubKey();
+    out = tkey.GetPubKey(true);
     return true;
 };
 
@@ -576,7 +576,7 @@ void CExtKeyPair::SetMaster(const unsigned char *seed, unsigned int nSeedLen)
     LockObject(out);
     HMAC_SHA512_Final(out, &ctx);
     key.Set(&out[0], &out[32], true);
-    pubkey = key.GetPubKey();
+    pubkey = key.GetPubKey(true);
     memcpy(vchChainCode, &out[32], 32);
     UnlockObject(out);
     nDepth = 0;
@@ -587,7 +587,7 @@ void CExtKeyPair::SetMaster(const unsigned char *seed, unsigned int nSeedLen)
 int CExtKeyPair::SetKeyCode(const unsigned char *pkey, const unsigned char *pcode)
 {
     key.Set(pkey, true);
-    pubkey = key.GetPubKey();
+    pubkey = key.GetPubKey(true);
     memcpy(vchChainCode, pcode, 32);
     nDepth = 0;
     nChild = 0;

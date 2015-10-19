@@ -157,9 +157,9 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "signrawtransaction", 1},
     { "signrawtransaction", 2},
     { "keypoolrefill", 0 },
-    
+
     { "sendtostealthaddress", 1 },
-    
+
     { "sendsdctoanon", 1 },
     { "sendanontoanon", 1 },
     { "sendanontoanon", 2 },
@@ -167,9 +167,12 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "sendanontosdc", 2 },
     { "estimateanonfee", 0 },
     { "estimateanonfee", 1 },
-    
+
     { "thinscanmerkleblocks", 0 },
     { "thinforcestate", 0 },
+
+    { "importprivkey", 2 },
+    { "importprivkey", 3 },
 };
 
 class CRPCConvertTable
