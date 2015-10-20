@@ -6157,17 +6157,14 @@ std::string CWallet::SendMoneyToDestination(const CTxDestination& address, int64
         ek = boost::get<CExtKeyPair>(address);
         CExtKey58 ek58;
         ek58.SetKeyP(ek);
-
         if (0 != ExtKeyGetDestination(ek, scriptPubKey, nChildKey))
             return "ExtKeyGetDestination failed.";
     } else
-    {
         scriptPubKey.SetDestination(address);
-    };
 
     std::string rv = SendMoney(scriptPubKey, nValue, sNarr, wtxNew, fAskFee);
 
-    if (rv == "")
+    if (address.type() == typeid(CExtKeyPair) && rv == "")
         ExtKeyUpdateLooseKey(ek, nChildKey, true);
 
     return rv;
