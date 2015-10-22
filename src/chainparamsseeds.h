@@ -12,6 +12,7 @@ static const unsigned int pnSeed[] =
 
 static const unsigned int pnTestnetSeed[] =
 {
+    0x05fab2da,
     0x05fab2db,
 };
 

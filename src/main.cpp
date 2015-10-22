@@ -2174,7 +2174,7 @@ static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSiz
         pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
         if (!txdb.ReadAnonOutput(pkRingCoin, ao))
         {
-            LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
             return false;
         };
 
@@ -2184,21 +2184,21 @@ static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSiz
         } else
         if (nCoinValue != ao.nValue)
         {
-            LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
             return false;
         };
 
         if (ao.nBlockHeight == 0
             || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
         {
-            LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
             return false;
         };
     };
 
     if (verifyRingSignatureAB(vchImage, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
     {
-        LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignatureAB() failed.\n", i);
+        LogPrintf("CheckAnonInputsAB(): Error input %d verifyRingSignatureAB() failed.\n", i);
         return false;
     };
 
@@ -2207,12 +2207,7 @@ static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSiz
 
 bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists)
 {
-    if (fDebugRingSig)
-    {
-        LogPrintf("CheckAnonInputs()\n");
-        AssertLockHeld(cs_main);
-    };
-
+    AssertLockHeld(cs_main);
     // - fCheckExists should only run for anonInputs entering this node
 
     fInvalid = false; // TODO: is it acceptable to not find ring members?

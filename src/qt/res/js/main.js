@@ -547,7 +547,7 @@ function openContextMenu(el)
 var overviewPage = {
     init: function() {
         this.balance = $(".balance"),
-        this.shadowBal = $("#shadowBal"),
+        this.shadowBal = $(".shadow_balance"),
         this.reserved = $("#reserved"),
         this.stake = $("#stake"),
         this.unconfirmed = $("#unconfirmed"),
@@ -1017,22 +1017,15 @@ function changeTxnType()
 
     if (type > 1)
     {
-        if(bridge.info.options.AutoRingSize == true)
-        {
-            $("#tx_ringsize").hide();
-            $("#suggest_ring_size").hide();
-        } else
-        {
-            $("#tx_ringsize").show();
-            $("#suggest_ring_size").show();
-        }
-        $("#coincontrol").hide();
+        $("#tx_ringsize,#suggest_ring_size")[bridge.info.options.AutoRingSize == true ? 'hide' : 'show']();
+        $("#coincontrol,#spend_sdc").hide();
+        $("#spend_shadow").show();
+        toggleCoinControl(false);
     }
     else
     {
-        $("#tx_ringsize").hide();
-        $("#suggest_ring_size").hide();
-        $("#coincontrol").show();
+        $("#tx_ringsize,#suggest_ring_size,#spend_shadow").hide();
+        $("#coincontrol,#spend_sdc").show();
     }
 
     resizeFooter();
@@ -1043,7 +1036,7 @@ function suggestRingSize()
     chainDataPage.updateAnonOutputs();
 
     var minsize = bridge.info.options.MinRingSize||3,
-        maxsize = bridge.info.options.MaxRingSize||100;
+        maxsize = bridge.info.options.MaxRingSize||50;
 
     function mature(value, min_owned) {
         if(min_owned == undefined || !$.isNumeric(min_owned))

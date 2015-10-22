@@ -2947,7 +2947,8 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
         pkRingCoin = CPubKey(&pPubkeys[0 * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
         if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
         {
-            LogPrintf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, HexStr(pkRingCoin).c_str());
+            LogPrintf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, pkRingCoin.GetID().ToString());
+            LogPrintf("%s, %s\n", pkRingCoin.GetID().ToString(), CBitcoinAddress(pkRingCoin.GetID()).ToString());
             return false;
         };
 
@@ -3219,9 +3220,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
             WalletTxMap::iterator mi = mapWallet.find(oao.outpoint.hash);
             if (mi == mapWallet.end())
-            {
                 return error("%s: Error input %d prev txn not in mapwallet %s.", __func__, i, oao.outpoint.hash.ToString().c_str());
-            };
 
             CWalletTx& inTx = (*mi).second;
             if (oao.outpoint.n >= inTx.vout.size())
@@ -3251,10 +3250,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
         int nRingSize = txin.ExtractRingSize();
         if (nRingSize < (int)MIN_RING_SIZE
-            || nRingSize > (int)MAX_RING_SIZE)
-        {
+         || nRingSize > (int)MAX_RING_SIZE)
             return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
-        };
 
 
         const uint8_t *pPubkeys;
@@ -3269,9 +3266,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             rsType = RING_SIG_1;
             pPubkeys = &s[2];
         } else
-        {
             return error("%s: Input %d scriptSig too small.", __func__, i);
-        };
 
         int64_t nCoinValue = -1;
 
@@ -3290,9 +3285,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 nCoinValue = ao.nValue;
             } else
             if (nCoinValue != ao.nValue)
-            {
                 return error("%s: Input %u ring amount mismatch %d, %d.", __func__, i, nCoinValue, ao.nValue);
-            };
 
             if (ao.nBlockHeight == 0
                 || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
@@ -3305,19 +3298,15 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
         spentKeyImage.txnHash = txnHash;
         spentKeyImage.inputNo = i;
-        spentKeyImage.nValue = nCoinValue;
+        spentKeyImage.nValue  = nCoinValue;
 
         if (blockHash != 0)
         {
             if (!ptxdb->WriteKeyImage(vchImage, spentKeyImage))
-            {
                 return error("%s: Input %d WriteKeyImage failed %s.", __func__, i, HexStr(vchImage).c_str());
-            };
         } else
-        {
             // -- add keyImage to mempool, will be added to txdb in UpdateAnonTransaction
             mempool.insertKeyImage(vchImage, spentKeyImage);
-        };
 
         mapAnonOutputStats[spentKeyImage.nValue].incSpends(spentKeyImage.nValue);
     };
@@ -3375,7 +3364,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
         if (!ptxdb->WriteAnonOutput(pkCoin, ao))
         {
-            LogPrintf("%s: WriteKeyImage failed.\n", __func__);
+            LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
             continue;
         };
 
@@ -3605,9 +3594,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             CKeyImageSpent kis;
             if (GetKeyImage(ptxdb, pkImage, kis, fInMemPool)
                 && !fInMemPool) // shouldn't be possible for kis to be in mempool here
-            {
                 fSpentAOut = true;
-            };
 
             COwnedAnonOutput oao(outpoint, fSpentAOut);
 
@@ -3859,16 +3846,16 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
     return true;
 };
 
-static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*>& vData, std::vector<int>& v)
+static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*>& vData, std::vector<int>& vecInputIndex)
 {
     // -- m of n combinations, check smallest coins first
 
     if (fDebugRingSig)
         LogPrintf("checkCombinations() %d, %u\n", m, vData.size());
 
-    int n = vData.size();
+    int nOwnedAnonOutputs = vData.size();
 
-    try { v.resize(m); } catch (std::exception& e)
+    try { vecInputIndex.resize(m); } catch (std::exception& e)
     {
         LogPrintf("Error: checkCombinations() v.resize(%d) threw: %s.\n", m, e.what());
         return false;
@@ -3877,9 +3864,9 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
 
     int64_t nCount = 0;
 
-    if (m > n) // ERROR
+    if (m > nOwnedAnonOutputs) // ERROR
     {
-        LogPrintf("Error: checkCombinations() m > n\n");
+        LogPrintf("Error: checkCombinations() m > nOwnedAnonOutputs\n");
         return false;
     };
 
@@ -3887,7 +3874,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
 
     // -- pick better start point
     //    lAvailableCoins is sorted, if coin i * m < nReq, no combinations of lesser coins will be < either
-    for (l = m; l <= n; ++l)
+    for (l = m; l <= nOwnedAnonOutputs; ++l)
     {
         if (vData[l-1]->nValue * m < nReq)
             continue;
@@ -3905,25 +3892,30 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     };
 
 
-    for (l = startL; l <= n; ++l)
+    for (l = startL; l <= nOwnedAnonOutputs; ++l)
     {
         for (i = 0; i < m; ++i)
-            v[i] = (m - i)-1;
-        v[0] = l-1;
+            vecInputIndex[i] = (m - i)-1;
+        vecInputIndex[0] = l-1;
 
         // -- m must be > 2 to use coarse seeking
-        bool fSeekFine = m > 2 ? false : true;
+        bool fSeekFine = m <= 2;
 
+        if(fDebugRingSig)
+            LogPrintf("coarse seek: %d, vecInputIndex[1]: %d, vecInputIndex[0]-1: %d\n", !fSeekFine, vecInputIndex[1], vecInputIndex[0]-1);
         // -- coarse
-        while(!fSeekFine && v[1] < v[0]-1)
+        while(!fSeekFine && vecInputIndex[1] < vecInputIndex[0]-1)
         {
             for (i = 1; i < m; ++i)
-                v[i] = v[i]+1;
+                vecInputIndex[i] = vecInputIndex[i]+1;
 
             int64_t nTotal = 0;
 
             for (i = 0; i < m; ++i)
-                nTotal += vData[v[i]]->nValue;
+                nTotal += vData[vecInputIndex[i]]->nValue;
+
+            if(fDebugRingSig)
+                LogPrintf("coarse seeking - nTotal: %d\n", nTotal);
 
             nCount++;
 
@@ -3932,37 +3924,40 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
                 if (fDebugRingSig)
                 {
                     LogPrintf("Found match of total %d, in %d tries\n", nTotal, nCount);
-                    for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
+                    for (i = m; i--;) LogPrintf("%d%c", vecInputIndex[i], i ? ' ': '\n');
                 };
                 return true;
             };
             if (nTotal > nReq)
             {
                 for (i = 1; i < m; ++i) // rewind
-                    v[i] = v[i]-1;
+                    vecInputIndex[i] = vecInputIndex[i]-1;
 
                 if (fDebugRingSig)
                 {
                     LogPrintf("Found coarse match of total %d, in %d tries\n", nTotal, nCount);
-                    for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
+                    for (i = m; i--;) LogPrintf("%d%c", vecInputIndex[i], i ? ' ': '\n');
                 };
                 fSeekFine = true;
             };
         };
 
-        if (!fSeekFine)
+        if (!fSeekFine && l < nOwnedAnonOutputs)
             continue;
 
         // -- fine
         i = m-1;
         for (;;)
         {
-            if (v[0] == l-1) // otherwise get duplicate combinations
+            if (vecInputIndex[0] == l-1) // otherwise get duplicate combinations
             {
                 int64_t nTotal = 0;
 
                 for (i = 0; i < m; ++i)
-                    nTotal += vData[v[i]]->nValue;
+                    nTotal += vData[vecInputIndex[i]]->nValue;
+
+                if(fDebugRingSig)
+                    LogPrintf("fine seeking - nTotal: %d\n", nTotal);
 
                 nCount++;
 
@@ -3971,30 +3966,30 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
                     if (fDebugRingSig)
                     {
                         LogPrintf("Found match of total %d, in %d tries\n", nTotal, nCount);
-                        for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
+                        for (i = m; i--;) LogPrintf("%d%c", vecInputIndex[i], i ? ' ': '\n');
                     };
                     return true;
                 };
 
                 if (fDebugRingSig && !(nCount % 500))
                 {
-                    LogPrintf("checkCombinations() nCount: %d - l: %d, n: %d, m: %d, i: %d, nReq: %d, v[0]: %d, nTotal: %d \n", nCount, l, n, m, i, nReq, v[0], nTotal);
-                    for (i = m; i--;) LogPrintf("%d%c", v[i], i ? ' ': '\n');
+                    LogPrintf("checkCombinations() nCount: %d - l: %d, nOwnedAnonOutputs: %d, m: %d, i: %d, nReq: %d, v[0]: %d, nTotal: %d \n", nCount, l, nOwnedAnonOutputs, m, i, nReq, vecInputIndex[0], nTotal);
+                    for (i = m; i--;) LogPrintf("%d%c", vecInputIndex[i], i ? ' ': '\n');
                 };
             };
 
-            for (i = 0; v[i] >= l - i;) // 0 is largest element
+            for (i = 0; vecInputIndex[i] >= l - i;) // 0 is largest element
             {
                 if (++i >= m)
                     goto EndInner;
             };
 
             // -- fill the set with the next values
-            for (v[i]++; i; i--)
-                v[i-1] = v[i] + 1;
+            for (vecInputIndex[i]++; i; i--)
+                vecInputIndex[i-1] = vecInputIndex[i] + 1;
         };
         EndInner:
-        if (i+1 > n)
+        if (i+1 > nOwnedAnonOutputs)
             break;
     };
 
@@ -4043,6 +4038,9 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
             return false;
     };
 
+    if (fDebugRingSig)
+        LogPrintf("nByteSizePerInCoin: %d\n", nByteSizePerInCoin);
+
     // -- repeat until all levels are tried (1 coin, 2 coins, 3 coins etc)
     for (uint32_t i = 0; i < lAvailableCoins.size(); ++i)
     {
@@ -4058,6 +4056,9 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
         nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
 
+        if (fDebugRingSig)
+            LogPrintf("nValue + nFee: %d, nValue: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue + nFee, nValue, nAmountCheck, nTotalBytes);
+
         if (nValue + nFee > nAmountCheck)
         {
             sError = "Not enough coins with requested ring size.";
@@ -4067,24 +4068,24 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
         vPickedCoins.clear();
         vecChange.clear();
 
-        std::vector<int> v;
-        if (checkCombinations(nValue + nFee, i+1, vData, v))
+        std::vector<int> vecInputIndex;
+        if (checkCombinations(nValue + nFee, i+1, vData, vecInputIndex))
         {
             if (fDebugRingSig)
             {
                 LogPrintf("Found combination %u, ", i+1);
-                for (int ic = v.size(); ic--;)
-                    LogPrintf("%d%c", v[ic], ic ? ' ': '\n');
+                for (int ic = vecInputIndex.size(); ic--;)
+                    LogPrintf("%d%c", vecInputIndex[ic], ic ? ' ': '\n');
 
                 LogPrintf("nTotalBytes %u\n", nTotalBytes);
                 LogPrintf("nFee %d\n", nFee);
             };
 
             int64_t nTotalIn = 0;
-            vPickedCoins.resize(v.size());
-            for (uint32_t ic = 0; ic < v.size(); ++ic)
+            vPickedCoins.resize(vecInputIndex.size());
+            for (uint32_t ic = 0; ic < vecInputIndex.size(); ++ic)
             {
-                vPickedCoins[ic] = vData[v[ic]];
+                vPickedCoins[ic] = vData[vecInputIndex[ic]];
                 nTotalIn += vPickedCoins[ic]->nValue;
             };
 
@@ -4320,12 +4321,6 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
-    if(rsType == RING_SIG_2 && wtxNew.nTime < Params().RSABTime()) // Prevent use of new ringsigs before hardfork
-    {
-        sError = "Error: Trying to use Adam Back ringsignatures before hardfork!";
-        return false;
-    };
-
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
     {
@@ -4378,7 +4373,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
 
     bool fFound = false;
     int64_t nFee;
-    int nExpectChangeOuts = 5;
+    int nExpectChangeOuts = 1;
     std::string sPickError;
     std::vector<COwnedAnonOutput*> vPickedCoins;
     for (int k = 0; k < 50; ++k) // safety
@@ -4389,6 +4384,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
             break;
         if (rv == 3)
         {
+            nFeeRequired = nFee; // set in PickAnonInputs()
             sError = sPickError;
             return false;
         };
@@ -4406,6 +4402,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     };
 
     nFeeRequired = nFee; // set in PickAnonInputs()
+    int nSigSize = GetRingSigSize(rsType, nRingSize);
 
     // -- need hash of tx without signatures
     std::vector<int> vCoinOffsets;
@@ -4422,9 +4419,6 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
         memcpy(txin.prevout.hash.begin(), &(*it)->vchImage[0], EC_SECRET_SIZE);
 
         txin.prevout.n = 0 | (((*it)->vchImage[32]) & 0xFF) | (int32_t)(((int16_t) nRingSize) << 16);
-
-
-        int nSigSize = GetRingSigSize(rsType, nRingSize);
 
         // -- size for full signature, signature is added later after hash
         try { txin.scriptSig.resize(nSigSize); } catch (std::exception& e)
@@ -4516,7 +4510,6 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
             return false;
         };
 
-        int nSigSize = GetRingSigSize(rsType, nRingSize);
         if (txin.scriptSig.size() < nSigSize)
         {
             sError = "Error: scriptSig too small.";
@@ -4579,6 +4572,9 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
                 };
                 if (pSigC.size() == EC_SECRET_SIZE)
                     memcpy(&txin.scriptSig[2], &pSigC[0], EC_SECRET_SIZE);
+                else
+                    LogPrintf("pSigC.size() : %d Invalid!!\n", pSigC.size());
+
                 // -- test verify
                 if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
                 {
@@ -4787,7 +4783,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed : " + sError2;
@@ -4896,9 +4892,9 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
-        LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
+        LogPrintf("SendAnonToSdc() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed: " + sError2;
         return false;
     };
@@ -4941,7 +4937,7 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
         fFound = true;
 
         if (si->spend_secret.size() != EC_SECRET_SIZE
-            || si->scan_secret.size() != EC_SECRET_SIZE)
+         || si->scan_secret .size() != EC_SECRET_SIZE)
             return error("%s: Stealth address has no secret.", __func__);
 
         memcpy(&sScan.e[0], &si->scan_secret[0], EC_SECRET_SIZE);
