@@ -136,12 +136,10 @@ cd inputs;
 wget http://liquidtelecom.dl.sourceforge.net/project/flex/flex-2.5.38.tar.gz;
 wget http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-src.tgz;
 wget http://wtogami.fedorapeople.org/boost-mingw-gas-cross-compile-2013-03-03.patch;
-wget http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.9.tar.gz -Ominiupnpc-1.9.tar.gz;
-wget http://www.openssl.org/source/openssl-1.0.1h.tar.gz;
+wget http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.9.20151008.tar.gz -Ominiupnpc-1.9.20151008.tar.gz;
+wget http://www.openssl.org/source/openssl-1.0.2d.tar.gz;
 wget http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz;
-wget http://liquidtelecom.dl.sourceforge.net/project/libpng/libpng16/older-releases/1.6.10/libpng-1.6.10.tar.gz;
-wget http://zlib.net/zlib-1.2.8.tar.gz;
-wget http://download.qt.io/official_releases/qt/5.4/5.4.2/single/qt-everywhere-opensource-src-5.4.2.tar.xz
+wget http://download.qt.io/official_releases/qt/5.5/5.5.0/single/qt-everywhere-opensource-src-5.5.0.tar.xz
 wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download -Oboost_1_55_0.tar.bz2;
 
 Mirror - http://mindstalk.net/host/boost-mingw-gas-cross-compile-2013-03-03.patch 
@@ -150,31 +148,41 @@ Mirror - http://mindstalk.net/host/boost-mingw-gas-cross-compile-2013-03-03.patc
 $ cd ..;
 $ LXC_EXECUTE=lxc-execute; PATH="$(pwd)/libexec/:$PATH";
 
-$ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/boost-linux.yml
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/boost-linux.yml
 $ mv build/out/boost-*.zip inputs/
 
-$ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/deps-linux.yml
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/deps-linux.yml
 $ mv build/out/shadow-deps-*.zip inputs/
    
 $ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/gitian-linux.yml
 $ mkdir -p ../compiled/linux
 $ mv build/out/* ../compiled/linux/
 
-$ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/boost-win.yml
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/boost-win.yml
 $ mv build/out/boost-*.zip inputs/
 
-$ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/deps-win.yml
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/deps-win.yml
 $ mv build/out/shadow-deps-*.zip inputs/
 
-$ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/qt-win.yml
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/qt-win.yml
 $ mv build/out/qt-win*.zip inputs/
 
 $ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/gitian-win.yml
 $ mkdir -p ../compiled/win
 $ mv build/out/* ../compiled/win/
 
+$ ./bin/gbuild --commit osxcross=master,libdmg-hfsplus=master ../shadowcoin/contrib/gitian-descriptors/osxcross.yml
+$ mv build/out/osxcross.tar.xz inputs/
 
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/deps-osx.yml
+$ mv build/out/shadow-deps-osx-gitian inputs/
 
+$ ./bin/gbuild ../shadowcoin/contrib/gitian-descriptors/qt-osx.yml
+$ mv build/out/qt-osx*.tar.xz inputs/
+
+$ ./bin/gbuild --commit shadowcoin=HEAD ../shadowcoin/contrib/gitian-descriptors/gitian-osx.yml
+$ mkdir -p ../compiled/osx
+$ mv build/out/* ../compiled/osx/
 
 Notes:
     To check the progress of the script:

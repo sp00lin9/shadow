@@ -226,14 +226,14 @@
 
                     <div>
                         <table id="balances">
-                            <tr><td>Spendable:      </td><td class="balance" >0.00</td><td class="unit">SDC</td></tr>
-                            <tr><td>Shadow:         </td><td id="shadowBal"  >0.00</td><td class="unit">SDC</td></tr>
-                            <tr><td>Reserved:       </td><td id="reserved"   >0.00</td><td class="unit">SDC</td></tr>
-                            <tr><td>Stake:          </td><td id="stake"      >0.00</td><td class="unit">SDC</td></tr>
-                            <tr><td>Unconfirmed:    </td><td id="unconfirmed">0.00</td><td class="unit">SDC</td></tr>
-                            <tr><td>Immature:       </td><td id="immature"   >0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td>Spendable:      </td><td class="balance"       >0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td>Shadow:         </td><td class="shadow_balance">0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td>Reserved:       </td><td id="reserved"         >0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td>Stake:          </td><td id="stake"            >0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td>Unconfirmed:    </td><td id="unconfirmed"      >0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td>Immature:       </td><td id="immature"         >0.00</td><td class="unit">SDC</td></tr>
 
-                            <tr><td><b>Total:   </b></td><td id="total"      >0.00</td><td class="unit">SDC</td></tr>
+                            <tr><td><b>Total:   </b></td><td id="total"            >0.00</td><td class="unit">SDC</td></tr>
                         </table>
                     </div>
                 </div>
@@ -351,14 +351,17 @@
                     <div class="ui-buttons">
                         <a class="button is-inverse has-icon-spacing" onclick="addRecipient();" data-title="Send to multiple recipients at once"><i class="fa fa-plus"></i>Add Recipient</a>
                         <a  class="button is-inverse has-icon-spacing" onclick="clearRecipients();" data-title="Remove all transaction fields"><i class="fa fa-close"></i>Clear All</a>
-                        <span data-title="Current spendable balance"><a class="current_spenable_balance"><b>Balance:</b> <span class="balance">0.00</span> <span class="unit">SDC</span></span>
+                        <span data-title="Current spendable balance"><a class="current_spenable_balance"><b>Balance:</b>
+                          <span id="spend_sdc"   ><span class="balance"       >0.00</span> <span class="unit">SDC</span></span>
+                          <span id="spend_shadow"><span class="shadow_balance">0.00</span> <span class="unit">SDC</span></span>
+                        </span>
                         <a class="button is-inverse has-icon-spacing"  id="suggest_ring_size" href="javascript:suggestRingSize();">Suggest Ring Size <i class="fa fa-calculator"></i></a>
                         <a class="button is-inverse has-icon-spacing" onclick="sendCoins();" data-title="Confirm the send action"><i class="fa fa-arrow-right"></i>Send</a>
                     </div>
                 </div><!-- /content -->
             </div>
         </article><!-- /send page -->
-    
+
         <div id="verify-sign-modal" style="display:none;" class="content">
             <div id="signing-options">
                 <a id='sign-href' onclick="$('#sign-message-modal').show(); $('#verify-message-modal').hide(); $('#sign-href').addClass('heading-selected'); $('#sign-href').removeClass('heading-deselected'); $('#verify-href').addClass('heading-deselected'); $('#verify-href').removeClass('heading-selected');">Sign Message</a> / <a id="verify-href" onclick="$('#sign-message-modal').hide(); $('#verify-message-modal').show(); $('#sign-href').addClass('heading-deselected'); $('#sign-href').removeClass('heading-selected'); $('#verify-href').addClass('heading-selected'); $('#verify-href').removeClass('heading-deselected');">Verify Message</a>
@@ -447,7 +450,7 @@
                 </div><!-- /content -->
             </div><!-- /bottom -->
         </article><!-- /receive page -->
- 
+
         <div id="transaction-info-modal" style="display:none;">
             <a class="modal_close" href="#close"><i class="fa fa-times-circle red"></i></a>
             <div id="transaction-info"></div>
@@ -739,10 +742,10 @@
             <a class="modal_close" href="#close"><i class="fa fa-times-circle red"></i></a>
             <div class="ng-scope" data-ng-if="block.hash">
                 <div class="well well-sm ellipsis">
-                  <h2>Transaction Hash</h2> 
+                  <h2>Transaction Hash</h2>
                   <span class="text-muted" id="txn-hash"></span>
                 </div>
-                </br></br>    
+                </br></br>
                 <h2>Summary</h2>
                 <div class="row">
                   <div class="col-md-6">
@@ -759,7 +762,7 @@
                       <tr class="modal-tr">
                         <td><strong>Mined Time</strong></td>
                         <td class="text-muted" id="txn-minetime"></td>
-                      </tr> 
+                      </tr>
                       <tr class="modal-tr">
                         <td><strong>Included in Block</strong></td>
                         <td class="text-muted" id="txn-blkhash"></td>
@@ -835,10 +838,10 @@
             <div class="shadow" id="block-info"></div>
             <div class="ng-scope" data-ng-if="block.hash">
                 <div class="well well-sm ellipsis">
-                  <h2>BlockHash</h2> 
+                  <h2>BlockHash</h2>
                   <span class="text-muted" id="blk-hash"></span>
                 </div>
-                </br></br>    
+                </br></br>
                 <h2>Summary</h2>
                 <div class="row">
                   <div class="col-md-6">
@@ -855,7 +858,7 @@
                       <tr class="modal-tr">
                         <td><strong>Block Type</strong></td>
                         <td class="text-muted" id="blk-type"></td>
-                      </tr> 
+                      </tr>
                       <tr class="modal-tr">
                         <td><strong>Block Reward</strong></td>
                         <td class="text-muted" id="blk-reward"></td>
@@ -903,7 +906,7 @@
                 </div>
               </div>
         </div>
-                
+
         <!-- Block Explorer Page -->
         <article id="blockdata" style="display:none;">
             <div class="content top">
@@ -975,7 +978,7 @@
                 <span id="import-result" style="width:300px"></span>
             </div>
 
-            
+
         </div>
 
         <!-- Key Management Page -->
@@ -985,23 +988,27 @@
             </div>
             <div class="bottom">
                 <div class="content">
-                    <div id="key-options"> 
+                    <div id="key-options">
                         <h3> Please select one of the following options: </h3>
-                        <div class="optionblock" alt="New Account"     onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('new-key-wizard', 0, true);resizeFooter();"/><i class="fa green font-150px fa-plus-square"></i>New Account </div>
+                        <div class="optionblock" alt="New Key"     onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('new-key-wizard', 0, true);resizeFooter();"/><i class="fa green font-150px fa-plus-square"></i>New Key </div>
                         <div class="optionblock" onclick="$('#key-options').hide(); $('#wizards').show();gotoWizard('recover-key-wizard', 0, true);resizeFooter();"/><i class="fa red font-150px fa-ambulance"></i>Recover     </div>
                         <div class="optionblock" onclick="$('#key-options').hide(); $('#wizards').hide(); $('#keymanagement-advanced').show(); keyManagementPage.updateKeyList(); keyManagementPage.updateAccountList(); resizeFooter(); "/><i class="fa blue font-150px fa-laptop"></i> Advanced management</div>
                     </div>
-    
-                    <div id="wizards" style="display:none">    
+
+                    <div id="wizards" style="display:none">
                         <div id="new-key-wizard" class="wizardblock" style="display:none">
                             <div>
-                                <h3>Lets create a new account</h3>
-                                <h2>Give your new account a label and a password</h2>
+                                <h3>Lets create a new key and account</h3>
+                                <h2>Give your new key and account a label and a password</h2>
                                 <label for="new-account-label" class="recipient">Label: </label>
-                                <input id="new-account-label"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Label for account" ></br>
+                                <input id="new-account-label"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Label for key/account" ></br>
                                 <label for="new-account-passphrase" class="recipient">Passphrase (Optional): </label>
                                 <input id="new-account-passphrase" type="password"  class="recipient input_box" style="width: 450px; height: 40px;" data-title="Enter a passphrase for the bip39 mnemonic" ></br>
-
+                                <div class="option">
+                                    <label for="new-account-bip44" class="recipient">BIP44:</label>
+                                    <input  id="new-account-bip44" class="option" type="checkbox" data-title="Would you like to create a bip44 path?" checked />
+                                    <label for="new-account-bip44" style="vertical-align: initial;">Would you like to create a Multi-Account HD Key?</label><!-- checkbox / FontAwesome hack -->
+                                </div>
                                 <label for="new-account-language" class="recipient">Language: </label>
                                 <select id="new-account-language" class="button is-inverse has-fixed-icon"  style="width:25%;height:40px;padding:0 10px;margin-bottom:10px;">
                                     <option value="1" title="English">English</option>
@@ -1012,21 +1019,21 @@
                                     <option value="6" title="Chinese (Traditional)">Chinese (Traditional)</option>
                                 </select>
                             </div>
-                            <div stepJS="keyManagementPage.newMnemonic();"> 
-                                <h3>Here is your 24 word account mnemonic </h3>                            
+                            <div stepJS="keyManagementPage.newMnemonic();">
+                                <h3>Here is your 24 word account mnemonic </h3>
                                 <textarea id="new-key-mnemonic" style="line-height: 20px; width:90%; height:100px; font-family: 'Open Sans', 'NotoCJK Japanese', 'NotoCJK Chinese simplified', 'NotoCJK Chinese traditional';" class="input_box" placeholder="24 word mnemonic" data-title="Your 24 word mnemonic ( Keep this safe! )" readonly></textarea><br/>
                                 <p>It is very important to write this down as this is the only backup you will need for your wallet. You will be asked to confirm the seed in the next screen to ensure it has been copied down correctly</p>
                             </div>
-                            <div validateJS="keyManagementPage.compareMnemonics();"> 
+                            <div validateJS="keyManagementPage.compareMnemonics();">
                                 <h3>Please re-enter your 24 word mnemonic from earlier</h3>
                                 <textarea id="validate-key-mnemonic" style="line-height: 20px; width:90%; height:100px; font-family: 'Open Sans', 'NotoCJK Japanese', 'NotoCJK Chinese simplified', 'NotoCJK Chinese traditional';" class="input_box" placeholder="24 word mnemonic" data-title="24 word mnemonic"></textarea><br/>
                                 <p>We really want to make sure that you have copied these 24 words down correctly as this will serve as a means to recover your wallet if you should ever lose it. </p>
                             </div>
                             <div stepJS="keyManagementPage.newKey();" endWiz=" keyManagementPage.gotoPage('overview'); " >
                                 <h3>Congratulations! You have successfully created a new wallet account</h3>
-                                <p>You can now use your account to send and receive funds :) Remember to keep your 24 work mnemonic and passphase safe in case you ever need to recover your wallet </p></br>
+                                <p>You can now use your account to send and receive funds :) Remember to keep your 24 word mnemonic and passphase safe in case you ever need to recover your wallet </p></br>
 
-<!-- TODO: Implement a SET DEFAULT / SET MASTER option at the end of the wizard -->                                 
+<!-- TODO: Implement a SET DEFAULT / SET MASTER option at the end of the wizard -->
 <!--                                <input id="new-key-make-default" type="checkbox" checked>
                                 <label for="new-key-make-default" class="option">Make this account the default</label> -->
                             </div>
@@ -1042,7 +1049,7 @@
 
                                 <div class="option">
                                     <label for="recover-bip44" class="recipient">BIP44:</label>
-                                    <input  id="recover-bip44" class="option" type="checkbox" data-title="Is this a bip44 path?" />
+                                    <input  id="recover-bip44" class="option" type="checkbox" data-title="Is this a bip44 path?" checked />
                                     <label for="recover-bip44" style="vertical-align: initial;">Is this a Multi-Account HD Key?</label><!-- checkbox / FontAwesome hack -->
                                 </div>
                                 <textarea id="recover-key-mnemonic" style="line-height: 20px; width:90%; height:100px; font-family: 'Open Sans', 'NotoCJK Japanese', 'NotoCJK Chinese simplified', 'NotoCJK Chinese traditional';" class="input_box" placeholder="Your 24 word mnemonic for recovery" data-title="Your 24 word mnemonic for recovery"></textarea></br>
@@ -1103,7 +1110,7 @@
                             <a id="btn-make-default-key" class="button is-inverse has-icon-spacing" href="#" onclick="keyManagementPage.setDefault();"><i class="fa fa-pencil-square-o"></i>Make Default</a>
                             <a id="btn-activate-deactivate" class="button is-inverse has-icon-spacing" href="#" onclick="keyManagementPage.changeActiveFlag();"><i class="fa fa-pencil-square-o"></i>Activate/Deactivate</a>
                             <a id="btn-set-master" class="button is-inverse has-icon-spacing" href="#" onclick="keyManagementPage.setMaster();"><i class="fa fa-pencil-square-o"></i>Set as Master</a>
-                        </div> 
+                        </div>
                     </div>
                 </div> <!-- content -->
             </div><!-- bottom -->

@@ -122,7 +122,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
     auto_ptr<CBlock> pblock(new CBlock());
     if (!pblock.get())
         return NULL;
-    
+
     CBlockIndex* pindexPrev = pindexBest;
 
     // Create coinbase tx
@@ -133,10 +133,10 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
 
 
     int nHeight = pindexPrev->nHeight+1; // height of new block
-    
+
     if (!Params().IsProtocolV2(nHeight)) // generate old version until protocolV2
         pblock->nVersion = 6;
-    
+
 
     if (!fProofOfStake)
     {
@@ -538,7 +538,7 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
 
     if (!pblock->IsProofOfStake())
         return error("CheckStake() : %s is not a proof-of-stake block", hashBlock.GetHex().c_str());
-    
+
     std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
     if (mi == mapBlockIndex.end())
         return error("CheckStake() : %s prev block not found: %s.", hashBlock.GetHex().c_str(), pblock->hashPrevBlock.GetHex().c_str());
@@ -581,7 +581,7 @@ void ThreadStakeMiner(CWallet *pwallet)
     while (true)
     {
         boost::this_thread::interruption_point();
-        
+
         while (pwallet->IsLocked())
         {
             fIsStaking = false;
@@ -637,9 +637,9 @@ void ThreadStakeMiner(CWallet *pwallet)
         auto_ptr<CBlock> pblock(CreateNewBlock(pwallet, true, &nFees));
         if (!pblock.get())
             return;
-        
+
         fIsStaking = true;
-        
+
         // Trying to sign a block
         if (pblock->SignBlock(*pwallet, nFees))
         {
@@ -648,7 +648,7 @@ void ThreadStakeMiner(CWallet *pwallet)
                 nTimeLastStake = GetTime();
             SetThreadPriority(THREAD_PRIORITY_LOWEST);
         };
-        
+
         MilliSleep(nMinerSleep);
     };
 }

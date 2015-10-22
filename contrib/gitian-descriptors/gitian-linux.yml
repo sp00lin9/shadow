@@ -12,7 +12,6 @@ packages:
 - "qt5-default"
 - "qttools5-dev-tools"
 - "git-core"
-- "unzip"
 - "pkg-config"
 - "libtool"
 - "automake"
@@ -23,11 +22,12 @@ remotes:
 - "url": "https://github.com/ShadowProject/shadowcoin.git"
   "dir": "shadowcoin"
 files:
-- "shadow-deps-linux32-gitian-r4.zip"
-- "shadow-deps-linux64-gitian-r4.zip"
-- "boost-linux32-1.55.0-gitian-r1.zip"
-- "boost-linux64-1.55.0-gitian-r1.zip"
+- "shadow-deps-linux32-gitian.tar.xz"
+- "shadow-deps-linux64-gitian.tar.xz"
 script: |
+  #Integrity check
+  echo "0d1e171cd3683f2ebb8e3dc1ab29bdcca4ed136b4ee30d376f1c3cf8c29ea7d0  shadow-deps-linux32-gitian.tar.xz" |sha256sum -c
+  echo "3f3f36e20fc1c3dcd00a4f32a7f07172989933b2b8534147fec896de1b520b3b  shadow-deps-linux64-gitian.tar.xz" |sha256sum -c
   STAGING="$HOME/install"
   OPTFLAGS='-O2'
   BINDIR="${OUTDIR}/bin/${GBUILD_BITS}" # 32/64 bit build specific output directory
@@ -44,8 +44,7 @@ script: |
   #
   mkdir -p $STAGING
   cd $STAGING
-  unzip ../build/shadow-deps-linux${GBUILD_BITS}-gitian-r4.zip
-  unzip ../build/boost-linux${GBUILD_BITS}-1.55.0-gitian-r1.zip
+  tar xf ../build/shadow-deps-linux${GBUILD_BITS}-gitian.tar.xz
   cd ../build
   #
   cd shadowcoin
