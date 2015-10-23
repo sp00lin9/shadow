@@ -89,19 +89,6 @@ script: |
     make $MAKEOPTS
     cp release/shadow.exe $BINDIR/
     #
-    # windeployqt !?
-    #
-    cp $STAGING/host/bin/*.dll $BINDIR/
-    if [ "$BITS" == "32" ]; then
-      cp /usr/lib/gcc/i686-w64-mingw32/4.8/*.dll $BINDIR/
-      cp /usr/i686-w64-mingw32/lib/*.dll $BINDIR/
-    else
-      cp /usr/lib/gcc/x86_64-w64-mingw32/4.8/*.dll $BINDIR/
-      cp /usr/x86_64-w64-mingw32/lib/*.dll $BINDIR/
-    fi
-    mkdir -p $BINDIR/platforms
-    cp $STAGING/plugins/platforms/*.dll $BINDIR/platforms/
-    #
     unset LD_PRELOAD
     unset FAKETIME
   done # for BITS in

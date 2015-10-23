@@ -63,9 +63,9 @@ public:
 
                 if (strName.startsWith("ao "))
                     continue;
-                
+
                 QString strAddress(QString::fromStdString(address.ToString()));
-                
+
                 int8_t addrType;
                 QString strPubkey;
                 if (address.IsBIP32())
@@ -76,7 +76,7 @@ public:
                     addrType = AT_Normal;
                     strPubkey = parent->pubkeyForAddress(strAddress, false);
                 };
-                
+
                 cachedAddressTable.append(
                     AddressTableEntry(fMine ? AddressTableEntry::Receiving : AddressTableEntry::Sending,
                     strName,
@@ -96,7 +96,7 @@ public:
                     "",
                     AT_Stealth));
             };
-            
+
             ExtKeyAccountMap::const_iterator mi;
             for (mi = wallet->mapExtAccounts.begin(); mi != wallet->mapExtAccounts.end(); ++mi)
             {
@@ -116,8 +116,8 @@ public:
                         AT_Stealth));
                 };
             };
-            
-            
+
+
         } // cs_wallet
         // qLowerBound() and qUpperBound() require our cachedAddressTable list to be sorted in asc order
         qSort(cachedAddressTable.begin(), cachedAddressTable.end(), AddressTableEntryLessThan());
@@ -137,8 +137,8 @@ public:
         int upperIndex = (upper - cachedAddressTable.begin());
         bool inModel = (lower != upper);
         AddressTableEntry::Type newEntryType = isMine ? AddressTableEntry::Receiving : AddressTableEntry::Sending;
-        
-        
+
+
         switch(status)
         {
         case CT_NEW:
@@ -148,9 +148,9 @@ public:
                 LogPrintf("Warning: AddressTablePriv::updateEntry: Got CT_NEW, but entry is already in model\n");
                 break;
             };
-            
+
             parent->beginInsertRows(QModelIndex(), lowerIndex, lowerIndex);
-            
+
             int8_t addrType;
             QString strPubkey;
             if (IsBIP32(address.toStdString().c_str()))
@@ -163,9 +163,9 @@ public:
                 addrType = AT_Normal;
                 strPubkey = parent->pubkeyForAddress(address, false);
             };
-            
+
             cachedAddressTable.insert(lowerIndex, AddressTableEntry(newEntryType, label, address, strPubkey, addrType));
-            
+
             parent->endInsertRows();
             }
             break;
@@ -273,7 +273,7 @@ QVariant AddressTableModel::data(const QModelIndex &index, int role) const
             return Receive;
         default: break;
         }
-    } else 
+    } else
     if (role == AddressTypeRole)
         return rec->addressType;
 
@@ -430,13 +430,13 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
             // -- Check for duplicate addresses
             {
                 LOCK(wallet->cs_wallet);
-                
+
                 if (wallet->HaveStealthAddress(sxAddr))
                 {
                     editStatus = DUPLICATE_ADDRESS;
                     return QString();
                 };
-                
+
                 sxAddr.label = strLabel;
                 wallet->AddStealthAddress(sxAddr);
             } // cs_wallet
@@ -444,7 +444,7 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
         {
             // - NOTE: adding a bip32 address here only puts it in mapAddressBook
             //   it will be added to the db as needed (when funds are sent)
-            
+
             if (!walletModel->validateAddress(address))
             {
                 editStatus = INVALID_ADDRESS;
@@ -506,12 +506,12 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
                 editStatus = KEY_GENERATION_FAILURE;
                 return QString();
             };
-            
+
             strAddress = CBitcoinAddress(newKey.GetID()).ToString();
-            
+
             {
                 LOCK(wallet->cs_wallet);
-                
+
                 wallet->SetAddressBookName(CBitcoinAddress(strAddress).Get(), strLabel, NULL, true, true);
             } // cs_wallet
         };
@@ -576,8 +576,7 @@ QString AddressTableModel::labelForAddress(const QString &address) const
             std::set<CStealthAddress>::iterator it(wallet->stealthAddresses.find(sxAddr));
             if (it != wallet->stealthAddresses.end())
                 return QString::fromStdString(it->label);
-            
-            
+
         } else
         {
             CBitcoinAddress address_parsed(sAddr);

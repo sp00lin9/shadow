@@ -79,7 +79,7 @@ public:
         QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
         QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
         QModelIndex amount   = status.sibling(row, TransactionTableModel::Amount);
-        
+
         QVariantMap transaction;
 
         transaction.insert("id",   status.data(TransactionTableModel::TxIDRole).toString());
@@ -239,7 +239,7 @@ public:
 
             addresses.append(addAddress(row));
         }
-        
+
         emitAddresses(addresses, true);
 
         running = false;
@@ -425,19 +425,19 @@ void ShadowBridge::populateOptions()
 bool ShadowBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize)
 {
     SendCoinsRecipient rv;
-    
-    
+
+
     rv.address = address;
     rv.label = label;
     rv.narration = narration;
     rv.amount = amount;
-    
+
     std::string sAddr = address.toStdString();
     if (IsBIP32(sAddr.c_str()))
         rv.typeInd = 3;
     else
         rv.typeInd = address.length() > 75 ? AT_Stealth : AT_Normal;
-    
+
     rv.txnTypeInd = txnType;
     rv.nRingSize = nRingSize;
 
@@ -785,19 +785,19 @@ void ShadowBridge::insertAddresses(const QModelIndex & parent, int start, int en
     if (!fPassGuiAddresses
         && (window->clientModel->inInitialBlockDownload() || addressModel->isRunning()))
         return;
-    
+
     addressModel->poplateRows(start, end);
 }
 
 QString ShadowBridge::newAddress(QString addressLabel, int addressType, QString address, bool send)
 {
     // Generate a new address to associate with given label
-    
-    
+
+
     // NOTE: unlock happens in addRow
-    
+
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
-    
+
     return rv;
 }
 
@@ -805,7 +805,7 @@ QString ShadowBridge::lastAddressError()
 {
     QString sError;
     AddressTableModel::EditStatus status = addressModel->atm->getEditStatus();
-    
+
     switch(status)
     {
         case AddressTableModel::OK:
@@ -825,7 +825,7 @@ QString ShadowBridge::lastAddressError()
             sError = "Unspecified error.";
             break;
     };
-    
+
     return sError;
 }
 
@@ -1053,11 +1053,11 @@ QVariantMap ShadowBridge::listLatestBlocks()
 QVariantMap ShadowBridge::findBlock(QString searchID)
 {
     CBlockIndex* findBlock;
-    
+
     int blkHeight = searchID.toInt();
-    
+
     QVariantMap foundBlock;
-    
+
     if (blkHeight != 0 || searchID == "0")
     {
         findBlock = FindBlockByHeight(blkHeight);
@@ -1065,7 +1065,7 @@ QVariantMap ShadowBridge::findBlock(QString searchID)
     {
         uint256 hash, hashBlock;
         hash.SetHex(searchID.toStdString());
-        
+
         // -- look for a block or transaction
         //    Note: only finds transactions in the block chain
         std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
@@ -1079,7 +1079,7 @@ QVariantMap ShadowBridge::findBlock(QString searchID)
             findBlock = NULL;
         };
     };
-    
+
     if (!findBlock)
     {
         foundBlock.insert("error_msg", "Block / transaction not found.");
@@ -1108,29 +1108,29 @@ QVariantMap ShadowBridge::findBlock(QString searchID)
 QVariantMap ShadowBridge::blockDetails(QString blkHash)
 {
     QVariantMap blockDetail;
-    
+
     uint256 hash;
     hash.SetHex(blkHash.toStdString());
-    
+
     CBlockIndex* blkIndex;
     CBlock block;
-    
+
     std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
     if (mi == mapBlockIndex.end())
     {
         blockDetail.insert("error_msg", "Block not found.");
         return blockDetail;
     };
-    
+
     blkIndex  = mi->second;
     block.ReadFromDisk(blkIndex, true);
-    
+
     if (block.IsNull() || block.vtx.size() < 1)
     {
         blockDetail.insert("error_msg", "Block not found.");
         return blockDetail;
     };
-    
+
     CTxDB txdb("r");
     MapPrevTx mapInputs;
     std::map<uint256, CTxIndex> mapUnused;
@@ -1140,33 +1140,33 @@ QVariantMap ShadowBridge::blockDetails(QString blkHash)
     if (block.IsProofOfStake())
     {
         sBlockType = "PoS";
-        
+
         CTransaction& coinstake = block.vtx[1]; // IsProofOfStake checks vtx > 1
-        
+
         if (coinstake.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
             nTxValueIn = coinstake.GetValueIn(mapInputs);
         // else error
-        
+
         nTxValueOut = coinstake.GetValueOut();
     } else
     {
         sBlockType = "PoW";
-        
+
         CTransaction& coinbase = block.vtx[0]; // check vtx.size() above
-        
+
         if (coinbase.FetchInputs(txdb, mapUnused, false, false, mapInputs, fInvalid))
             nTxValueIn = coinbase.GetValueIn(mapInputs);
         // else error
-        
+
         nTxValueOut = coinbase.GetValueOut();
     };
-    
+
     double nBlockReward = (double)(nTxValueOut - nTxValueIn) / (double)COIN;
-    
+
 
     std::string sHashPrev = blkIndex->pprev ? blkIndex->pprev->GetBlockHash().ToString() : "None";
     std::string sHashNext = blkIndex->pnext ? blkIndex->pnext->GetBlockHash().ToString() : "None";
-    
+
     blockDetail.insert("block_hash"             , QString::fromStdString(blkIndex->GetBlockHash().ToString()));
     blockDetail.insert("block_transactions"     , QString::number(block.vtx.size() - 1));
     blockDetail.insert("block_height"           , blkIndex->nHeight);
@@ -1182,7 +1182,7 @@ QVariantMap ShadowBridge::blockDetails(QString blkHash)
     blockDetail.insert("block_version"          , blkIndex->nVersion);
     blockDetail.insert("block_nonce"            , blkIndex->nNonce);
     blockDetail.insert("error_msg"              , "");
-    
+
     return blockDetail;
 }
 
@@ -1535,7 +1535,7 @@ QVariantMap ShadowBridge::getNewMnemonic(QString password, QString language)
     return result;
 }
 
-QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44)
+QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, int64_t nCreateTime)
 {
     std::string sPassword = inPassword.toStdString();
     std::string sMnemonic = inMnemonic.toStdString();
@@ -1593,7 +1593,7 @@ QVariantMap ShadowBridge::importFromMnemonic(QString inMnemonic, QString inPassw
     // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
     //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
     //    OPENSSL_cleanse(&sPassword[0], sPassword.size());
-    return result = extKeyImport(QString::fromStdString(eKey58.ToString()), inLabel, fBip44);
+    return result = extKeyImport(QString::fromStdString(eKey58.ToString()), inLabel, fBip44, nCreateTime);
 
 }
 
@@ -1703,7 +1703,6 @@ int KeyInfo(CKeyID &idMaster, CKeyID &idKey, CStoredExtKey &sek, int nShowKeys, 
 
     obj.insert("num_derives"         , QString::fromStdString(strprintf("%u", sek.nGenerated)));
     obj.insert("num_derives_hardened", QString::fromStdString(strprintf("%u", sek.nHGenerated)));
-
 
     return 0;
 }
@@ -1867,23 +1866,21 @@ QVariantMap ShadowBridge::extKeyList() {
     return result;
 }
 
-#include <QDebug>
-QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44)
+QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, int64_t nCreateTime)
 {
     QVariantMap result;
     std::string sInKey = inKey.toStdString();
     CStoredExtKey sek;
     sek.sLabel = inLabel.toStdString();
 
-
     std::vector<uint8_t> v;
-    sek.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, GetTime());
+    sek.mapValue[EKVT_CREATED_AT] = SetCompressedInt64(v, nCreateTime ? nCreateTime : GetTime());
 
     CExtKey58 eKey58;
     if (eKey58.Set58(sInKey.c_str()) == 0)
     {
         if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
-            && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
+         && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
         {
             result.insert("error_msg", "Import failed - Key must begin with Shadowcoin prefix.");
             return result;
@@ -1951,6 +1948,9 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip
 
     extKeySetDefault(QString::fromStdString(sea->GetIDString58()));
 
+    newAddress(inLabel + (inLabel.isEmpty() ? "" : " ") + "default",         AT_Normal,  "", false);
+    newAddress(inLabel + (inLabel.isEmpty() ? "" : " ") + "default Stealth", AT_Stealth, "", false);
+
     // If we get here all went well and the message is valid
     result.insert("error_msg" , "");
     return result;
@@ -1972,40 +1972,35 @@ QVariantMap ShadowBridge::extKeySetDefault(QString extKeyID)
 
     CExtKeyAccount *sea = new CExtKeyAccount();
 
-    if (addr.SetString(sInKey)
-        && addr.IsValid(CChainParams::EXT_ACC_HASH)
-        && addr.GetKeyID(idNewDefault, CChainParams::EXT_ACC_HASH))
-    {
-        // idNewDefault is set
-    };
-
+    addr.SetString(sInKey),
+    addr.IsValid(CChainParams::EXT_ACC_HASH),
+    addr.GetKeyID(idNewDefault, CChainParams::EXT_ACC_HASH);
 
     {
         LOCK(pwalletMain->cs_wallet);
         CWalletDB wdb(pwalletMain->strWalletFile, "r+");
         if (!wdb.TxnBegin())
         {
-            result.insert("error_msg"       , "TxnBegin failed.");
+            result.insert("error_msg", "TxnBegin failed.");
             return result;
         }
 
         if (!wdb.ReadExtAccount(idNewDefault, *sea))
         {
-            result.insert("error_msg"       , "Account not in wallet.");
+            result.insert("error_msg", "Account not in wallet.");
             return result;
         }
 
         if (!wdb.WriteNamedExtKeyId("defaultAccount", idNewDefault))
         {
             wdb.TxnAbort();
-            result.insert("error_msg"       , "WriteNamedExtKeyId failed.");
+            result.insert("error_msg", "WriteNamedExtKeyId failed.");
             return result;
         };
         if (!wdb.TxnCommit())
         {
-            result.insert("error_msg"       , "TxnCommit failed.");
+            result.insert("error_msg", "TxnCommit failed.");
             return result;
-
         }
 
         pwalletMain->idDefaultAccount = idNewDefault;
@@ -2013,12 +2008,9 @@ QVariantMap ShadowBridge::extKeySetDefault(QString extKeyID)
         // TODO: necessary?
         ExtKeyAccountMap::iterator mi = pwalletMain->mapExtAccounts.find(idNewDefault);
         if (mi == pwalletMain->mapExtAccounts.end())
-        {
             pwalletMain->mapExtAccounts[idNewDefault] = sea;
-        } else
-        {
+        else
             delete sea;
-        };
 
         result.insert("result"      , "Success.");
     } // cs_wallet

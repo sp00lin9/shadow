@@ -96,15 +96,15 @@ Value getinfo(const Array& params, bool fHelp)
     static const char *help = ""
         "getinfo ['env']\n"
         "Returns an object containing various state info.";
-    
+
     if (fHelp || params.size() > 1)
         throw std::runtime_error(help);
-    
+
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
-    
+
     Object obj, diff;
-    
+
     if (params.size() > 0)
     {
         if (params[0].get_str().compare("env") == 0)
@@ -112,34 +112,34 @@ Value getinfo(const Array& params, bool fHelp)
             obj.push_back(Pair("version",           FormatFullVersion()));
             obj.push_back(Pair("mode",              std::string(GetNodeModeName(nNodeMode))));
             obj.push_back(Pair("state",             nNodeMode == NT_THIN ? std::string(GetNodeStateName(nNodeState)) : "Full Node"));
-            
+
             obj.push_back(Pair("protocolversion",   (int)PROTOCOL_VERSION));
-            
+
             obj.push_back(Pair("testnet",           fTestNet));
-            
+
             obj.push_back(Pair("debug",             fDebug));
             obj.push_back(Pair("debugpos",          fDebugPoS));
             obj.push_back(Pair("debugringsig",      fDebugRingSig));
-            
-            
+
+
             obj.push_back(Pair("datadir",           GetDataDir().string()));
-            
-            
+
+
             obj.push_back(Pair("walletfile",        pwalletMain->strWalletFile));
             obj.push_back(Pair("walletversion",     pwalletMain->GetVersion()));
             obj.push_back(Pair("walletcrypted",     pwalletMain->IsCrypted()));
             obj.push_back(Pair("walletlocked",      pwalletMain->IsCrypted() ?  pwalletMain->IsLocked() ? "Locked" : "Unlocked" : "Uncrypted"));
             obj.push_back(Pair("walletunlockedto",  pwalletMain->IsCrypted() ? !pwalletMain->IsLocked() ? strprintf("%d", (int64_t)nWalletUnlockTime / 1000).c_str() : "Locked" : "Uncrypted"));
-            
+
             obj.push_back(Pair("errors",        GetWarnings("statusbar")));
-        
+
             return obj;
         } else
         {
             throw std::runtime_error(help);
         };
     };
-    
+
     obj.push_back(Pair("version",       FormatFullVersion()));
     obj.push_back(Pair("mode",          std::string(GetNodeModeName(nNodeMode))));
     obj.push_back(Pair("state",         nNodeMode == NT_THIN ? std::string(GetNodeStateName(nNodeState)) : "Full Node"));
@@ -184,7 +184,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("difficulty",    diff));
 
     obj.push_back(Pair("testnet",       fTestNet));
-    
+
     obj.push_back(Pair("paytxfee",      ValueFromAmount(nTransactionFee)));
     obj.push_back(Pair("mininput",      ValueFromAmount(nMinimumInputValue)));
     if (pwalletMain->IsCrypted())
@@ -200,24 +200,24 @@ Value getnewpubkey(const Array& params, bool fHelp)
         throw std::runtime_error(
             "getnewpubkey [account]\n"
             "Returns new public key for coinbase generation.");
-    
+
     // Parse the account first so we don't generate a key if there's an error
     std::string strAccount;
     if (params.size() > 0)
     {
         strAccount = AccountFromValue(params[0]);
     };
-    
+
     if (pwalletMain->IsLocked())
         throw std::runtime_error("Wallet is locked.");
 
     // Generate a new key that is added to wallet
-    
+
     CPubKey newKey;
     if (0 != pwalletMain->NewKeyFromAccount(newKey))
         throw std::runtime_error("NewKeyFromAccount failed.");
     CKeyID keyID = newKey.GetID();
-    
+
     pwalletMain->SetAddressBookName(keyID, strAccount, NULL, true, true);
 
     return HexStr(newKey.begin(), newKey.end());
@@ -232,13 +232,13 @@ Value getnewaddress(const Array& params, bool fHelp)
             "Returns a new ShadowCoin address for receiving payments.  "
             "If [account] is specified, it is added to the address book "
             "so payments received with the address will be credited to [account].");
-    
+
     // Parse the account first so we don't generate a key if there's an error
     std::string strAccount;
     if (params.size() > 0)
         strAccount = AccountFromValue(params[0]);
-    
-    
+
+
     // Generate a new key that is added to wallet
     CPubKey newKey;
     if (0 != pwalletMain->NewKeyFromAccount(newKey))
@@ -246,7 +246,7 @@ Value getnewaddress(const Array& params, bool fHelp)
     CKeyID keyID = newKey.GetID();
 
     pwalletMain->SetAddressBookName(keyID, strAccount, NULL, true, true);
-    
+
     return CBitcoinAddress(keyID).ToString();
 }
 
@@ -257,12 +257,12 @@ Value getnewextaddress(const Array& params, bool fHelp)
             "getnewextaddress [label]\n"
             "Returns a new ShadowCoin ext address for receiving payments."
             "If [label] is specified, it is added to the address book. ");
-    
+
     std::string strLabel;
     if (params.size() > 0)
         strLabel = params[0].get_str();
-    
-    
+
+
     // Generate a new key that is added to wallet
     CStoredExtKey *sek = new CStoredExtKey();
     if (0 != pwalletMain->NewExtKeyFromAccount(strLabel, sek))
@@ -271,7 +271,7 @@ Value getnewextaddress(const Array& params, bool fHelp)
         throw std::runtime_error("NewExtKeyFromAccount failed.");
     };
     pwalletMain->SetAddressBookName(sek->kp, strLabel, NULL, true, true);
-    
+
     // - CBitcoinAddress displays public key only
     return CBitcoinAddress(sek->kp).ToString();
 }
@@ -421,7 +421,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
         && IsStealthAddress(params[0].get_str()))
         return sendtostealthaddress(params, false);
 
-    
+
     std::string sAddrIn = params[0].get_str();
     CBitcoinAddress address(sAddrIn);
     if (!address.IsValid())
@@ -639,7 +639,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
                     nAmount += txout.nValue;
         };
     };
-    
+
     return (double)nAmount / (double)COIN;
 }
 
@@ -969,17 +969,17 @@ Value addmultisigaddress(const Array& params, bool fHelp)
             "If [account] is specified, assign address to [account].";
         throw std::runtime_error(msg);
     };
-    
+
     std::string strAccount;
     if (params.size() > 2)
         strAccount = AccountFromValue(params[2]);
 
-    
+
     // Construct using pay-to-script-hash:
     CScript inner = _createmultisig_redeemScript(params);
     CScriptID innerID(inner);
     CBitcoinAddress address(innerID);
-    
+
     if (!pwalletMain->AddCScript(inner))
         throw std::runtime_error("AddCScript() failed");
 
@@ -1144,7 +1144,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             ret.push_back(obj);
         };
     };
-    
+
     return ret;
 }
 
@@ -1613,7 +1613,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
             "walletpassphrase <passphrase> <timeout>\n"
             "Stores the wallet decryption key in memory for <timeout> seconds.");
     };
-    
+
     pwalletMain->TopUpKeyPool();
     int64_t nSleepTime = params[1].get_int64();
     LOCK(cs_nWalletUnlockTime);
@@ -1758,7 +1758,7 @@ public:
         obj.push_back(Pair("todo - stealth address", true));
         return obj;
     }
-    
+
     Object operator()(const CExtKeyPair &ek) const {
         Object obj;
         obj.push_back(Pair("todo - bip32 address", true));
@@ -1949,7 +1949,7 @@ Value makekeypair(const Array& params, bool fHelp)
 
     CKey key;
     key.MakeNewKey(false);
-    
+
     CPrivKey vchPrivKey = key.GetPrivKey();
     Object result;
     result.push_back(Pair("PrivateKey", HexStr<CPrivKey::iterator>(vchPrivKey.begin(), vchPrivKey.end())));
@@ -1973,11 +1973,11 @@ Value getnewstealthaddress(const Array& params, bool fHelp)
     std::string sLabel;
     if (params.size() > 0)
         sLabel = params[0].get_str();
-    
-    
+
+
     CEKAStealthKey akStealth;
     std::string sError;
-    
+
     if (0 != pwalletMain->NewStealthKeyFromAccount(sLabel, akStealth))
         throw std::runtime_error("NewStealthKeyFromAccount failed.");
     return akStealth.ToStealthAddress();
@@ -2006,16 +2006,16 @@ Value liststealthaddresses(const Array& params, bool fHelp)
         EnsureWalletIsUnlocked();
 
     Object result;
-    
+
     ExtKeyAccountMap::const_iterator mi;
     for (mi = pwalletMain->mapExtAccounts.begin(); mi != pwalletMain->mapExtAccounts.end(); ++mi)
     {
         CExtKeyAccount *ea = mi->second;
-        
+
         if (ea->mapStealthKeys.size() < 1)
             continue;
         result.push_back(Pair("Account", ea->sLabel));
-        
+
         AccStealthKeyMap::iterator it;
         for (it = ea->mapStealthKeys.begin(); it != ea->mapStealthKeys.end(); ++it)
         {
@@ -2026,7 +2026,7 @@ Value liststealthaddresses(const Array& params, bool fHelp)
                 objA.push_back(Pair("Label        ", aks.sLabel));
                 objA.push_back(Pair("Address      ", aks.ToStealthAddress()));
                 objA.push_back(Pair("Scan Secret  ", HexStr(aks.skScan.begin(), aks.skScan.end())));
-                
+
                 std::string sSpend;
                 CStoredExtKey *sekAccount = ea->ChainAccount();
                 if (sekAccount && !sekAccount->fLocked)
@@ -2041,7 +2041,7 @@ Value liststealthaddresses(const Array& params, bool fHelp)
                     sSpend = "Account Locked.";
                 };
                 objA.push_back(Pair("Spend Secret ", sSpend));
-                
+
                 result.push_back(Pair("Stealth Address", objA));
             } else
             {
@@ -2049,7 +2049,7 @@ Value liststealthaddresses(const Array& params, bool fHelp)
             };
         };
     };
-    
+
     if (pwalletMain->stealthAddresses.size() > 0)
         result.push_back(Pair("Account", "Legacy"));
     std::set<CStealthAddress>::iterator it;
@@ -2071,7 +2071,7 @@ Value liststealthaddresses(const Array& params, bool fHelp)
             result.push_back(Pair("Stealth Address", it->Encoded() + " - " + it->label));
         };
     };
-    
+
     return result;
 }
 
@@ -2366,8 +2366,8 @@ Value scanforalltxns(const Array& params, bool fHelp)
         throw std::runtime_error(
             "scanforalltxns [fromHeight]\n"
             "Scan blockchain for owned transactions.");
-    
-    
+
+
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Can't run in thin mode.");
 
@@ -2376,10 +2376,8 @@ Value scanforalltxns(const Array& params, bool fHelp)
 
     CBlockIndex *pindex = pindexGenesisBlock;
 
-
     if (params.size() > 0)
         nFromHeight = params[0].get_int();
-
 
     if (nFromHeight > 0)
     {
@@ -2391,16 +2389,16 @@ Value scanforalltxns(const Array& params, bool fHelp)
 
     if (pindex == NULL)
         throw std::runtime_error("Genesis Block is not set.");
-    
+
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
-        
+
         pwalletMain->MarkDirty();
-        
+
         pwalletMain->ScanForWalletTransactions(pindex, true);
         pwalletMain->ReacceptWalletTransactions();
     } // cs_main, pwalletMain->cs_wallet
-    
+
     result.push_back(Pair("result", "Scan complete."));
 
     return result;
@@ -2858,8 +2856,11 @@ Value reloadanondata(const Array& params, bool fHelp)
 
 
     CBlockIndex *pindex = pindexGenesisBlock;
-    
-    
+
+    // check from 257000, once anon transactions started
+    while (pindex->nHeight < (fTestNet ? 68000 : 257000) && pindex->pnext)
+        pindex = pindex->pnext;
+
     Object result;
     if (pindex)
     {
@@ -2878,7 +2879,7 @@ Value reloadanondata(const Array& params, bool fHelp)
     {
         result.push_back(Pair("result", "reloadanondata failed - !pindex."));
     };
-    
+
     return result;
 }
 
@@ -2894,100 +2895,100 @@ Value txnreport(const Array& params, bool fHelp)
         throw std::runtime_error(
             "txnreport [collate_amounts] [show_key_images]\n"
             "List transactions at output level.\n");
-    
+
     bool fCollateAmounts = false;
     bool fShowKeyImage = false;
-    
+
     // TODO: trust CWalletTx::vfSpent?
-    
+
     if (params.size() > 0)
     {
         std::string value = params[0].get_str();
         if (IsStringBoolPositive(value))
             fCollateAmounts = true;
     };
-    
+
     if (params.size() > 1)
     {
         std::string value = params[1].get_str();
         if (IsStringBoolPositive(value))
             fShowKeyImage = true;
     };
-    
+
     int64_t nWalletIn = 0;      // total inputs from owned addresses
     int64_t nWalletOut = 0;     // total outputs from owned addresses
-    
+
     Object result;
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
-        
+
         std::list<CWalletTx*> listOrdered;
         for (std::map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
         {
             if (it->second.GetDepthInMainChain() > 0) // exclude txns not in the chain
                 listOrdered.push_back(&it->second);
         };
-        
+
         listOrdered.sort(compareTxnTime);
-        
+
         std::list<CWalletTx*>::iterator it;
-        
+
         Array headings;
         headings.push_back("When");
         headings.push_back("Txn Hash");
         headings.push_back("In/Output Type");
         headings.push_back("Txn Type");
-        
+
         headings.push_back("Address");
         headings.push_back("Ring Size");
-        
+
         if (fShowKeyImage)
             headings.push_back("Key Image");
-        
+
         headings.push_back("Owned");
         headings.push_back("Spent");
-        
+
         headings.push_back("Value In");
         headings.push_back("Value Out");
-        
+
         if (fCollateAmounts)
         {
             headings.push_back("Wallet In");
             headings.push_back("Wallet Out");
         };
-        
+
         result.push_back(Pair("headings", headings));
-        
+
         if (pwalletMain->IsLocked())
         {
             result.push_back(Pair("warning", "Wallet is locked - owned inputs may not be detected correctly."));
         };
-        
+
         Array lines;
-        
+
         CTxDB txdb("r");
         CWalletDB walletdb(pwalletMain->strWalletFile, "r");
-        
+
         char cbuf[256];
         for (it = listOrdered.begin(); it != listOrdered.end(); ++it)
         {
             CWalletTx* pwtx = (*it);
-            
+
             Array entryTxn;
             entryTxn.push_back(getTimeString(pwtx->nTime, cbuf, sizeof(cbuf)));
             entryTxn.push_back(pwtx->GetHash().GetHex());
-            
+
             bool fCoinBase = pwtx->IsCoinBase();
             bool fCoinStake = pwtx->IsCoinStake();
-            
+
             for (uint32_t i = 0; i < pwtx->vin.size(); ++i)
             {
                 const CTxIn& txin = pwtx->vin[i];
-                
+
                 int64_t nInputValue = 0;
-                
+
                 Array entry = entryTxn;
-                
+
                 std::string sAddr = "";
                 std::string sKeyImage = "";
                 bool fOwnCoin = false;
@@ -3000,14 +3001,14 @@ Value txnreport(const Array& params, bool fHelp)
                     std::vector<uint8_t> vchImage;
                     txin.ExtractKeyImage(vchImage);
                     nRingSize = txin.ExtractRingSize();
-                    
+
                     sKeyImage = HexStr(vchImage);
-                    
+
                     CKeyImageSpent ski;
                     bool fInMemPool;
                     if (GetKeyImage(&txdb, vchImage, ski, fInMemPool))
                         nInputValue = ski.nValue;
-                    
+
                     COwnedAnonOutput oao;
                     if (walletdb.ReadOwnedAnonOutput(vchImage, oao))
                     {
@@ -3018,22 +3019,22 @@ Value txnreport(const Array& params, bool fHelp)
                         // - tokens received with locked wallet won't have oao until wallet unlocked
                         //   No way to tell if locked input is owned
                         //   need vchImage
-                        
+
                         // TODO, closest would be to tell if it's possible for the input to be owned
                         sKeyImage = "locked?";
                     };
-                    
+
                 } else
                 {
                     if (txin.prevout.IsNull()) // coinbase
                         continue;
-                    
+
                     entry.push_back("sdc in");
                     entry.push_back(fCoinBase ? "coinbase" : fCoinStake ? "coinstake" : "");
-                    
+
                     if (pwalletMain->IsMine(txin))
                         fOwnCoin = true;
-                    
+
                     CTransaction prevTx;
                     if (txdb.ReadDiskTx(txin.prevout.hash, prevTx))
                     {
@@ -3041,7 +3042,7 @@ Value txnreport(const Array& params, bool fHelp)
                         {
                             const CTxOut &vout = prevTx.vout[txin.prevout.n];
                             nInputValue = vout.nValue;
-                            
+
                             CTxDestination address;
                             if (ExtractDestination(vout.scriptPubKey, address))
                                 sAddr = CBitcoinAddress(address).ToString();
@@ -3050,59 +3051,59 @@ Value txnreport(const Array& params, bool fHelp)
                             nInputValue = 0;
                         };
                     };
-                    
+
                 };
-                
+
                 if (fOwnCoin)
                     nWalletIn += nInputValue;
-                
-                
+
+
                 entry.push_back(sAddr);
                 entry.push_back(nRingSize == 0 ? "" : strprintf("%d", nRingSize));
-                
+
                 if (fShowKeyImage)
                     entry.push_back(sKeyImage);
-                
+
                 entry.push_back(fOwnCoin);
                 entry.push_back(""); // spent
                 entry.push_back(strprintf("%f", (double)nInputValue / (double)COIN));
                 entry.push_back(""); // out
-                
+
                 if (fCollateAmounts)
                 {
                     entry.push_back(strprintf("%f", (double)nWalletIn / (double)COIN));
                     entry.push_back(strprintf("%f", (double)nWalletOut / (double)COIN));
                 };
-                
+
                 lines.push_back(entry);
             };
-            
+
             for (uint32_t i = 0; i < pwtx->vout.size(); i++)
             {
                 const CTxOut& txout = pwtx->vout[i];
-                
+
                 if (txout.nValue < 1) // metadata output, narration or stealth
                     continue;
-                
+
                 Array entry = entryTxn;
-                
-                
+
+
                 std::string sAddr = "";
                 std::string sKeyImage = "";
                 bool fOwnCoin = false;
                 bool fSpent = false;
-                
+
                 if (pwtx->nVersion == ANON_TXN_VERSION
                     && txout.IsAnonOutput())
                 {
                     entry.push_back("shadow out");
                     entry.push_back("");
-                    
+
                     CPubKey pkCoin    = txout.ExtractAnonPk();
-                    
+
                     std::vector<uint8_t> vchImage;
                     COwnedAnonOutput oao;
-                    
+
                     if (walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage)
                         && walletdb.ReadOwnedAnonOutput(vchImage, oao))
                     {
@@ -3113,59 +3114,59 @@ Value txnreport(const Array& params, bool fHelp)
                     {
                         // - tokens received with locked wallet won't have oao until wallet unlocked
                         CKeyID ckCoinId = pkCoin.GetID();
-                        
+
                         CLockedAnonOutput lockedAo;
                         if (walletdb.ReadLockedAnonOutput(ckCoinId, lockedAo))
                             fOwnCoin = true;
-                        
+
                         sKeyImage = "locked?";
                     };
                 } else
                 {
                     entry.push_back("sdc out");
                     entry.push_back(fCoinBase ? "coinbase" : fCoinStake ? "coinstake" : "");
-                    
-                    
+
+
                     CTxDestination address;
                     if (ExtractDestination(txout.scriptPubKey, address))
                         sAddr = CBitcoinAddress(address).ToString();
-                    
+
                     if (pwalletMain->IsMine(txout))
                         fOwnCoin = true;
                 };
-                
+
                 if (fOwnCoin)
                 {
                     nWalletOut += txout.nValue;
                     fSpent = pwtx->IsSpent(i);
                 };
-                
+
                 entry.push_back(sAddr);
-                
+
                 entry.push_back(""); // ring size (only for inputs)
-                
+
                 if (fShowKeyImage)
                     entry.push_back(sKeyImage);
-                
+
                 entry.push_back(fOwnCoin);
                 entry.push_back(fSpent);
-                
+
                 entry.push_back(""); // in
                 entry.push_back(ValueFromAmount(txout.nValue));
-                
+
                 if (fCollateAmounts)
                 {
                     entry.push_back(strprintf("%f", (double)nWalletIn / (double)COIN));
                     entry.push_back(strprintf("%f", (double)nWalletOut / (double)COIN));
                 };
-                
+
                 lines.push_back(entry);
             };
         };
         result.push_back(Pair("data", lines));
     }
-    
-    
+
+
     result.push_back(Pair("result", "txnreport complete."));
     return result;
 }

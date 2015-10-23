@@ -153,10 +153,10 @@ void WalletModel::updateAddressBook(const QString &address, const QString &label
 bool WalletModel::validateAddress(const QString &address)
 {
     std::string sAddr = address.toStdString();
-    
+
     if (address.length() > 75 && IsBIP32(sAddr.c_str())) // < 75, don't bother checking plain addrs
         return true;
-    
+
     if (address.length() > 75)
         return IsStealthAddress(sAddr); // > 75, will never be a plain address, exit here
 
@@ -206,21 +206,21 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         return SendCoinsReturn(AmountWithFeeExceedsBalance, nTransactionFee);
 
     std::map<int, std::string> mapStealthNarr;
-    
-    
-    
+
+
+
     {
         LOCK2(cs_main, wallet->cs_wallet);
 
         CWalletTx wtx;
-        
+
         // Sendmany
         std::vector<std::pair<CExtKeyPair, uint32_t> > vecUpdate;
         std::vector<std::pair<CScript, int64_t> > vecSend;
         foreach(const SendCoinsRecipient &rcp, recipients)
         {
             std::string sAddr = rcp.address.toStdString();
-            
+
             if (rcp.typeInd == AT_Stealth)
             {
                 CStealthAddress sxAddr;
@@ -311,10 +311,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                     continue;
                 }; // else drop through to normal
             }
-            
+
             // TODO: why the drop through for stealth?!
             CScript scriptPubKey;
-            
+
             if (rcp.typeInd == AT_BIP32)
             {
                 CBitcoinAddress address(sAddr);
@@ -324,20 +324,20 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                     LogPrintf("Error: Address is not an extended address.\n");
                     return Aborted;
                 };
-                
+
                 CExtKeyPair ek = boost::get<CExtKeyPair>(dest);
                 CExtKey58 ek58;
                 ek58.SetKeyP(ek);
                 uint32_t nChildKey;
                 if (0 != wallet->ExtKeyGetDestination(ek, scriptPubKey, nChildKey))
                     return InvalidAddress;
-                
+
                 vecUpdate.push_back(std::make_pair(ek, nChildKey));
             } else
             {
                 scriptPubKey.SetDestination(CBitcoinAddress(sAddr).Get());
             };
-            
+
             vecSend.push_back(make_pair(scriptPubKey, rcp.amount));
 
             if (rcp.narration.length() > 0)
@@ -362,7 +362,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                 vecSend.push_back(make_pair(scriptN, 0));
             }
         }
-        
+
         int64_t nFeeRequired = 0;
         int nChangePos = -1;
         bool fCreated = wallet->CreateTransaction(vecSend, wtx, nFeeRequired, nChangePos, coinControl);
@@ -398,7 +398,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
             return TransactionCommitFailed;
 
         hex = QString::fromStdString(wtx.GetHash().GetHex());
-        
+
         // - Update sent to ext keys
         for (uint32_t k = 0; k < vecUpdate.size(); ++k)
         {
@@ -414,7 +414,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
         {
             LOCK(wallet->cs_wallet);
-            
+
             if (rcp.typeInd == AT_Stealth)
             {
                 wallet->UpdateStealthAddress(strAddress, strLabel, true);
@@ -431,7 +431,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
             };
         } // wallet->cs_wallet
     };
-    
+
 
     return SendCoinsReturn(OK, 0, hex);
 }
@@ -508,10 +508,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
     } else
     {
         nBalance = wallet->GetShadowBalance();
-        if ((nTotalOut + nTransactionFee) > nBalance)
-            return SendCoinsReturn(SCR_AmountWithFeeExceedsShadowBalance, nTransactionFee);
+        if ((nTotalOut + MIN_TX_FEE_ANON) > nBalance)
+            return SendCoinsReturn(SCR_AmountWithFeeExceedsShadowBalance, MIN_TX_FEE_ANON);
     };
-
 
     {
         LOCK2(cs_main, wallet->cs_wallet);
@@ -572,7 +571,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         // -- add inputs
 
         int64_t nFeeRequired = 0;
-        
+
         if (inputTypes == 0)
         {
             // -- in sdc
@@ -610,7 +609,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             // -- in shadow
 
             std::string sError;
-            if (!wallet->AddAnonInputs(wtxNew.nTime >= Params().RSABTime() ? RING_SIG_2 : RING_SIG_1, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
+            if (!wallet->AddAnonInputs(RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
             {
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);

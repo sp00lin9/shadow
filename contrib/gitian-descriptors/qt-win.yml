@@ -65,7 +65,6 @@ script: |
     export PATH="$DEPSDIR/bin:$PATH"
     
     #
-    rm -rf $DEPSDIR
     mkdir -p $INSTALLPREFIX $INSTALLPREFIX/host/bin $DEPSDIR $BUILDDIR
     #
     cd $BUILDDIR
@@ -81,14 +80,14 @@ script: |
     cd $DEPSDIR
     tar xf $INDIR/shadow-deps-win${BITS}-gitian.tar.xz
     #
-    ln -s $DEPSDIR/lib/libsicudt.a $DEPSDIR/lib/libicudt.a
-    ln -s $DEPSDIR/lib/libsicuin.a $DEPSDIR/lib/libicuin.a
-    ln -s $DEPSDIR/lib/libsicuio.a $DEPSDIR/lib/libicuio.a
-    ln -s $DEPSDIR/lib/libsicule.a $DEPSDIR/lib/libicule.a
-    ln -s $DEPSDIR/lib/libsiculx.a $DEPSDIR/lib/libiculx.a
-    ln -s $DEPSDIR/lib/libsicutest.a $DEPSDIR/lib/libicutest.a
-    ln -s $DEPSDIR/lib/libsicutu.a $DEPSDIR/lib/libicutu.a
-    ln -s $DEPSDIR/lib/libsicuuc.a $DEPSDIR/lib/libicuuc.a
+    ln -sf $DEPSDIR/lib/libsicudt.a $DEPSDIR/lib/libicudt.a
+    ln -sf $DEPSDIR/lib/libsicuin.a $DEPSDIR/lib/libicuin.a
+    ln -sf $DEPSDIR/lib/libsicuio.a $DEPSDIR/lib/libicuio.a
+    ln -sf $DEPSDIR/lib/libsicule.a $DEPSDIR/lib/libicule.a
+    ln -sf $DEPSDIR/lib/libsiculx.a $DEPSDIR/lib/libiculx.a
+    ln -sf $DEPSDIR/lib/libsicutest.a $DEPSDIR/lib/libicutest.a
+    ln -sf $DEPSDIR/lib/libsicutu.a $DEPSDIR/lib/libicutu.a
+    ln -sf $DEPSDIR/lib/libsicuuc.a $DEPSDIR/lib/libicuuc.a
     #
     cd $BUILDDIR
     #
@@ -221,11 +220,12 @@ script: |
     #
     cd $QTDIR/qtwebkit
     sed 's,type nul,cat /dev/null,' -i Source/WebCore/DerivedSources.pri
-    for TARGET in Source/WebCore/Target.pri Source/WebKit2/Target.pri Source/JavaScriptCore/Target.pri Source/ThirdParty/leveldb/Target.pri Source/ThirdParty/ANGLE/Target.pri Source/WebKit/WebKit1.pro
+    for TARGET in Source/WebCore/Target.pri Source/WebKit2/Target.pri Source/JavaScriptCore/Target.pri Source/ThirdParty/leveldb/Target.pri Source/ThirdParty/ANGLE/Target.pri Source/WebKit/WebKit1.pro Source/WTF/WTF.pro
     do
+       sed --posix 's/^CONFIG += staticlib optimize_full/CONFIG(shared, static|shared): CONFIG += staticlib optimize_full\nCONFIG(static, static|shared): CONFIG += optimize_full/' -i $TARGET
        sed 's/^CONFIG += staticlib/CONFIG(shared, static|shared): CONFIG += staticlib/' -i $TARGET
        echo "CONFIG(static, static|shared) {
-             target.path = $$[QT_INSTALL_LIBS]
+             target.path = \$\$[QT_INSTALL_LIBS]
              INSTALLS += target
              }" >> $TARGET
     done
