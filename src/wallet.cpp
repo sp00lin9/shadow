@@ -2939,11 +2939,24 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
         std::vector<uint8_t> vchImage;
         txin.ExtractKeyImage(vchImage);
 
+        int nRingSize = txin.ExtractRingSize();
+
         // -- get nCoinValue by reading first ring element
         CPubKey pkRingCoin;
         CAnonOutput ao;
         CTxIndex txindex;
-        const unsigned char* pPubkeys = &s[2];
+
+        const uint8_t *pPubkeys;
+        if (s.size() == 2 + EC_SECRET_SIZE + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize)
+        {
+            pPubkeys = &s[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
+        } else
+        if (s.size() >= 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        {
+            pPubkeys = &s[2];
+        } else
+            return error("%s: Input %d scriptSig too small.", __func__, i);
+
         pkRingCoin = CPubKey(&pPubkeys[0 * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
         if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
         {
