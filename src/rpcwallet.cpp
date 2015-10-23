@@ -182,9 +182,8 @@ Value getinfo(const Array& params, bool fHelp)
     };
 
     obj.push_back(Pair("difficulty",    diff));
-
     obj.push_back(Pair("testnet",       fTestNet));
-
+    obj.push_back(Pair("keypoolsize",   (int)pwalletMain->GetKeyPoolSize()));
     obj.push_back(Pair("paytxfee",      ValueFromAmount(nTransactionFee)));
     obj.push_back(Pair("mininput",      ValueFromAmount(nMinimumInputValue)));
     if (pwalletMain->IsCrypted())
