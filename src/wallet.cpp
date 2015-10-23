@@ -4074,7 +4074,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
         if (nValue + nFee > nAmountCheck)
         {
-            sError = "Not enough coins with requested ring size.";
+            sError = "Not enough mature coins with requested ring size.";
             return 3;
         };
 
