@@ -227,7 +227,6 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 dPriority += (double)nValueIn * nConf;
             };
 
-
             if (tx.nVersion == ANON_TXN_VERSION)
             {
                 int64_t nSumAnon;
@@ -349,10 +348,8 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 nFee = nTxFees;
             };
 
-
             // TODO: must this be done twice!?
             // Need to look at COrphan
-
 
             if (nFee < nMinFee)
                 continue;

@@ -599,7 +599,7 @@ bool CTransaction::IsStandard() const
             && txout.IsAnonOutput())
         {
             if (txout.nValue < 1
-                || txout.scriptPubKey.size() > MIN_ANON_OUT_SIZE + MAX_ANON_NARRATION_SIZE)
+             || txout.scriptPubKey.size() > MIN_ANON_OUT_SIZE + MAX_ANON_NARRATION_SIZE)
             {
                 LogPrintf("IsStandard() anon txout failed.\n");
                 return false;
@@ -610,6 +610,7 @@ bool CTransaction::IsStandard() const
 
         if (!::IsStandard(txout.scriptPubKey, whichType))
             return false;
+
         if (whichType == TX_NULL_DATA)
         {
             nDataOut++;
@@ -621,9 +622,7 @@ bool CTransaction::IsStandard() const
         };
 
         if (fEnforceCanonical && !txout.scriptPubKey.HasCanonicalPushes())
-        {
             return false;
-        };
     };
 
     // only one OP_RETURN txout per txn out is permitted

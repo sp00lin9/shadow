@@ -207,8 +207,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
     std::map<int, std::string> mapStealthNarr;
 
-
-
     {
         LOCK2(cs_main, wallet->cs_wallet);
 
@@ -409,6 +407,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     // Add addresses / update labels that we've sent to to the address book
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
+        if(rcp.label.isEmpty()) // Don't add addresses without labels...
+            continue;
+
         std::string strAddress = rcp.address.toStdString();
         std::string strLabel = rcp.label.toStdString();
 
@@ -425,13 +426,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                 // Check if we have a new address or an updated label
                 if (mi == wallet->mapAddressBook.end() || mi->second != strLabel)
-                {
                     wallet->SetAddressBookName(dest, strLabel);
-                };
             };
         } // wallet->cs_wallet
     };
-
 
     return SendCoinsReturn(OK, 0, hex);
 }
@@ -609,7 +607,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             // -- in shadow
 
             std::string sError;
-            if (!wallet->AddAnonInputs(RING_SIG_1, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
+            if (!wallet->AddAnonInputs(RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
             {
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
