@@ -3291,7 +3291,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         {
             pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
-                return error("%s: Input %u AnonOutput %s not found.", __func__, i, HexStr(pkRingCoin).c_str());
+                return error("%s: Input %u AnonOutput %s not found, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
             if (nCoinValue == -1)
             {
