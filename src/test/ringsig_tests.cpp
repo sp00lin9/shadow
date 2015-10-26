@@ -24,8 +24,8 @@ clock_t start, stop;
 void testRingSigs(int nRingSize)
 {
     uint8_t *pPubkeys = (uint8_t*) malloc(sizeof(uint8_t) * EC_COMPRESSED_SIZE * nRingSize);
-    uint8_t *pSigc = (uint8_t*) malloc(sizeof(uint8_t) * EC_SECRET_SIZE * nRingSize);
-    uint8_t *pSigr = (uint8_t*) malloc(sizeof(uint8_t) * EC_SECRET_SIZE * nRingSize);
+    uint8_t *pSigc    = (uint8_t*) malloc(sizeof(uint8_t) *     EC_SECRET_SIZE * nRingSize);
+    uint8_t *pSigr    = (uint8_t*) malloc(sizeof(uint8_t) *     EC_SECRET_SIZE * nRingSize);
     
     BOOST_CHECK(NULL != pPubkeys);
     BOOST_CHECK(NULL != pSigc);
@@ -46,7 +46,7 @@ void testRingSigs(int nRingSize)
     //BOOST_MESSAGE("Txn preimage: " << HexStr(preimage));
     
     //BOOST_MESSAGE("nRingSize: " << nRingSize);
-    int iSender = GetRandInt(nRingSize-1);
+    int iSender = GetRandInt(nRingSize);
     //BOOST_MESSAGE("sender: " << iSender);
     
     ec_secret sSpend;
@@ -84,7 +84,7 @@ void testRingSigs(int nRingSize)
 void testRingSigABs(int nRingSize)
 {
     uint8_t *pPubkeys = (uint8_t*) malloc(sizeof(uint8_t) * EC_COMPRESSED_SIZE * nRingSize);
-    uint8_t *pSigS = (uint8_t*) malloc(sizeof(uint8_t) *  EC_SECRET_SIZE * nRingSize);
+    uint8_t *pSigS    = (uint8_t*) malloc(sizeof(uint8_t) *     EC_SECRET_SIZE * nRingSize);
     
     BOOST_CHECK(NULL != pPubkeys);
     BOOST_CHECK(NULL != pSigS);
@@ -103,7 +103,7 @@ void testRingSigABs(int nRingSize)
     BOOST_CHECK(1 == RAND_bytes((uint8_t*) preimage.begin(), 32));
     //BOOST_MESSAGE("Txn preimage: " << HexStr(preimage));
     
-    int iSender = GetRandInt(nRingSize-1);
+    int iSender = GetRandInt(nRingSize);
     //BOOST_MESSAGE("sender: " << iSender);
     
     ec_point pSigC;
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(ringsig)
     //testRingSigs(16);
     
     BOOST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
-    BOOST_MESSAGE("totalVerify   " << (double(totalVerify) / CLOCKS_PER_SEC));
+    BOOST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
     
     totalGenerate = 0;
     totalVerify = 0;
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(ringsig)
     //testRingSigABs(16);
     
     BOOST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
-    BOOST_MESSAGE("totalVerify   " << (double(totalVerify) / CLOCKS_PER_SEC));
+    BOOST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
     
     BOOST_CHECK(0 == finaliseRingSigs());
 }

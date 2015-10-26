@@ -3936,7 +3936,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
             {
                 if (fDebugRingSig)
                 {
-                    LogPrintf("Found match of total %d, in %d tries\n", nTotal, nCount);
+                    LogPrintf("Found match of total %d, in %d tries, ", nTotal, nCount);
                     for (i = m; i--;) LogPrintf("%d%c", vecInputIndex[i], i ? ' ': '\n');
                 };
                 return true;

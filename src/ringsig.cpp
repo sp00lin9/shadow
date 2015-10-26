@@ -535,7 +535,7 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
         // Li = ci * Pi + ri * G
         // Ri = ci * I + ri * Hp(Pi)
 
-        if (!bnC || !(bnC = BN_bin2bn(&pSigc[i * EC_SECRET_SIZE], EC_SECRET_SIZE, bnC))
+        if (   !bnC || !(bnC = BN_bin2bn(&pSigc[i * EC_SECRET_SIZE], EC_SECRET_SIZE, bnC))
             || !bnR || !(bnR = BN_bin2bn(&pSigr[i * EC_SECRET_SIZE], EC_SECRET_SIZE, bnR)))
         {
             LogPrintf("%s: extract bnC and bnR failed.\n", __func__);
@@ -675,7 +675,7 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
     if (fDebugRingSig)
         LogPrintf("%s: Ring size %d.\n", __func__, nRingSize);
 
-    assert(nRingSize < 513);
+    assert(nRingSize < 200);
 
     RandAddSeedPerfmon();
 
@@ -806,9 +806,41 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
 
     // c_{j+2} = h(P_1,...,P_n,s_{j+1}*G+c_{j+1}*P_{j+1},s_{j+1}*H(P_{j+1})+c_{j+1}*I_j)
     for (int k = 0, ib = (nSecretOffset + 1) % nRingSize, i = (nSecretOffset + 2) % nRingSize;
-        k < nRingSize-1;
+        k < nRingSize;
         ++k, ib=i, i=(i+1) % nRingSize)
     {
+        if (k == nRingSize - 1)
+        {
+            // s_j = alpha - c_j*x_j mod n.
+            if (!bnT || !BN_bin2bn(&secret.e[0], EC_SECRET_SIZE, bnT))
+            {
+                LogPrintf("%s: BN_bin2bn failed.\n", __func__);
+                rv = 1; goto End;
+            };
+
+            if (!BN_mul(bnT2, bnCj, bnT, bnCtx))
+            {
+                LogPrintf("%s: BN_mul failed.\n", __func__);
+                rv = 1; goto End;
+            };
+
+            if (!BN_mod_sub(bnS, bnA, bnT2, bnN, bnCtx))
+            {
+                LogPrintf("%s: BN_mod_sub failed.\n", __func__);
+                rv = 1; goto End;
+            };
+
+            if (!bnS || (nBytes = BN_num_bytes(bnS)) > (int) EC_SECRET_SIZE
+                || BN_bn2bin(bnS, &pSigS[nSecretOffset * EC_SECRET_SIZE + (EC_SECRET_SIZE-nBytes)]) != nBytes)
+            {
+                LogPrintf("%s: bnS -> pSigS failed.\n", __func__);
+                rv = 1; goto End;
+            };
+
+            if (nSecretOffset != nRingSize - 1)
+                break;
+        };
+
         if (!bnS || !(BN_bin2bn(&pSigS[ib * EC_SECRET_SIZE], EC_SECRET_SIZE, bnS)))
         {
             LogPrintf("%s: BN_bin2bn failed.\n", __func__);
@@ -828,7 +860,6 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
             LogPrintf("%s: EC_POINT_mul failed.\n", __func__);
             rv = 1; goto End;
         };
-
 
         //s_{j+1}*H(P_{j+1})+c_{j+1}*I_j
 
@@ -901,32 +932,6 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
             };
             memcpy(&sigC[0], tempData, EC_SECRET_SIZE);
         };
-    };
-
-    // s_j = alpha - c_j*x_j mod n.
-    if (!bnT || !BN_bin2bn(&secret.e[0], EC_SECRET_SIZE, bnT))
-    {
-        LogPrintf("%s: BN_bin2bn failed.\n", __func__);
-        rv = 1; goto End;
-    };
-
-    if (!BN_mul(bnT2, bnCj, bnT, bnCtx))
-    {
-        LogPrintf("%s: BN_mul failed.\n", __func__);
-        rv = 1; goto End;
-    };
-
-    if (!BN_mod_sub(bnS, bnA, bnT2, bnN, bnCtx))
-    {
-        LogPrintf("%s: BN_mod_sub failed.\n", __func__);
-        rv = 1; goto End;
-    };
-
-    if (!bnS || (nBytes = BN_num_bytes(bnS)) > (int) EC_SECRET_SIZE
-        || BN_bn2bin(bnS, &pSigS[nSecretOffset * EC_SECRET_SIZE + (EC_SECRET_SIZE-nBytes)]) != nBytes)
-    {
-        LogPrintf("%s: bnS -> pSigS failed.\n", __func__);
-        rv = 1; goto End;
     };
 
     End:
