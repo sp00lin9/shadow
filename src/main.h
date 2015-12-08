@@ -119,6 +119,8 @@ CBlockIndex* FindBlockByHeight(int nHeight);
 CBlockThinIndex* FindBlockThinByHeight(int nHeight);
 bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle);
+
+bool LoadExternalBlockFile(FILE* fileIn);
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles);
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
