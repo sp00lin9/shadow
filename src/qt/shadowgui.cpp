@@ -478,10 +478,10 @@ void ShadowGUI::setNumBlocks(int count, int nTotalBlocks)
         }
 
         tooltip += (tooltip.isEmpty()? "" : "\n")
-                 + tr(clientModel->isImporting() ? "Imported " : "Downloaded ") + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
+                 + tr("Downloaded %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
     } else
     {
-        tooltip = clientModel->isImporting() ? "Imported " : "Downloaded " + tr("%1 blocks of transaction history.").arg(count);
+        tooltip = tr("Downloaded %1 blocks of transaction history.").arg(count);
     }
 
     // Override progressBarLabel text when we have warnings to display
