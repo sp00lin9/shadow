@@ -438,7 +438,7 @@ void ShadowGUI::setNumBlocks(int count, int nTotalBlocks)
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        tooltip = tr(clientModel->isImporting() ? "Importing blocks..." : "Synchronizing with network...");
+        tooltip = tr("Synchronizing with network...");
                 + "\n"
                 + tr("Downloading filtered blocks...");
 
