@@ -57,6 +57,7 @@ CBlockIndex* pindexBest = NULL;
 CBlockThinIndex* pindexBestHeader;
 
 int64_t nTimeBestReceived = 0;
+bool fImporting = false;
 
 CMedianFilter<int> cPeerBlockCounts(5, 0); // Amount of blocks that other nodes claim to have
 
@@ -4209,7 +4210,6 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
     int nLoaded = 0;
 
     {
-        LOCK(cs_main);
         try {
             CAutoFile blkdat(fileIn, SER_DISK, CLIENT_VERSION);
             unsigned int nPos = 0;
@@ -4254,6 +4254,7 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
                     CBlock block;
                     blkdat >> block;
                     uint256 hashblock = block.GetHash();
+                    LOCK(cs_main);
                     if (ProcessBlock(NULL, &block, hashblock))
                     {
                         uint256 hashProof;
@@ -4278,6 +4279,59 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
     LogPrintf("Loaded %i blocks from external file in %dms\n", nLoaded, GetTimeMillis() - nStart);
     return nLoaded > 0;
 }
+
+struct CImportingNow
+{
+    CImportingNow() {
+        assert(fImporting == false);
+        fImporting = true;
+    }
+
+    ~CImportingNow() {
+        assert(fImporting == true);
+        fImporting = false;
+    }
+};
+
+void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
+{
+    RenameThread("shadow-loadblk");
+    CImportingNow imp;
+
+    // -loadblock=
+    uiInterface.InitMessage(_("Starting block import..."));
+    BOOST_FOREACH(boost::filesystem::path &path, vImportFiles) {
+        FILE *file = fopen(path.string().c_str(), "rb");
+        if (file) {
+            LogPrintf("Importing blocks file %s...\n", path.string());
+            LoadExternalBlockFile(file);
+        } else {
+            LogPrintf("Warning: Could not open blocks file %s\n", path.string());
+        }
+    }
+
+    // hardcoded $DATADIR/bootstrap.dat
+    filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
+    if (filesystem::exists(pathBootstrap)) {
+        uiInterface.InitMessage(_("Importing bootstrap blockchain data file."));
+
+        FILE *file = fopen(pathBootstrap.string().c_str(), "rb");
+        if (file) {
+            filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
+            LogPrintf("Importing bootstrap.dat...\n");
+            LoadExternalBlockFile(file);
+            RenameOver(pathBootstrap, pathBootstrapOld);
+        } else {
+            LogPrintf("Warning: Could not open bootstrap file %s\n", pathBootstrap.string());
+        }
+    }
+
+    if (GetBoolArg("-stopafterblockimport", DEFAULT_STOPAFTERBLOCKIMPORT)) {
+        LogPrintf("Stopping after block import\n");
+        StartShutdown();
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -5075,8 +5129,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         if (nNodeMode == NT_FULL)
         {
-            if (pfrom->nTypeInd == NT_FULL
-                && !pfrom->fClient && !pfrom->fOneShot
+            if (pfrom->nTypeInd == NT_FULL 
+                && !pfrom->fClient && !pfrom->fOneShot && !fImporting
                 && (pfrom->nChainHeight > (nBestHeight - 144))
                 && (nAskedForBlocks < 1 || vNodes.size() <= 1))
             {
@@ -5088,7 +5142,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         {
             // -- TODO it should be able to request headers from thin clients, but providing headers should be optional for a thin client
             if (pfrom->nTypeInd == NT_FULL
-                && !pfrom->fClient && !pfrom->fOneShot)
+                && !pfrom->fClient && !pfrom->fOneShot && !fImporting)
             {
                 if ((pfrom->nChainHeight > (nBestHeight - 144))
                     && (nAskedForBlocks < 1 || vNodes.size() <= 1))
@@ -5261,7 +5315,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (!fAlreadyHave)
                 {
-                    pfrom->AskFor(inv);
+					if (!fImporting)
+                        pfrom->AskFor(inv);
                 } else
                 if (inv.type == MSG_BLOCK && mapOrphanBlocks.count(inv.hash))
                 {
@@ -5304,7 +5359,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (!fAlreadyHave)
                 {
-                    pfrom->AskFor(inv);
+					if (!fImporting)
+                        pfrom->AskFor(inv);
                 } else
                 if (inv.type == MSG_BLOCK
                     && mapOrphanBlockThins.count(inv.hash))

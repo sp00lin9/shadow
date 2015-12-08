@@ -81,6 +81,7 @@ extern uint64_t nLastBlockSize;
 extern int64_t nLastCoinStakeSearchInterval;
 extern const std::string strMessageMagic;
 extern int64_t nTimeBestReceived;
+extern bool fImporting;
 extern CCriticalSection cs_setpwalletRegistered;
 extern std::set<CWallet*> setpwalletRegistered;
 extern std::map<uint256, CBlock*> mapOrphanBlocks;
@@ -118,8 +119,7 @@ CBlockIndex* FindBlockByHeight(int nHeight);
 CBlockThinIndex* FindBlockThinByHeight(int nHeight);
 bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle);
-
-bool LoadExternalBlockFile(int nFile, FILE* fileIn);
+void ThreadImport(std::vector<boost::filesystem::path> vImportFiles);
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake);

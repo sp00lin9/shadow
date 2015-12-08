@@ -421,7 +421,7 @@ void ShadowGUI::setNumBlocks(int count, int nTotalBlocks)
     QWebElement syncProgressBar = documentFrame->findFirstElement("#syncProgressBar");
 
     // don't show / hide progress bar and its label if we have no connection to the network
-    if (!clientModel || clientModel->getNumConnections() == 0)
+    if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
     {
         syncProgressBar.setAttribute("style", "display:none;");
 
@@ -438,7 +438,7 @@ void ShadowGUI::setNumBlocks(int count, int nTotalBlocks)
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        tooltip = tr("Synchronizing with network...");
+        tooltip = tr(clientModel->isImporting() ? "Importing blocks..." : "Synchronizing with network...");
                 + "\n"
                 + tr("Downloading filtered blocks...");
 
@@ -460,7 +460,7 @@ void ShadowGUI::setNumBlocks(int count, int nTotalBlocks)
         if (strStatusBarWarnings.isEmpty())
         {
             bridge->networkAlert("");
-            tooltip = tr("Synchronizing with network...");
+            tooltip = tr(clientModel->isImporting() ? "Importing blocks..." : "Synchronizing with network...");
 
             if (nNodeMode == NT_FULL)
             {
