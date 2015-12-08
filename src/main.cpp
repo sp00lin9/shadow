@@ -5142,7 +5142,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         {
             // -- TODO it should be able to request headers from thin clients, but providing headers should be optional for a thin client
             if (pfrom->nTypeInd == NT_FULL
-                && !pfrom->fClient && !pfrom->fOneShot && !fImporting)
+                && !pfrom->fClient && !pfrom->fOneShot)
             {
                 if ((pfrom->nChainHeight > (nBestHeight - 144))
                     && (nAskedForBlocks < 1 || vNodes.size() <= 1))
@@ -5315,7 +5315,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (!fAlreadyHave)
                 {
-					if (!fImporting)
+                    if (!fImporting)
                         pfrom->AskFor(inv);
                 } else
                 if (inv.type == MSG_BLOCK && mapOrphanBlocks.count(inv.hash))
@@ -5359,8 +5359,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (!fAlreadyHave)
                 {
-					if (!fImporting)
-                        pfrom->AskFor(inv);
+                    pfrom->AskFor(inv);
                 } else
                 if (inv.type == MSG_BLOCK
                     && mapOrphanBlockThins.count(inv.hash))
