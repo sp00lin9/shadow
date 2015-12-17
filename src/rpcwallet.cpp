@@ -306,8 +306,15 @@ CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew=false)
     // Generate a new key
     if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed)
     {
-        if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false))
-            throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
+        // Generate a new key that is added to wallet
+        CStoredExtKey *sek = new CStoredExtKey();
+ 
+        if (0 != pwalletMain->NewExtKeyFromAccount(strAccount, sek))
+        {
+            delete sek;
+            throw std::runtime_error("NewExtKeyFromAccount failed.");
+        };
+        account.vchPubKey = sek->kp.pubkey;
 
         pwalletMain->SetAddressBookName(account.vchPubKey.GetID(), strAccount);
         walletdb.WriteAccount(strAccount, account);

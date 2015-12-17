@@ -6258,6 +6258,14 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
         pto->fPingQueued = false;
         pto->nPingUsecStart = GetTimeMicros();
 
+        // Resend wallet transactions that haven't gotten in a block yet
+        // Except during reindex, importing and IBD, when old wallet
+        // transactions become unconfirmed and spams other nodes.
+        if (!fReindexing && !IsInitialBlockDownload())
+        {
+            ResendWalletTransactions();
+        }
+
         pto->nPingNonceSent = nonce;
         pto->PushMessage("ping", nonce, nBestHeight);
     };
