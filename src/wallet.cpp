@@ -4495,6 +4495,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     for (uint32_t i = 0; i < vecChange.size(); ++i)
         wtxNew.vout.push_back(CTxOut(vecChange[i].second, vecChange[i].first));
 
+    std::sort(wtxNew.vout.begin(), wtxNew.vout.end());
+
     if (fTestOnly)
         return true;
 
