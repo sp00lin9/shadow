@@ -1,3 +1,4 @@
+---
 language: cpp
 compiler: gcc
 os: linux
@@ -9,3 +10,5 @@ install:
 script:
   - qmake
   - make
+  - cd src && RELEASE=1 STATIC=TRUE make -f makefile.unix && strip shadowcoind
+# TODO: Here is where we need to upload it to the server, or even better, use github releases if its a tag :)
