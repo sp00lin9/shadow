@@ -2590,6 +2590,16 @@ int SecureMsgScanMessage(uint8_t *pHeader, uint8_t *pPayload, uint32_t nPayload,
                 };
             };
         } // cs_smsgDB
+
+        // notify an external script when a message comes in
+        std::string strCmd = GetArg("-smsgnotify", "");
+
+        if (!strCmd.empty())
+        {
+            boost::replace_all(strCmd, "%s", wtxIn.GetHash().GetHex());
+            boost::thread t(runCommand, strCmd); // thread runs free
+        };
+
     };
 
     return 0;

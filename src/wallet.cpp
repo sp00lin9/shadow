@@ -850,39 +850,39 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
 
         mapValue_t mapNarr;
 
-        FindStealthTransactions(tx, mapNarr);
-
         bool fIsMine = false;
-        if (tx.nVersion == ANON_TXN_VERSION)
+        if(!tx.IsCoinBase() && !tx.IsCoinStake())
         {
-            LOCK(cs_main); // cs_wallet is already locked
-            CWalletDB walletdb(strWalletFile, "cr+");
-            CTxDB txdb("cr+");
+            // Skip transactions that we know wouldn't be stealth...
+            FindStealthTransactions(tx, mapNarr);
 
-            uint256 blockHash = 0;
-            if (nNodeMode == NT_FULL)
-                blockHash = pblock ? ((CBlock*)pblock)->GetHash() : 0;
-            else
-                blockHash = pblock ? *(uint256*)pblock : 0;
+            if (tx.nVersion == ANON_TXN_VERSION)
+            {
+                LOCK(cs_main); // cs_wallet is already locked
+                CWalletDB walletdb(strWalletFile, "cr+");
+                CTxDB txdb("cr+");
 
-            walletdb.TxnBegin();
-            txdb.TxnBegin();
-            std::vector<WalletTxMap::iterator> vUpdatedTxns;
-            if (!ProcessAnonTransaction(&walletdb, &txdb, tx, blockHash, fIsMine, mapNarr, vUpdatedTxns))
-            {
-                LogPrintf("ProcessAnonTransaction failed %s\n", hash.ToString().c_str());
-                walletdb.TxnAbort();
-                txdb.TxnAbort();
-                return false;
-            } else
-            {
-                walletdb.TxnCommit();
-                txdb.TxnCommit();
-                for (std::vector<WalletTxMap::iterator>::iterator it = vUpdatedTxns.begin();
-                    it != vUpdatedTxns.end(); ++it)
-                    NotifyTransactionChanged(this, (*it)->first, CT_UPDATED);
+                uint256 blockHash = (pblock ? (nNodeMode == NT_FULL ? ((CBlock*)pblock)->GetHash() : *(uint256*)pblock) : 0);
+
+                walletdb.TxnBegin();
+                txdb.TxnBegin();
+                std::vector<WalletTxMap::iterator> vUpdatedTxns;
+                if (!ProcessAnonTransaction(&walletdb, &txdb, tx, blockHash, fIsMine, mapNarr, vUpdatedTxns))
+                {
+                    LogPrintf("ProcessAnonTransaction failed %s\n", hash.ToString().c_str());
+                    walletdb.TxnAbort();
+                    txdb.TxnAbort();
+                    return false;
+                } else
+                {
+                    walletdb.TxnCommit();
+                    txdb.TxnCommit();
+                    for (std::vector<WalletTxMap::iterator>::iterator it = vUpdatedTxns.begin();
+                        it != vUpdatedTxns.end(); ++it)
+                        NotifyTransactionChanged(this, (*it)->first, CT_UPDATED);
+                };
             };
-        };
+        }
 
         if (fExisted || fIsMine || IsMine(tx) || IsFromMe(tx))
         {
@@ -3292,7 +3292,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         {
             pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
-                return error("%s: Input %u AnonOutput %s not found.", __func__, i, HexStr(pkRingCoin).c_str());
+                return error("%s: Input %u AnonOutput %s not found, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
             if (nCoinValue == -1)
             {
@@ -3937,7 +3937,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
             {
                 if (fDebugRingSig)
                 {
-                    LogPrintf("Found match of total %d, in %d tries\n", nTotal, nCount);
+                    LogPrintf("Found match of total %d, in %d tries, ", nTotal, nCount);
                     for (i = m; i--;) LogPrintf("%d%c", vecInputIndex[i], i ? ' ': '\n');
                 };
                 return true;
@@ -4075,7 +4075,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
         if (nValue + nFee > nAmountCheck)
         {
-            sError = "Not enough coins with requested ring size.";
+            sError = "Not enough mature coins with requested ring size.";
             return 3;
         };
 
@@ -4496,6 +4496,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     for (uint32_t i = 0; i < vecChange.size(); ++i)
         wtxNew.vout.push_back(CTxOut(vecChange[i].second, vecChange[i].first));
 
+    std::sort(wtxNew.vout.begin(), wtxNew.vout.end());
+
     if (fTestOnly)
         return true;
 
@@ -4797,7 +4799,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(RING_SIG_2, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToAnon() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed : " + sError2;
@@ -4906,7 +4908,7 @@ bool CWallet::SendAnonToSdc(CStealthAddress& sxAddress, int64_t nValue, int nRin
 
     int64_t nFeeRequired;
     std::string sError2;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
+    if (!AddAnonInputs(RING_SIG_2, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToSdc() AddAnonInputs failed %s.\n", sError2.c_str());
         sError = "AddAnonInputs() failed: " + sError2;
@@ -5203,7 +5205,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     };
 
     int64_t nFeeRequired;
-    if (!AddAnonInputs(RING_SIG_1, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, true, sError))
+    if (!AddAnonInputs(RING_SIG_2, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, true, sError))
     {
         LogPrintf("EstimateAnonFee() AddAnonInputs failed %s.\n", sError.c_str());
         sError = "AddAnonInputs() failed.";

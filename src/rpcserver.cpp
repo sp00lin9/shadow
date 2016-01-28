@@ -360,10 +360,9 @@ static const CRPCCommand vRPCCommands[] =
     { "anonoutputs",            &anonoutputs,            false,     false,     false },
     { "anoninfo",               &anoninfo,               false,     false,     false },
     { "reloadanondata",         &reloadanondata,         false,     false,     false },
-    
+
     { "txnreport",              &txnreport,              false,     false,     false },
-    
-    
+
     { "smsgenable",             &smsgenable,             false,     false,     false },
     { "smsgdisable",            &smsgdisable,            false,     false,     false },
     { "smsglocalkeys",          &smsglocalkeys,          false,     false,     false },
@@ -386,6 +385,8 @@ static const CRPCCommand vRPCCommands[] =
     { "bip32",                  &extkey,                 false,     false,     true  },
     { "mnemonic",               &mnemonic,               false,     false,     false },
     { "bip39",                  &mnemonic,               false,     false,     false },
+
+    { "market",                 &market,                 false,     false,     true },
 };
 
 CRPCTable::CRPCTable()

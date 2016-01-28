@@ -646,12 +646,15 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         };
 
         hex = QString::fromStdString(wtxNew.GetHash().GetHex());
-    }
+    } // LOCK2(cs_main, wallet->cs_wallet)
 
 
     // Add addresses / update labels that we've sent to to the address book
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
+        if(rcp.label.isEmpty()) // Don't add addresses without labels...
+            continue;
+
         std::string strAddress = rcp.address.toStdString();
         std::string strLabel = rcp.label.toStdString();
 

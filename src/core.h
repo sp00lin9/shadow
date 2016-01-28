@@ -250,6 +250,11 @@ public:
         return !(a == b);
     }
 
+    friend bool operator<(const CTxOut& a, const CTxOut& b)
+    {
+        return (a.nValue < b.nValue);
+    }
+
     std::string ToString() const
     {
         if (IsEmpty()) return "CTxOut(empty)";

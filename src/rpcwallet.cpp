@@ -182,9 +182,8 @@ Value getinfo(const Array& params, bool fHelp)
     };
 
     obj.push_back(Pair("difficulty",    diff));
-
     obj.push_back(Pair("testnet",       fTestNet));
-
+    obj.push_back(Pair("keypoolsize",   (int)pwalletMain->GetKeyPoolSize()));
     obj.push_back(Pair("paytxfee",      ValueFromAmount(nTransactionFee)));
     obj.push_back(Pair("mininput",      ValueFromAmount(nMinimumInputValue)));
     if (pwalletMain->IsCrypted())
@@ -307,8 +306,15 @@ CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew=false)
     // Generate a new key
     if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed)
     {
-        if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false))
-            throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
+        // Generate a new key that is added to wallet
+        CStoredExtKey *sek = new CStoredExtKey();
+ 
+        if (0 != pwalletMain->NewExtKeyFromAccount(strAccount, sek))
+        {
+            delete sek;
+            throw std::runtime_error("NewExtKeyFromAccount failed.");
+        };
+        account.vchPubKey = sek->kp.pubkey;
 
         pwalletMain->SetAddressBookName(account.vchPubKey.GetID(), strAccount);
         walletdb.WriteAccount(strAccount, account);
@@ -2858,9 +2864,8 @@ Value reloadanondata(const Array& params, bool fHelp)
     CBlockIndex *pindex = pindexGenesisBlock;
 
     // check from 257000, once anon transactions started
-    if(!fTestNet)
-        while (pindex->nHeight < 257000 && pindex->pnext)
-            pindex = pindex->pnext;
+    while (pindex->nHeight < (fTestNet ? 68000 : 257000) && pindex->pnext)
+        pindex = pindex->pnext;
 
     Object result;
     if (pindex)
