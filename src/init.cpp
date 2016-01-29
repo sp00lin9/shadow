@@ -33,7 +33,7 @@ namespace fs = boost::filesystem;
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
 
-
+static const bool DEFAULT_STOPAFTERBLOCKIMPORT = false;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -980,37 +980,13 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 9: import blocks
 
-
+    std::vector<boost::filesystem::path> vImportFiles;
     if (mapArgs.count("-loadblock"))
     {
-        uiInterface.InitMessage(_("Importing blockchain data file."));
-
         BOOST_FOREACH(std::string strFile, mapMultiArgs["-loadblock"])
-        {
-            FILE* file = fopen(strFile.c_str(), "rb");
-            if (file)
-                LoadExternalBlockFile(0, file);
-            else
-                LogPrintf("Error: -loadblock '%s' - file not found.\n", strFile.c_str());
-        };
-        LogPrintf("Terminating: loadblock completed.\n");
-        Finalise();
-        exit(0);
+            vImportFiles.push_back(strFile);
     };
-
-    fs::path pathBootstrap = GetDataDir() / "bootstrap.dat";
-    if (fs::exists(pathBootstrap))
-    {
-        uiInterface.InitMessage(_("Importing bootstrap blockchain data file."));
-
-        FILE* file = fopen(pathBootstrap.string().c_str(), "rb");
-        if (file)
-        {
-            fs::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
-            LoadExternalBlockFile(0, file);
-            RenameOver(pathBootstrap, pathBootstrapOld);
-        };
-    };
+	threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
     
     if (mapArgs.count("-reindex"))
     {
