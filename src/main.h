@@ -95,6 +95,7 @@ extern CTxMemPool mempool;
 extern int64_t nTransactionFee;
 extern int64_t nReserveBalance;
 extern int64_t nMinimumInputValue;
+extern bool fUseFastIndex;
 
 extern bool fEnforceCanonical;
 
@@ -419,7 +420,7 @@ public:
         std::string str;
         str += IsCoinBase()? "Coinbase" : (IsCoinStake()? "Coinstake" : "CTransaction");
         str += strprintf("(hash=%s, nTime=%d, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%d)\n",
-            GetHash().ToString().substr(0,10).c_str(),
+            GetHash().ToString(),
             nTime,
             nVersion,
             vin.size(),
@@ -473,8 +474,8 @@ public:
                        std::map<uint256, CTxIndex>& mapTestPool, const CDiskTxPos& posThisTx,
                        const CBlockIndex* pindexBlock, bool fBlock, bool fMiner, unsigned int flags = STANDARD_SCRIPT_VERIFY_FLAGS);
     bool CheckTransaction() const;
-    
-    bool GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const;  // ppcoin: get transaction coin age
+    //bool GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64_t& nCoinAge) const;
+    bool GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const;
 
 
 protected:
@@ -1020,8 +1021,15 @@ public:
     int64_t nMoneySupply;
 
     unsigned int nFlags;  // ppcoin: block index flags
+    enum  
+    {
+        BLOCK_PROOF_OF_STAKE = (1 << 0), // is proof-of-stake block
+        BLOCK_STAKE_ENTROPY  = (1 << 1), // entropy bit for stake modifier
+        BLOCK_STAKE_MODIFIER = (1 << 2), // regenerated stake modifier
+    };
 
     uint64_t nStakeModifier; // hash modifier for proof-of-stake
+    uint256 bnStakeModifierV2;
 
     // proof-of-stake specific fields
     COutPoint prevoutStake;
@@ -1049,6 +1057,7 @@ public:
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
+        bnStakeModifierV2 = 0;
         hashProof = 0;
         prevoutStake.SetNull();
         nStakeTime = 0;
@@ -1073,17 +1082,19 @@ public:
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
+        bnStakeModifierV2 = 0;
         hashProof = 0;
         if (block.IsProofOfStake())
         {
             SetProofOfStake();
             prevoutStake = block.vtx[1].vin[0].prevout;
             nStakeTime = block.vtx[1].nTime;
-        } else
+        }
+        else
         {
             prevoutStake.SetNull();
             nStakeTime = 0;
-        };
+        }
 
         nVersion       = block.nVersion;
         hashMerkleRoot = block.hashMerkleRoot;
@@ -1091,7 +1102,6 @@ public:
         nBits          = block.nBits;
         nNonce         = block.nNonce;
     }
-
 
     CBlock GetBlockHeader() const
     {
@@ -1223,13 +1233,13 @@ public:
     {
         return strprintf("CBlockIndex(nprev=%p, pnext=%p, nFile=%u, nBlockPos=%-6d nHeight=%d, nMint=%s, nMoneySupply=%s, nFlags=(%s)(%d)(%s), nStakeModifier=%016x, hashProof=%s, prevoutStake=(%s), nStakeTime=%d merkle=%s, hashBlock=%s)",
             pprev, pnext, nFile, nBlockPos, nHeight,
-            FormatMoney(nMint).c_str(), FormatMoney(nMoneySupply).c_str(),
+            FormatMoney(nMint), FormatMoney(nMoneySupply),
             GeneratedStakeModifier() ? "MOD" : "-", GetStakeEntropyBit(), IsProofOfStake()? "PoS" : "PoW",
             nStakeModifier,
-            hashProof.ToString().c_str(),
-            prevoutStake.ToString().c_str(), nStakeTime,
-            hashMerkleRoot.ToString().c_str(),
-            GetBlockHash().ToString().c_str());
+            hashProof.ToString(),
+            prevoutStake.ToString(), nStakeTime,
+            hashMerkleRoot.ToString(),
+            GetBlockHash().ToString());
     }
 
     void print() const
@@ -1427,6 +1437,9 @@ public:
 /** Used to marshal pointers into hashes for db storage. */
 class CDiskBlockIndex : public CBlockIndex
 {
+private:
+    uint256 blockHash;
+
 public:
     uint256 hashPrev;
     uint256 hashNext;
@@ -1435,6 +1448,7 @@ public:
     {
         hashPrev = 0;
         hashNext = 0;
+        blockHash = 0;
     }
 
     explicit CDiskBlockIndex(CBlockIndex* pindex) : CBlockIndex(*pindex)
@@ -1456,12 +1470,13 @@ public:
         READWRITE(nMoneySupply);
         READWRITE(nFlags);
         READWRITE(nStakeModifier);
+        READWRITE(bnStakeModifierV2);
         if (IsProofOfStake())
         {
             READWRITE(prevoutStake);
             READWRITE(nStakeTime);
-        } else
-        if (fRead)
+        }
+        else if (fRead)
         {
             const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
             const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
@@ -1475,10 +1490,14 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        READWRITE(blockHash);
     )
 
     uint256 GetBlockHash() const
     {
+        if (fUseFastIndex && (nTime < GetAdjustedTime() - 24 * 60 * 60) && blockHash != 0)
+            return blockHash;
+
         CBlock block;
         block.nVersion        = nVersion;
         block.hashPrevBlock   = hashPrev;
@@ -1486,7 +1505,10 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
-        return block.GetHash();
+
+        const_cast<CDiskBlockIndex*>(this)->blockHash = block.GetHash();
+
+        return blockHash;
     }
 
     std::string ToString() const
@@ -1494,9 +1516,9 @@ public:
         std::string str = "CDiskBlockIndex(";
         str += CBlockIndex::ToString();
         str += strprintf("\n                hashBlock=%s, hashPrev=%s, hashNext=%s)",
-            GetBlockHash().ToString().c_str(),
-            hashPrev.ToString().c_str(),
-            hashNext.ToString().c_str());
+            GetBlockHash().ToString(),
+            hashPrev.ToString(),
+            hashNext.ToString());
         return str;
     }
 

@@ -71,12 +71,11 @@ volatile bool fRequestShutdown = false;
 void StartShutdown()
 {
     fRequestShutdown = true;
-};
-
+}
 bool ShutdownRequested()
 {
     return fRequestShutdown;
-};
+}
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -388,6 +387,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     nMinStakeInterval = GetArg("-minstakeinterval", 0);
     nMinerSleep = GetArg("-minersleep", 500);
 
+    fUseFastIndex = GetBoolArg("-fastindex", true);
+
     // Largest block you're willing to create.
     // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
     nBlockMaxSize = GetArg("-blockmaxsize", MAX_BLOCK_SIZE_GEN/2);
@@ -428,8 +429,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     nDerivationMethodIndex = 0;
 
-    fTestNet = GetBoolArg("-testnet");
-    
+    fTestNet = true;
+
     if (!SelectParamsFromCommandLine())
         return InitError("Invalid combination of -testnet and -regtest.");
     

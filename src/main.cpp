@@ -41,6 +41,7 @@ unsigned int nStakeMinAge       = 8 * 60 * 60;      // 8 hours
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 120;
+int nStakeMinConfirmations = 500;
 CBlockIndex* pindexGenesisBlock = NULL;
 
 CBlockThinIndex* pindexGenesisBlockThin = NULL;
@@ -1908,6 +1909,10 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
 
+    if (Params().IsProtocolV3(pindexLast->nHeight)) {
+        if (nActualSpacing > nTargetSpacing * 10)
+            nActualSpacing = nTargetSpacing * 10;
+    }
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
@@ -2557,6 +2562,15 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     unsigned int flags = SCRIPT_VERIFY_NOCACHE;
 
+    if (Params().IsProtocolV3(pindex->nHeight))
+    {
+        flags |= SCRIPT_VERIFY_NULLDUMMY |
+                 SCRIPT_VERIFY_STRICTENC |
+                 SCRIPT_VERIFY_ALLOW_EMPTY_SIG |
+                 SCRIPT_VERIFY_FIX_HASHTYPE |
+                 SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;                                                                                                                                      
+    }
+
     //// issue here: it doesn't know the version
     unsigned int nTxPos;
     if (fJustCheck)
@@ -2592,11 +2606,9 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (txdb.ReadTxIndex(hashTx, txindexOld))
         {
             BOOST_FOREACH(CDiskTxPos &pos, txindexOld.vSpent)
-            {
                 if (pos.IsNull())
                     return false;
-            };
-        };
+        }
 
         nSigOps += tx.GetLegacySigOpCount();
         if (nSigOps > MAX_BLOCK_SIGOPS)
@@ -2608,9 +2620,8 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
         MapPrevTx mapInputs;
         if (tx.IsCoinBase())
-        {
             nValueOut += tx.GetValueOut();
-        } else
+        else
         {
             bool fInvalid;
             if (!tx.FetchInputs(txdb, mapQueuedChanges, true, false, mapInputs, fInvalid))
@@ -2650,10 +2661,10 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
             if (!tx.ConnectInputs(txdb, mapInputs, mapQueuedChanges, posThisTx, pindex, true, false, flags))
                 return false;
-        };
+        }
 
         mapQueuedChanges[hashTx] = CTxIndex(posThisTx, tx.vout.size());
-    };
+    }
 
     if (IsProofOfWork())
     {
@@ -2663,26 +2674,26 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             return DoS(50, error("ConnectBlock() : coinbase reward exceeded (actual=%d vs calculated=%d)",
                    vtx[0].GetValueOut(),
                    nReward));
-    };
-
+    }
     if (IsProofOfStake())
     {
         // ppcoin: coin stake tx earns reward instead of paying fee
         uint64_t nCoinAge;
+        //if (!vtx[1].GetCoinAge(txdb, pindex->pprev, nCoinAge))
         if (!vtx[1].GetCoinAge(txdb, nCoinAge))
-            return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString().substr(0,10).c_str());
+            return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString());
 
-        int64_t nCalculatedStakeReward = Params().GetProofOfStakeReward(nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = Params().GetProofOfStakeReward(pindex, nCoinAge, nFees);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
-    };
+    }
 
     // ppcoin: track money supply and mint amount info
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
     if (!txdb.WriteBlockIndex(CDiskBlockIndex(pindex)))
-        return error("ConnectBlock() : WriteBlockIndex for pindex failed");
+        return error("Connect() : WriteBlockIndex for pindex failed");
 
     if (fJustCheck)
         return true;
@@ -3241,6 +3252,7 @@ CMerkleBlock::CMerkleBlock(const CBlock& block, CBlockIndex *pBlockIndex, CBloom
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
+//bool CTransaction::GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64_t& nCoinAge) const
 bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
 {
     CBigNum bnCentSecond = 0;  // coin age in the unit of cent-seconds
@@ -3259,12 +3271,25 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
         if (nTime < txPrev.nTime)
             return false;  // Transaction timestamp violation
 
-        // Read block header
-        CBlock block;
-        if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
-            return false; // unable to read block of previous transaction
-        if (block.GetBlockTime() + nStakeMinAge > nTime)
-            continue; // only count coins meeting min age requirement
+        // TODO: Implement IsConfirmedInNPrevBlocks...
+        //if (Params().IsProtocolV3(nHeight))
+        //{
+        //    int nSpendDepth;
+        //    if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+        //    {
+        //        LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
+        //        continue; // only count coins meeting min confirmations requirement
+        //    }
+        //}
+        //else
+        //{
+            // Read block header
+            CBlock block;
+            if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
+                return false; // unable to read block of previous transaction
+            if (block.GetBlockTime() + nStakeMinAge > nTime)
+                continue; // only count coins meeting min age requirement
+        //}
 
         int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
         bnCentSecond += CBigNum(nValueIn) * (nTime-txPrev.nTime) / CENT;
@@ -3310,6 +3335,8 @@ bool CBlock::GetCoinAge(uint64_t& nCoinAge) const
     BOOST_FOREACH(const CTransaction& tx, vtx)
     {
         uint64_t nTxCoinAge;
+        // TODO: After IsConfirmedInNPrevBlocks is implemented...
+        //if (tx.GetCoinAge(txdb, pindex->pprev, nTxCoinAge))
         if (tx.GetCoinAge(txdb, nTxCoinAge))
             nCoinAge += nTxCoinAge;
         else
@@ -3732,7 +3759,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
     LogPrintf("ProcessBlock: ACCEPTED %s\n", strHash.c_str());
 
     // ppcoin: if responsible for sync-checkpoint send it
-    //if (!Params().IsProtocolV2(pindex->nHeight)) // TODO: posv2 remove
+    //if (!Params().IsProtocolV2(pindex->nHeight)) // TODO: posv3 remove
     if (pfrom && !CSyncCheckpoint::strMasterPrivKey.empty())
         Checkpoints::SendSyncCheckpoint(Checkpoints::AutoSelectSyncCheckpoint());
 

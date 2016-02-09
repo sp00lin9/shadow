@@ -7,7 +7,6 @@
 
 #include "chainparams.h"
 #include "main.h"
-#include "util.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -32,7 +31,7 @@ int64_t CChainParams::GetProofOfWorkReward(int nHeight, int64_t nFees) const
         nSubsidy = 1 * COIN;
     else
     if (nHeight <= nLastPOWBlock)
-        nSubsidy = 400 * COIN;
+        nSubsidy = (NetworkID() == CChainParams::TESTNET ? 10000 : 400) * COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
         LogPrintf("GetProofOfWorkReward() : create=%s nSubsidy=%d\n", FormatMoney(nSubsidy).c_str(), nSubsidy);
@@ -41,10 +40,14 @@ int64_t CChainParams::GetProofOfWorkReward(int nHeight, int64_t nFees) const
 };
 
 
-int64_t CChainParams::GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees) const
+int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const
 {
     // miner's coin stake reward based on coin age spent (coin-days)
-    int64_t nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
+    int64_t nSubsidy;
+    if (IsProtocolV3(pindexPrev->nHeight))
+        nSubsidy = pindexPrev->nMoneySupply * 2 * CENT / 365 * 24 * (60 * 60 / 64);
+    else
+        nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
 
     if (fDebug && GetBoolArg("-printcreation"))
         LogPrintf("GetProofOfStakeReward(): create=%s nCoinAge=%d\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
@@ -116,9 +119,6 @@ public:
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
         genesis.nTime    = GENESIS_BLOCK_TIME;
-
-        nLastPOWBlock = 31000;
-        nLastFairLaunchBlock = 120;
     }
     virtual const CBlock& GenesisBlock() const { return genesis; }
     virtual const std::vector<CAddress>& FixedSeeds() const {
@@ -148,7 +148,11 @@ public:
         nRPCPort = 51736;
         nBIP44ID = 0x80000023;
 
+        nLastPOWBlock = 31000;
+        nLastFairLaunchBlock = 120;
+
         nFirstPosv2Block = 453000;
+        nFirstPosv3Block = 800000;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
@@ -211,7 +215,11 @@ public:
         nRPCPort = 51996;
         nBIP44ID = 0x80000001;
 
-        nFirstPosv2Block = 70149;
+        nLastPOWBlock = 300;
+        nLastFairLaunchBlock = 10;
+
+        nFirstPosv2Block = 350;
+        nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 16);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
@@ -307,7 +315,7 @@ void SelectParams(CChainParams::Network network)
 bool SelectParamsFromCommandLine()
 {
     bool fRegTest = GetBoolArg("-regtest", false);
-    bool fTestNet = GetBoolArg("-testnet", false);
+    bool fTestNet = GetBoolArg("-testnet", true);
 
     if (fTestNet && fRegTest)
     {

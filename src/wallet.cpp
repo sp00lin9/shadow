@@ -1760,13 +1760,13 @@ bool CWallet::SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, 
             setCoinsRet.insert(coin.second);
             nValueRet += coin.first;
             return true;
-        } else
-        if (n < nTargetValue + CENT)
+        }
+        else if (n < nTargetValue + CENT)
         {
             vValue.push_back(coin);
             nTotalLower += n;
-        } else
-        if (n < coinLowestLarger.first)
+        }
+        else if (n < coinLowestLarger.first)
         {
             coinLowestLarger = coin;
         }
@@ -1807,8 +1807,9 @@ bool CWallet::SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, 
     {
         setCoinsRet.insert(coinLowestLarger.second);
         nValueRet += coinLowestLarger.first;
-    } else
-    {
+    }
+    else
+	{
         for (unsigned int i = 0; i < vValue.size(); i++)
             if (vfBest[i])
             {
@@ -1842,14 +1843,15 @@ bool CWallet::SelectCoins(int64_t nTargetValue, unsigned int nSpendTime, set<pai
         {
             nValueRet += out.tx->vout[out.i].nValue;
             setCoinsRet.insert(make_pair(out.tx, out.i));
-        };
-
+        }
         return (nValueRet >= nTargetValue);
-    };
+    }
 
-    return (SelectCoinsMinConf(nTargetValue, nSpendTime, 1, 10, vCoins, setCoinsRet, nValueRet) ||
-            SelectCoinsMinConf(nTargetValue, nSpendTime, 1, 1, vCoins, setCoinsRet, nValueRet) ||
-            SelectCoinsMinConf(nTargetValue, nSpendTime, 0, 1, vCoins, setCoinsRet, nValueRet));
+    boost::function<bool (const CWallet*, int64_t, unsigned int, int, int, std::vector<COutput>, std::set<std::pair<const CWalletTx*,unsigned int> >&, int64_t&)> f = &CWallet::SelectCoinsMinConf;
+
+    return (f(this, nTargetValue, nSpendTime, 1, 10, vCoins, setCoinsRet, nValueRet) ||
+            f(this, nTargetValue, nSpendTime, 1, 1, vCoins, setCoinsRet, nValueRet) ||
+            f(this, nTargetValue, nSpendTime, 0, 1, vCoins, setCoinsRet, nValueRet));
 }
 
 // Select some coins without random shuffle or best subset approximation
@@ -2070,64 +2072,6 @@ bool CWallet::CreateTransaction(CScript scriptPubKey, int64_t nValue, std::strin
     return rv;
 }
 
-
-
-bool CWallet::NewStealthAddress(std::string& sError, std::string& sLabel, CStealthAddress& sxAddr)
-{
-    assert(false); // [rm] hd wallet
-
-    ec_secret scan_secret;
-    ec_secret spend_secret;
-
-    if (GenerateRandomSecret(scan_secret) != 0
-        || GenerateRandomSecret(spend_secret) != 0)
-    {
-        sError = "GenerateRandomSecret failed.";
-        LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
-        return false;
-    };
-
-    ec_point scan_pubkey, spend_pubkey;
-    if (SecretToPublicKey(scan_secret, scan_pubkey) != 0)
-    {
-        sError = "Could not get scan public key.";
-        LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
-        return false;
-    };
-
-    if (SecretToPublicKey(spend_secret, spend_pubkey) != 0)
-    {
-        sError = "Could not get spend public key.";
-        LogPrintf("Error CWallet::NewStealthAddress - %s\n", sError.c_str());
-        return false;
-    };
-
-    if (fDebug)
-    {
-        LogPrintf("getnewstealthaddress: ");
-        LogPrintf("scan_pubkey ");
-        for (uint32_t i = 0; i < scan_pubkey.size(); ++i)
-            LogPrintf("%02x", scan_pubkey[i]);
-        LogPrintf("\n");
-
-        LogPrintf("spend_pubkey ");
-        for (uint32_t i = 0; i < spend_pubkey.size(); ++i)
-            LogPrintf("%02x", spend_pubkey[i]);
-        LogPrintf("\n");
-    };
-
-
-    sxAddr.label = sLabel;
-    sxAddr.scan_pubkey = scan_pubkey;
-    sxAddr.spend_pubkey = spend_pubkey;
-
-    sxAddr.scan_secret.resize(EC_SECRET_SIZE);
-    memcpy(&sxAddr.scan_secret[0], &scan_secret.e[0], EC_SECRET_SIZE);
-    sxAddr.spend_secret.resize(EC_SECRET_SIZE);
-    memcpy(&sxAddr.spend_secret[0], &spend_secret.e[0], EC_SECRET_SIZE);
-
-    return true;
-}
 
 bool CWallet::AddStealthAddress(CStealthAddress& sxAddr)
 {
@@ -5901,9 +5845,6 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
                 vwtxPrev.push_back(pcoin.first);
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-                if (GetWeight(nBlockTime, (int64_t)txNew.nTime) < nStakeSplitAge)
-                    txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
-
                 if (fDebugPoS)
                     LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
                 fKernelFound = true;
@@ -5940,8 +5881,15 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
             if (pcoin.first->vout[pcoin.second].nValue >= nStakeCombineThreshold)
                 continue;
             // Do not add input that is still too young
-            if (nTimeWeight < nStakeMinAge)
-                continue;
+            if (Params().IsProtocolV3(pindexPrev->nHeight))
+            {
+                // properly handled by selection function
+            }
+            else
+            {
+                if (nTimeWeight < nStakeMinAge)
+                    continue;
+            }
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
             nCredit += pcoin.first->vout[pcoin.second].nValue;
@@ -5956,12 +5904,15 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
         if (!txNew.GetCoinAge(txdb, nCoinAge))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        int64_t nReward = Params().GetProofOfStakeReward(nCoinAge, nFees);
+        int64_t nReward = Params().GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
         if (nReward <= 0)
             return false;
 
         nCredit += nReward;
     }
+
+    if (nCredit >= nStakeSplitThreshold)
+        txNew.vout.push_back(CTxOut(0, txNew.vout[1].scriptPubKey)); //split stake
 
     // Set output amount
     if (txNew.vout.size() == 3)
@@ -5969,9 +5920,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
         txNew.vout[1].nValue = (nCredit / 2 / CENT) * CENT;
         txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
     } else
-    {
         txNew.vout[1].nValue = nCredit;
-    };
 
     // Sign
     int nIn = 0;
@@ -8799,6 +8748,7 @@ bool CReserveKey::GetReservedKey(CPubKey& pubkey)
             vchPubKey = keypool.vchPubKey;
         } else
         {
+            LogPrintf("is valid: %d", pwallet->vchDefaultKey.IsValid());
             if (pwallet->vchDefaultKey.IsValid())
             {
                 LogPrintf("CReserveKey::GetReservedKey(): Warning: Using default key instead of a new key, top up your keypool!");
