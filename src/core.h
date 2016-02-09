@@ -415,11 +415,12 @@ class CStakeModifier
 // for CheckKernel
 public:
     CStakeModifier() {};
-    CStakeModifier(uint64_t modifier, int height, int64_t time)
-        : nModifier(modifier), nHeight(height), nTime(time)
+    CStakeModifier(uint64_t modifier, uint256 modifierv2, int height, int64_t time)
+        : nModifier(modifier), bnModifierV2(modifierv2), nHeight(height), nTime(time)
     {};
 
     uint64_t nModifier;
+    uint256 bnModifierV2;
     int nHeight;
     int64_t nTime;
 };

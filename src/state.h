@@ -115,6 +115,7 @@ extern unsigned int nBlockMinSize;
 extern int64_t nMinTxFee;
 
 extern unsigned int nStakeSplitAge;
+extern int64_t nStakeSplitThreshold;
 extern int64_t nStakeCombineThreshold;
 
 extern uint32_t nExtKeyLookAhead;
