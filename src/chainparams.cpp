@@ -218,7 +218,7 @@ public:
         nLastPOWBlock = 300;
         nLastFairLaunchBlock = 10;
 
-        nFirstPosv2Block = 350;
+        nFirstPosv2Block = 300;
         nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 16);
