@@ -1225,40 +1225,35 @@ void MapPort(bool)
 
 void ThreadDNSAddressSeed()
 {
+    const vector<CDNSSeedData> &vSeeds = Params().DNSSeeds();
     int found = 0;
-
-    if (!fTestNet)
+    
+    LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
+    
+    BOOST_FOREACH(const CDNSSeedData &seed, vSeeds)
     {
-        const vector<CDNSSeedData> &vSeeds = Params().DNSSeeds();
-        int found = 0;
-        
-        LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
-        
-        BOOST_FOREACH(const CDNSSeedData &seed, vSeeds)
+        if (HaveNameProxy())
         {
-            if (HaveNameProxy())
+            AddOneShot(seed.host);
+        } else
+        {
+            vector<CNetAddr> vIPs;
+            vector<CAddress> vAdd;
+            if (LookupHost(seed.host.c_str(), vIPs))
             {
-                AddOneShot(seed.host);
-            } else
-            {
-                vector<CNetAddr> vIPs;
-                vector<CAddress> vAdd;
-                if (LookupHost(seed.host.c_str(), vIPs))
+                BOOST_FOREACH(CNetAddr& ip, vIPs)
                 {
-                    BOOST_FOREACH(CNetAddr& ip, vIPs)
-                    {
-                        
-                        int nOneDay = 24*3600;
-                        CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
-                        SetReachable(addr.GetNetwork());
-                        
-                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                        vAdd.push_back(addr);
-                        found++;
-                    };
+                    
+                    int nOneDay = 24*3600;
+                    CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
+                    SetReachable(addr.GetNetwork());
+                    
+                    addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+                    vAdd.push_back(addr);
+                    found++;
                 };
-                addrman.Add(vAdd, CNetAddr(seed.name, true));
             };
+            addrman.Add(vAdd, CNetAddr(seed.name, true));
         };
     };
     
