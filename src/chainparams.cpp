@@ -44,8 +44,9 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
 {
     // miner's coin stake reward based on coin age spent (coin-days)
     int64_t nSubsidy;
+
     if (IsProtocolV3(pindexPrev->nHeight))
-        nSubsidy = pindexPrev->nMoneySupply * 2 * CENT / 365 * 24 * (60 * 60 / 64);
+        nSubsidy = (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
     else
         nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
 
