@@ -2485,8 +2485,7 @@ Value sendsdctoanon(const Array& params, bool fHelp)
     if (fHelp || params.size() < 2 || params.size() > 5)
         throw std::runtime_error(
             "sendsdctoanon <stealth_address> <amount> [narration] [comment] [comment-to]\n"
-            "<amount> is a real and is rounded to the nearest 0.000001"
-            "<ring_size> is a number of outputs of the same amount to include in the signature"
+            "<amount> is a real number and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2528,7 +2527,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw std::runtime_error(
             "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
-            "<amount> is a real and is rounded to the nearest 0.000001"
+            "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature"
             + HelpRequiringPassphrase());
 
@@ -2578,7 +2577,8 @@ Value sendanontosdc(const Array& params, bool fHelp)
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw std::runtime_error(
             "sendanontosdc <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
-            "<amount> is a real and is rounded to the nearest 0.000001"
+            "<amount> is a real number and is rounded to the nearest 0.000001\n"
+            "<ring_size> is a number of outputs of the same amount to include in the signature"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2627,7 +2627,8 @@ Value estimateanonfee(const Array& params, bool fHelp)
     if (fHelp || params.size() < 2 || params.size() > 3)
         throw std::runtime_error(
             "estimateanonfee <amount> <ring_size> [narration]\n"
-            "<amount>is a real and is rounded to the nearest 0.000001");
+            "<amount>is a real number and is rounded to the nearest 0.000001\n"
+            "<ring_size> is a number of outputs of the same amount to include in the signature");
 
     int64_t nAmount = AmountFromValue(params[0]);
 
