@@ -32,14 +32,16 @@ int initialiseRingSigs()
     if (!(bnCtx = BN_CTX_new()))
         return errorN(1, "initialiseRingSigs(): BN_CTX_new failed.");
 
+    BN_CTX_start(bnCtx);
     ecGrpKi = EC_GROUP_dup(ecGrp);
 
     // ki basepoint
-    bnBaseKi = BN_new();
-    int n = 8;
+    bnBaseKi = BN_CTX_get(bnCtx);
+    BIGNUM *bnBaseKiAdd = BN_CTX_get(bnCtx);
+    int n = 5122259; // randomly chosen integer
     std::ostringstream num_str;
     num_str << n;
-    BN_dec2bn(&bnBaseKi, num_str.str().c_str());
+    BN_dec2bn(&bnBaseKiAdd, num_str.str().c_str());
 
     // get order and cofactor
     bnOrder = BN_new();
@@ -50,11 +52,25 @@ int initialiseRingSigs()
 
     // get the generators
     ptBase   = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp));
-    ptBaseKi = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrpKi));
 
-    // multiply and set the generator
-    EC_POINT_bn2point(ecGrpKi, bnBaseKi, ptBaseKi, bnCtx);
-    EC_POINT_mul(ecGrpKi, ptBaseKi, bnBaseKi, NULL, NULL, bnCtx);
+    // get current basepoint
+    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx);
+    // add n
+    BN_add(bnBaseKi, bnBaseKi, bnBaseKiAdd);
+
+    LogPrintf("bnBaseKi:    %s\n", BN_bn2hex(bnBaseKi));
+    LogPrintf("bnBaseKiAdd: %s\n", BN_bn2hex(bnBaseKiAdd));
+
+    ptBaseKi = EC_POINT_new(ecGrpKi);
+
+    // new basepoint bignum to point
+    if(!EC_POINT_bn2point(ecGrpKi, bnBaseKi, ptBaseKi, bnCtx))
+       errorN(1, "FAILED!!!");
+
+    LogPrintf("ptBaseKi before  : %s\n", EC_POINT_point2hex(ecGrpKi, ptBaseKi, POINT_CONVERSION_UNCOMPRESSED, bnCtx));
+
+    // Add the old basepoint to the new base point
+    EC_POINT_add(ecGrpKi, ptBaseKi, ptBaseKi, ptBase, bnCtx);
     EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor);
 
     if (fDebugRingSig)
@@ -69,7 +85,7 @@ int initialiseRingSigs()
     }
 
     BN_free(bnCofactor);
-
+    BN_CTX_end(bnCtx);
     return 0;
 };
 
@@ -138,14 +154,19 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
 static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet)
 {
     // - bn(hash(data)) * G
-    uint256 pkHash = Hash(p, p + len);
+    uint160 pkTmpHash = Hash160(p, p + len);
+    uint256    pkHash = Hash(pkTmpHash.begin(), pkTmpHash.end());
 
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "hashToEC(): BN_bin2bn failed.");
 
-    if (!ptRet ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
+    if (!ptRet
+//     || !BN_mul(bnTmp, bnTmp, bnBaseKi, bnCtx)
+     || !EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
         return errorN(1, "hashToEC(): EC_POINT_mul failed.");
 
+    //if(EC_POINT_cmp(ecGrpKi, ptNew, ptRet, bnCtx))
+    //    LogPrintf("Points are the same!!!\n");
     return 0;
 };
 
@@ -162,7 +183,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     BIGNUM   *bnSec = BN_CTX_get(bnCtx);
     EC_POINT *hG    = NULL;
 
-    if (!(hG = EC_POINT_new(ecGrpKi))
+    if (!(hG = EC_POINT_new(ecGrp))
     && (rv = errorN(1, "%s: EC_POINT_new failed.", __func__)))
         goto End;
 
@@ -187,7 +208,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     if ((!(EC_POINT_point2bn(ecGrp, hG, POINT_CONVERSION_COMPRESSED, bnTmp, bnCtx))
         || BN_num_bytes(bnTmp) != (int) EC_COMPRESSED_SIZE
         || BN_bn2bin(bnTmp, &keyImage[0]) != (int) EC_COMPRESSED_SIZE)
-    && (rv = errorN(1, "%s: point -> keyImage failed.", __func__)))
+    && (rv = errorN(1, "%s: point -> keyImage failed. %d", __func__, BN_num_bytes(bnTmp))))
         goto End;
 
     if (fDebugRingSig)
@@ -577,17 +598,16 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
             rv = 1; goto End;
         };
 
-        // ------- check if we can find the signer...
+        // DEBUGGING: ------- check if we can find the signer...
         // ptSN = Pi * bnT
-        if (!EC_POINT_mul(ecGrp, ptSN, NULL, ptPk, bnT, bnCtx)
-          ||!EC_POINT_mul(ecGrp, ptSN, NULL, ptSN, bnBaseKi, bnCtx))
-        {
-            LogPrintf("%s: EC_POINT_mul failed.\n", __func__);
-            rv = 1; goto End;
-        };
-        if (0 == EC_POINT_cmp(ecGrpKi, ptSN, ptKi, bnCtx) )
+        if ((!EC_POINT_mul(ecGrpKi, ptSN, NULL, ptPk, bnT, bnCtx)
+           || false)
+        && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
+            goto End;
+
+        if (0 == EC_POINT_cmp(ecGrp, ptSN, ptKi, bnCtx) )
             LogPrintf("signer is index %d\n", i);
-        // - End - check if we can find the signer...
+        // DEBUGGING: - End - check if we can find the signer...
 
         // ptT1 = k1 * I
         if (!EC_POINT_mul(ecGrp, ptT1, NULL, ptKi, bnC, bnCtx))
