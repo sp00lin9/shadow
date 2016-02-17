@@ -4380,7 +4380,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
         // -- size for full signature, signature is added later after hash
         try { txin.scriptSig.resize(nSigSize); } catch (std::exception& e)
         {
-            LogPrintf("Error: SendAnonToAnon() txin.scriptSig.resize threw: %s.\n", e.what());
+            LogPrintf("Error: AddAnonInputs() txin.scriptSig.resize threw: %s.\n", e.what());
             sError = "resize failed.\n";
             return false;
         };

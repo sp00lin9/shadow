@@ -27,9 +27,9 @@ void testRingSigs(int nRingSize)
     uint8_t *pSigc    = (uint8_t*) malloc(sizeof(uint8_t) *     EC_SECRET_SIZE * nRingSize);
     uint8_t *pSigr    = (uint8_t*) malloc(sizeof(uint8_t) *     EC_SECRET_SIZE * nRingSize);
     
-    BOOST_CHECK(NULL != pPubkeys);
-    BOOST_CHECK(NULL != pSigc);
-    BOOST_CHECK(NULL != pSigr);
+    BOOST_REQUIRE(NULL != pPubkeys);
+    BOOST_REQUIRE(NULL != pSigc);
+    BOOST_REQUIRE(NULL != pSigr);
     
     CKey key[nRingSize];
     for (int i = 0; i < nRingSize; ++i)
@@ -55,17 +55,17 @@ void testRingSigs(int nRingSize)
     
     memcpy(&sSpend.e[0], key[iSender].begin(), EC_SECRET_SIZE);
     
-    BOOST_CHECK(0 == SecretToPublicKey(sSpend, pkSpend));
+    BOOST_REQUIRE(0 == SecretToPublicKey(sSpend, pkSpend));
     
-    BOOST_CHECK(0 == generateKeyImage(pkSpend, sSpend, keyImage));
+    BOOST_REQUIRE(0 == generateKeyImage(pkSpend, sSpend, keyImage));
     
     start = clock();
-    BOOST_CHECK(0 == generateRingSignature(keyImage, preimage, nRingSize, iSender, sSpend, pPubkeys, pSigc, pSigr));
+    BOOST_REQUIRE(0 == generateRingSignature(keyImage, preimage, nRingSize, iSender, sSpend, pPubkeys, pSigc, pSigr));
     stop = clock();
     totalGenerate += stop - start;
     
     start = clock();
-    BOOST_CHECK(0 == verifyRingSignature(keyImage, preimage, nRingSize, pPubkeys, pSigc, pSigr));
+    BOOST_REQUIRE(0 == verifyRingSignature(keyImage, preimage, nRingSize, pPubkeys, pSigc, pSigr));
     stop = clock();
     totalVerify += stop - start;
     
@@ -116,15 +116,15 @@ void testRingSigABs(int nRingSize)
     
     BOOST_CHECK(0 == SecretToPublicKey(sSpend, pkSpend));
     
-    BOOST_CHECK(0 == generateKeyImage(pkSpend, sSpend, keyImage));
+    BOOST_REQUIRE(0 == generateKeyImage(pkSpend, sSpend, keyImage));
     
     start = clock();
-    BOOST_CHECK(0 == generateRingSignatureAB(keyImage, preimage, nRingSize, iSender, sSpend, pPubkeys, pSigC, pSigS));
+    BOOST_REQUIRE(0 == generateRingSignatureAB(keyImage, preimage, nRingSize, iSender, sSpend, pPubkeys, pSigC, pSigS));
     stop = clock();
     totalGenerate += stop - start;
     
     start = clock();
-    BOOST_CHECK(0 == verifyRingSignatureAB(keyImage, preimage, nRingSize, pPubkeys, pSigC, pSigS));
+    BOOST_REQUIRE(0 == verifyRingSignatureAB(keyImage, preimage, nRingSize, pPubkeys, pSigC, pSigS));
     stop = clock();
     totalVerify += stop - start;
     
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_SUITE(ringsig_tests)
 
 BOOST_AUTO_TEST_CASE(ringsig)
 {
-    BOOST_CHECK(0 == initialiseRingSigs());
+    BOOST_REQUIRE(0 == initialiseRingSigs());
     
     BOOST_MESSAGE("testRingSigs");
     
