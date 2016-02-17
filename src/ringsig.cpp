@@ -154,8 +154,7 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
 static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet)
 {
     // - bn(hash(data)) * G
-    uint160 pkTmpHash = Hash160(p, p + len);
-    uint256    pkHash = Hash(pkTmpHash.begin(), pkTmpHash.end());
+    uint256 pkHash = Hash(p, p + len);
 
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "hashToEC(): BN_bin2bn failed.");
