@@ -490,18 +490,18 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
 
     BN_CTX_start(bnCtx);
 
-    BIGNUM   *bnT      = BN_CTX_get(bnCtx);
-    BIGNUM   *bnH      = BN_CTX_get(bnCtx);
-    BIGNUM   *bnC      = BN_CTX_get(bnCtx);
-    BIGNUM   *bnR      = BN_CTX_get(bnCtx);
-    BIGNUM   *bnSum    = BN_CTX_get(bnCtx);
-    EC_POINT *ptT1     = NULL;
-    EC_POINT *ptT2     = NULL;
-    EC_POINT *ptT3     = NULL;
-    EC_POINT *ptPk     = NULL;
-    EC_POINT *ptKi     = NULL;
-    EC_POINT *ptL      = NULL;
-    EC_POINT *ptR      = NULL;
+    BIGNUM   *bnT   = BN_CTX_get(bnCtx);
+    BIGNUM   *bnH   = BN_CTX_get(bnCtx);
+    BIGNUM   *bnC   = BN_CTX_get(bnCtx);
+    BIGNUM   *bnR   = BN_CTX_get(bnCtx);
+    BIGNUM   *bnSum = BN_CTX_get(bnCtx);
+    EC_POINT *ptT1  = NULL;
+    EC_POINT *ptT2  = NULL;
+    EC_POINT *ptT3  = NULL;
+    EC_POINT *ptPk  = NULL;
+    EC_POINT *ptKi  = NULL;
+    EC_POINT *ptL   = NULL;
+    EC_POINT *ptR   = NULL;
 
     uint8_t tempData[66]; // hold raw point data to hash
     uint256 commitHash;
