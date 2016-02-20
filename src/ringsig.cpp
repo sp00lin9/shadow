@@ -13,13 +13,14 @@
 #include <openssl/obj_mac.h>
 
 
-static EC_GROUP *ecGrp    = NULL;
-static EC_GROUP *ecGrpKi  = NULL;
-static BN_CTX   *bnCtx    = NULL;
-static BIGNUM   *bnOrder  = NULL;
-static BIGNUM   *bnBaseKi = NULL;
-static EC_POINT *ptBaseKi = NULL;
-static EC_POINT *ptBase   = NULL;
+static EC_GROUP *ecGrp     = NULL;
+static EC_GROUP *ecGrpKi   = NULL;
+static BN_CTX   *bnCtx     = NULL;
+static BIGNUM   *bnOrder   = NULL;
+static BIGNUM   *bnBaseKi2 = NULL;
+static EC_POINT *ptBaseKi1 = NULL;
+static EC_POINT *ptBaseKi2 = NULL;
+static EC_POINT *ptBase    = NULL;
 
 int initialiseRingSigs()
 {
@@ -32,46 +33,57 @@ int initialiseRingSigs()
     if (!(bnCtx = BN_CTX_new()))
         return errorN(1, "initialiseRingSigs(): BN_CTX_new failed.");
 
-    BN_CTX_start(bnCtx);
     ecGrpKi = EC_GROUP_dup(ecGrp);
-
-    // ki basepoint
-    bnBaseKi = BN_CTX_get(bnCtx);
-    BIGNUM *bnBaseKiAdd = BN_CTX_get(bnCtx);
-    int n = 5122259; // randomly chosen integer
-    std::ostringstream num_str;
-    num_str << n;
-    BN_dec2bn(&bnBaseKiAdd, num_str.str().c_str());
 
     // get order and cofactor
     bnOrder = BN_new();
     EC_GROUP_get_order(ecGrp, bnOrder, bnCtx);
 
-    BIGNUM *bnCofactor = BN_new();
+    BN_CTX_start(bnCtx);
+    BIGNUM *bnCofactor = BN_CTX_get(bnCtx);
     EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx);
 
     // get the generators
-    ptBase   = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp));
+    ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp));
+
+    // ki basepoint
+    BIGNUM *bnBaseKi1 = BN_CTX_get(bnCtx);
+    bnBaseKi2 = BN_new();
+    BIGNUM *bnBaseKiAdd1 = BN_CTX_get(bnCtx);
+    BIGNUM *bnBaseKiAdd2 = BN_CTX_get(bnCtx);
+    int      n1 = 2099999974; // randomly chosen integer
+    uint64_t n2 = 18446744073702659837;
+    std::ostringstream num_str1;
+    std::ostringstream num_str2;
+    num_str1 << n1;
+    num_str2 << n2;
+    BN_dec2bn(&bnBaseKiAdd1, num_str1.str().c_str());
+    BN_dec2bn(&bnBaseKiAdd2, num_str1.str().c_str());
 
     // get current basepoint
-    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx);
+    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi1, bnCtx);
+    bnBaseKi2 = BN_dup(bnBaseKi1);
+
     // add n
-    BN_add(bnBaseKi, bnBaseKi, bnBaseKiAdd);
+    BN_add(bnBaseKi1, bnBaseKi1, bnBaseKiAdd1);
+    BN_add(bnBaseKi2, bnBaseKi2, bnBaseKiAdd2);
 
-    LogPrintf("bnBaseKi:    %s\n", BN_bn2hex(bnBaseKi));
-    LogPrintf("bnBaseKiAdd: %s\n", BN_bn2hex(bnBaseKiAdd));
+    LogPrintf("bnBaseKi:    %s\n", BN_bn2hex(bnBaseKi1));
+    LogPrintf("bnBaseKiAdd: %s\n", BN_bn2hex(bnBaseKiAdd1));
 
-    ptBaseKi = EC_POINT_new(ecGrpKi);
+    ptBaseKi1 = EC_POINT_new(ecGrp);
+    ptBaseKi2 = EC_POINT_new(ecGrp);
 
     // new basepoint bignum to point
-    if(!EC_POINT_bn2point(ecGrpKi, bnBaseKi, ptBaseKi, bnCtx))
+    if(!EC_POINT_bn2point(ecGrp, bnBaseKi1, ptBaseKi1, bnCtx))
        errorN(1, "FAILED!!!");
-
-    LogPrintf("ptBaseKi before  : %s\n", EC_POINT_point2hex(ecGrpKi, ptBaseKi, POINT_CONVERSION_UNCOMPRESSED, bnCtx));
+    // new basepoint bignum to point
+    //if(!EC_POINT_bn2point(ecGrp, bnBaseKi2, ptBaseKi2, bnCtx))
+    //   errorN(1, "FAILED!!!");
 
     // Add the old basepoint to the new base point
-    EC_POINT_add(ecGrpKi, ptBaseKi, ptBaseKi, ptBase, bnCtx);
-    EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor);
+    EC_POINT_add(ecGrp, ptBaseKi1, ptBaseKi1, ptBase, bnCtx);
+    EC_GROUP_set_generator(ecGrpKi, ptBaseKi1, bnOrder, bnCofactor);
 
     if (fDebugRingSig)
     {
@@ -84,7 +96,6 @@ int initialiseRingSigs()
         LogPrintf("generator ecGrp:   %s\ngenerator ecGrpKi: %s\n", genPoint, genPointKi);
     }
 
-    BN_free(bnCofactor);
     BN_CTX_end(bnCtx);
     return 0;
 };
@@ -95,15 +106,16 @@ int finaliseRingSigs()
         LogPrintf("finaliseRingSigs()\n");
 
     BN_free(bnOrder);
-    BN_free(bnBaseKi);
+    BN_free(bnBaseKi2);
     BN_CTX_free(bnCtx);
     EC_GROUP_clear_free(ecGrp);
     EC_GROUP_clear_free(ecGrpKi);
 
-    ecGrp    = NULL;
-    bnCtx    = NULL;
-    bnOrder  = NULL;
-    bnBaseKi = NULL;
+    ecGrp     = NULL;
+    ecGrpKi   = NULL;
+    bnCtx     = NULL;
+    bnOrder   = NULL;
+    bnBaseKi2 = NULL;
 
     return 0;
 };
@@ -151,21 +163,50 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
     return 0;
 };
 
-static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet)
+int getOldKeyImage(const uint8_t *p, uint32_t len, ec_point &keyImage)
 {
     // - bn(hash(data)) * G
+    uint256 pkHash = Hash(p, p + len);
+    BN_CTX_start(bnCtx);
+    BIGNUM *bnTmp = BN_CTX_get(bnCtx);
+    EC_POINT *ptPk = NULL;
+
+    if (!BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
+        return errorN(1, "hashToEC(): BN_bin2bn failed.");
+
+    if (!(ptPk = EC_POINT_new(ecGrp)))
+        return errorN(1, "%s: EC_POINT_new failed.", __func__);
+
+    if (!ptPk
+      ||!EC_POINT_bn2point(ecGrp, bnTmp, ptPk, bnCtx)
+      ||!EC_POINT_mul(ecGrp, ptPk, NULL, ptPk, bnTmp, bnCtx))
+        return errorN(1, "hashToEC(): EC_POINT_mul failed.");
+
+    if ((!(EC_POINT_point2bn(ecGrp, ptPk, POINT_CONVERSION_COMPRESSED, bnTmp, bnCtx))
+        || BN_num_bytes(bnTmp) != (int) EC_COMPRESSED_SIZE
+        || BN_bn2bin(bnTmp, &keyImage[0]) != (int) EC_COMPRESSED_SIZE))
+        return errorN(1, "%s: point -> keyImage failed. %d", __func__, BN_num_bytes(bnTmp));
+
+    EC_POINT_free(ptPk);
+    BN_CTX_end(bnCtx);
+
+    return 0;
+}
+
+static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet)
+{
+    // - bn(hash(data)) * (G + bn1) * (bn2)
     uint256 pkHash = Hash(p, p + len);
 
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "hashToEC(): BN_bin2bn failed.");
 
     if (!ptRet
-//     || !BN_mul(bnTmp, bnTmp, bnBaseKi, bnCtx)
-     || !EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
+//      ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
+      ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx)
+      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
         return errorN(1, "hashToEC(): EC_POINT_mul failed.");
 
-    //if(EC_POINT_cmp(ecGrpKi, ptNew, ptRet, bnCtx))
-    //    LogPrintf("Points are the same!!!\n");
     return 0;
 };
 
@@ -176,10 +217,10 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     if (publicKey.size() != EC_COMPRESSED_SIZE)
         return errorN(1, "%s Invalid publicKey.", __func__);
 
-    int rv = 0;
     BN_CTX_start(bnCtx);
-    BIGNUM   *bnTmp = BN_CTX_get(bnCtx);
-    BIGNUM   *bnSec = BN_CTX_get(bnCtx);
+    int rv = 0;
+    BIGNUM *bnTmp = BN_CTX_get(bnCtx);
+    BIGNUM *bnSec = BN_CTX_get(bnCtx);
     EC_POINT *hG    = NULL;
 
     if (!(hG = EC_POINT_new(ecGrp))
@@ -599,7 +640,7 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
 
         // DEBUGGING: ------- check if we can find the signer...
         // ptSN = Pi * bnT
-        if ((!EC_POINT_mul(ecGrpKi, ptSN, NULL, ptPk, bnT, bnCtx)
+        if ((!EC_POINT_mul(ecGrp, ptSN, NULL, ptPk, bnT, bnCtx)
            || false)
         && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
             goto End;

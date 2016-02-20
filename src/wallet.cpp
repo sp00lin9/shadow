@@ -2933,7 +2933,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
 
         const CScript &s = txout.scriptPubKey;
 
-        CPubKey pkCoin    = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
+        CPubKey pkCoin = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
         CAnonOutput ao;
         if (!ptxdb->ReadAnonOutput(pkCoin, ao))
         {
@@ -4397,7 +4397,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
             || mi->second.nVersion != ANON_TXN_VERSION
             || (int)mi->second.vout.size() < nCoinOutId)
         {
-            LogPrintf("Error: SendAnonToAnon() picked coin not in wallet, %s version %d.\n", (*it)->outpoint.hash.ToString().c_str(), (*mi).second.nVersion);
+            LogPrintf("Error: AddAnonInputs() picked coin not in wallet, %s version %d.\n", (*it)->outpoint.hash.ToString().c_str(), (*mi).second.nVersion);
             sError = "picked coin not in wallet.\n";
             return false;
         };
@@ -5333,6 +5333,11 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
 
         CAnonOutput ao;
         ssValue >> ao;
+
+        // find the pubkey
+        CPubKey pk;
+        txdb.ReadAnonOutput(pk, ao);
+        LogPrintf("pk: %s", HexStr(pk.GetHash()));
 
         int nHeight = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight : 0;
 

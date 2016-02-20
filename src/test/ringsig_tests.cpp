@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(ringsig)
     
     BOOST_MESSAGE("testRingSigs");
     
-    for (int k = 0; k < 32; ++k)
+    for (int k = 1; k < 4; ++k)
     {
         //BOOST_MESSAGE("ringSize " << (k % 126 + 2));
         testRingSigs(k % 126 + 2);
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(ringsig)
     for (int k = 0; k < 32; ++k)
     {
         //BOOST_MESSAGE("ringSize " << (k % 126 + 2));
-        testRingSigABs(k % 126 + 2);
+        //testRingSigABs(k % 126 + 2);
     };
     //testRingSigABs(16);
     
