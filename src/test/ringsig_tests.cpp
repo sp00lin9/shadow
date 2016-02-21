@@ -12,6 +12,7 @@
 #include <ctime>
 
 #include "ringsig.h"
+#include "chainparams.h"
 
 using namespace boost::chrono;
 
@@ -30,7 +31,7 @@ void testRingSigs(int nRingSize)
     BOOST_REQUIRE(NULL != pPubkeys);
     BOOST_REQUIRE(NULL != pSigc);
     BOOST_REQUIRE(NULL != pSigr);
-    
+
     CKey key[nRingSize];
     for (int i = 0; i < nRingSize; ++i)
     {
@@ -143,16 +144,19 @@ BOOST_AUTO_TEST_SUITE(ringsig_tests)
 
 BOOST_AUTO_TEST_CASE(ringsig)
 {
+    SelectParams(CChainParams::REGTEST);
+
     BOOST_REQUIRE(0 == initialiseRingSigs());
     
     BOOST_MESSAGE("testRingSigs");
     
-    for (int k = 1; k < 4; ++k)
+    for (int k = 1; k < 3; ++k)
     {
         //BOOST_MESSAGE("ringSize " << (k % 126 + 2));
         testRingSigs(k % 126 + 2);
     };
-    //testRingSigs(16);
+    BOOST_MESSAGE("ringSize " << 199);
+    testRingSigs(199);
     
     BOOST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
     BOOST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
@@ -161,17 +165,20 @@ BOOST_AUTO_TEST_CASE(ringsig)
     totalVerify = 0;
     BOOST_MESSAGE("testRingSigABs");
     
-    for (int k = 0; k < 32; ++k)
+    for (int k = 1; k < 3; ++k)
     {
-        //BOOST_MESSAGE("ringSize " << (k % 126 + 2));
-        //testRingSigABs(k % 126 + 2);
+        BOOST_MESSAGE("ringSize " << (k % 126 + 2));
+        testRingSigABs(k % 126 + 2);
     };
-    //testRingSigABs(16);
+    BOOST_MESSAGE("ringSize " << 199);
+    testRingSigABs(199);
     
     BOOST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
     BOOST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
     
     BOOST_CHECK(0 == finaliseRingSigs());
+
+    SelectParams(CChainParams::MAIN);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

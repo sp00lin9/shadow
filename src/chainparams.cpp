@@ -259,6 +259,9 @@ public:
         strNetworkID = "regtest";
         strDataDir = "regtest";
 
+        nFirstPosv2Block = -1;
+        nFirstPosv3Block = -1;
+
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
