@@ -5,6 +5,7 @@
 #include "ringsig.h"
 #include "base58.h"
 #include "key.h"
+#include "main.h"
 #include "chainparams.h"
 
 #include <openssl/err.h>
@@ -15,14 +16,10 @@
 #include <openssl/obj_mac.h>
 
 
-static EC_GROUP *ecGrp     = NULL;
-static EC_GROUP *ecGrpKi   = NULL;
-static BN_CTX   *bnCtx     = NULL;
-static BIGNUM   *bnOrder   = NULL;
-static BIGNUM   *bnBaseKi2 = NULL;
-static EC_POINT *ptBaseKi1 = NULL;
-static EC_POINT *ptBaseKi2 = NULL;
-static EC_POINT *ptBase    = NULL;
+static EC_GROUP *ecGrp    = NULL;
+static EC_GROUP *ecGrpKi  = NULL;
+static BN_CTX   *bnCtx    = NULL;
+static BIGNUM   *bnOrder  = NULL;
 
 
 int initialiseRingSigs()
@@ -47,42 +44,28 @@ int initialiseRingSigs()
     EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx);
 
     // get the generators
-    ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp));
+    EC_POINT *ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp));
+    EC_POINT *ptBaseKi = EC_POINT_new(ecGrpKi);
 
     // ki basepoint
-    BIGNUM *bnBaseKi1 = BN_CTX_get(bnCtx);
-    bnBaseKi2 = BN_new();
-    BIGNUM *bnBaseKiAdd1 = BN_CTX_get(bnCtx);
-    BIGNUM *bnBaseKiAdd2 = BN_CTX_get(bnCtx);
-    std::string num_str1 = "1";
-    std::string num_str2 = "18446744073702659837";
-    BN_dec2bn(&bnBaseKiAdd1, num_str1.c_str());
-    BN_dec2bn(&bnBaseKiAdd2, num_str2.c_str());
+    BIGNUM *bnBaseKi = BN_CTX_get(bnCtx);
+    BIGNUM *bnBaseKiAdd = BN_CTX_get(bnCtx);
+    std::string num_str = "1";
+    BN_dec2bn(&bnBaseKiAdd, num_str.c_str());
 
     // get current basepoint
-    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi1, bnCtx);
-    bnBaseKi2 = BN_dup(bnBaseKi1);
+    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx);
 
     // add n
-    BN_add(bnBaseKi1, bnBaseKi1, bnBaseKiAdd1);
-    BN_add(bnBaseKi2, bnBaseKi2, bnBaseKiAdd2);
-
-    LogPrintf("bnBaseKi:    %s\n", BN_bn2hex(bnBaseKi1));
-    LogPrintf("bnBaseKiAdd: %s\n", BN_bn2hex(bnBaseKiAdd1));
-
-    ptBaseKi1 = EC_POINT_new(ecGrp);
-    ptBaseKi2 = EC_POINT_new(ecGrp);
+    BN_add(bnBaseKi, bnBaseKi, bnBaseKiAdd);
 
     // new basepoint bignum to point
-    if(!EC_POINT_bn2point(ecGrp, bnBaseKi1, ptBaseKi1, bnCtx))
+    if(!EC_POINT_bn2point(ecGrp, bnBaseKi, ptBaseKi, bnCtx))
        errorN(1, "FAILED!!!");
-    // new basepoint bignum to point
-    //if(!EC_POINT_bn2point(ecGrp, bnBaseKi2, ptBaseKi2, bnCtx))
-    //   errorN(1, "FAILED!!!");
 
     // Add the old basepoint to the new base point
-    EC_POINT_add(ecGrp, ptBaseKi1, ptBaseKi1, ptBase, bnCtx);
-    EC_GROUP_set_generator(ecGrpKi, ptBaseKi1, bnOrder, bnCofactor);
+    EC_POINT_add(ecGrp, ptBaseKi, ptBaseKi, ptBase, bnCtx);
+    EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor);
 
     if (fDebugRingSig)
     {
@@ -95,6 +78,8 @@ int initialiseRingSigs()
         LogPrintf("generator ecGrp:   %s\ngenerator ecGrpKi: %s\n", genPoint, genPointKi);
     }
 
+    EC_POINT_free(ptBaseKi);
+    EC_POINT_free(ptBase);
     BN_CTX_end(bnCtx);
     return 0;
 };
@@ -105,7 +90,6 @@ int finaliseRingSigs()
         LogPrintf("finaliseRingSigs()\n");
 
     BN_free(bnOrder);
-    BN_free(bnBaseKi2);
     BN_CTX_free(bnCtx);
     EC_GROUP_clear_free(ecGrp);
     EC_GROUP_clear_free(ecGrpKi);
@@ -114,7 +98,6 @@ int finaliseRingSigs()
     ecGrpKi   = NULL;
     bnCtx     = NULL;
     bnOrder   = NULL;
-    bnBaseKi2 = NULL;
 
     return 0;
 };
@@ -222,10 +205,12 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "%s: BN_bin2bn failed.", __func__);
 
-    
-    if (!ptRet
-      ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx)) // Temporarily reverted
-//      ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx)
+    if (Params().IsProtocolV3(pindexBest->nHeight))
+    {
+        if(!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
+            return errorN(1, "%s: EC_POINT_mul failed.", __func__);
+    } else
+    if (!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
 //      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
         return errorN(1, "%s: EC_POINT_mul failed.", __func__);
 

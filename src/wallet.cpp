@@ -5235,7 +5235,29 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
 
     pcursor->close();
     return 0;
-};
+}
+
+static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
+{
+        // check if its been compromised (signer known)
+        bool fInMemPool;
+        CKeyImageSpent kis;
+        ec_point pkImage;
+
+        getOldKeyImage(pubKey, pkImage);
+
+        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool))
+        {
+            ao.nCompromised = 1;
+            txdb.WriteAnonOutput(pubKey, ao);
+
+            if(fDebugRingSig)
+                LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
+        }
+        //LogPrintf("kis: %s\n", pkImage);
+
+}
+
 
 int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly)
 {
@@ -5264,7 +5286,9 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
+        CPubKey pubKey;
         ssKey >> strType;
+        ssKey >> pubKey;
 
         if (strType != "ao")
             break;
@@ -5274,6 +5298,8 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
 
         CAnonOutput anonOutput;
         ssValue >> anonOutput;
+
+        IsAnonCoinCompromised(txdb, pubKey, anonOutput);
 
         if (!fMatureOnly
             || (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH))
@@ -5323,9 +5349,9 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
-        CPubKey pubkey;
+        CPubKey pubKey;
         ssKey >> strType;
-        ssKey >> pubkey;
+        ssKey >> pubKey;
 
         if (strType != "ao")
             break;
@@ -5336,19 +5362,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         CAnonOutput ao;
         ssValue >> ao;
 
-        // check if its been spent
-        CKeyImageSpent kis;
-        ec_point pkImage;
-        bool fInMemPool;
-        getOldKeyImage(pubkey, pkImage);
-        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool))
-        {
-            ao.nCompromised = 1;
-            txdb.WriteAnonOutput(pubkey, ao);
-            if(fDebugRingSig)
-                LogPrintf("Spent key image, mark as compromised: %s\n", pubkey.GetID().ToString());
-        }
-        //LogPrintf("kis: %s\n", pkImage);
+        IsAnonCoinCompromised(txdb, pubKey, ao);
 
         if (strType != "ao")
             break;
@@ -5369,6 +5383,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
                 if (ao.nValue == it->nValue)
                 {
                     it->nExists++;
+                    it->nCompromised += ao.nCompromised;
                     if (it->nLeastDepth > nHeight)
                         it->nLeastDepth = nHeight;
                     fProcessed = true;
@@ -5376,12 +5391,12 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
                 };
                 if (ao.nValue > it->nValue)
                     continue;
-                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nHeight));
+                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nHeight, ao.nCompromised));
                 fProcessed = true;
                 break;
             };
             if (!fProcessed)
-                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nHeight));
+                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nHeight, ao.nCompromised));
         };
 
         iterator->Next();
@@ -5558,7 +5573,7 @@ bool CWallet::CacheAnonStats()
     {
         mapAnonOutputStats[it->nValue].set(
             it->nValue, it->nExists, it->nSpends, it->nOwned,
-            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth); // mapAnonOutputStats stores height in chain instead of depth
+            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth, it->nCompromised); // mapAnonOutputStats stores height in chain instead of depth
     };
 
     return true;
