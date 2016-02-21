@@ -5324,6 +5324,9 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
         ssKey >> strType;
+        CPubKey pubkey;
+        ssKey >> strType;
+        ssKey >> pubkey;
 
         if (strType != "ao")
             break;
@@ -5334,10 +5337,21 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         CAnonOutput ao;
         ssValue >> ao;
 
-        // find the pubkey
-        CPubKey pk;
-        txdb.ReadAnonOutput(pk, ao);
-        LogPrintf("pk: %s", HexStr(pk.GetHash()));
+        // check if its been spent
+        CKeyImageSpent kis;
+        ec_point pkImage;
+        bool fInMemPool;
+        getOldKeyImage(pubkey, pkImage);
+        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool))
+        {
+            ao.nCompromised = 1;
+            txdb.WriteAnonOutput(pubkey, ao);
+            LogPrintf("Spent key image, mark as compromised\n");
+        }
+        //LogPrintf("kis: %s\n", pkImage);
+
+        if (strType != "ao")
+            break;
 
         int nHeight = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight : 0;
 

@@ -4,6 +4,8 @@
 
 #include "ringsig.h"
 #include "base58.h"
+#include "key.h"
+#include "chainparams.h"
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
@@ -21,6 +23,7 @@ static BIGNUM   *bnBaseKi2 = NULL;
 static EC_POINT *ptBaseKi1 = NULL;
 static EC_POINT *ptBaseKi2 = NULL;
 static EC_POINT *ptBase    = NULL;
+
 
 int initialiseRingSigs()
 {
@@ -163,25 +166,29 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
     return 0;
 };
 
-int getOldKeyImage(const uint8_t *p, uint32_t len, ec_point &keyImage)
+int getOldKeyImage(CPubKey &publickey, ec_point &keyImage)
 {
-    // - bn(hash(data)) * G
-    uint256 pkHash = Hash(p, p + len);
+    // - PublicKey * Hash(PublicKey)
+    uint256 pkHash = publickey.GetHash();
     BN_CTX_start(bnCtx);
     BIGNUM *bnTmp = BN_CTX_get(bnCtx);
     EC_POINT *ptPk = NULL;
 
+    // Hash to BIGNUM
     if (!BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
-        return errorN(1, "hashToEC(): BN_bin2bn failed.");
+        return errorN(1, "getOldKeyImage(): BN_bin2bn failed.");
 
-    if (!(ptPk = EC_POINT_new(ecGrp)))
+    // PublicKey point
+    if (!(ptPk  = EC_POINT_new(ecGrp)))
         return errorN(1, "%s: EC_POINT_new failed.", __func__);
 
-    if (!ptPk
-      ||!EC_POINT_bn2point(ecGrp, bnTmp, ptPk, bnCtx)
-      ||!EC_POINT_mul(ecGrp, ptPk, NULL, ptPk, bnTmp, bnCtx))
+    EC_POINT_oct2point(ecGrp, ptPk, publickey.begin(), EC_UNCOMPRESSED_SIZE, bnCtx);
+
+    // PublicKey * Hash(PublicKey)
+    if (!ptPk||!EC_POINT_mul(ecGrp, ptPk, NULL, ptPk, bnTmp, bnCtx))
         return errorN(1, "hashToEC(): EC_POINT_mul failed.");
 
+    // Point to BIGNUM to bin
     if ((!(EC_POINT_point2bn(ecGrp, ptPk, POINT_CONVERSION_COMPRESSED, bnTmp, bnCtx))
         || BN_num_bytes(bnTmp) != (int) EC_COMPRESSED_SIZE
         || BN_bn2bin(bnTmp, &keyImage[0]) != (int) EC_COMPRESSED_SIZE))
@@ -201,10 +208,11 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "hashToEC(): BN_bin2bn failed.");
 
+    
     if (!ptRet
-//      ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
-      ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx)
-      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
+      ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
+//      ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx)
+//      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
         return errorN(1, "hashToEC(): EC_POINT_mul failed.");
 
     return 0;

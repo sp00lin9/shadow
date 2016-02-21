@@ -1990,7 +1990,6 @@ static bool ScanBlock(CBlock& block, CTxDB& txdb, SecMsgDB& addrpkdb,
                 CScript::const_iterator pc = script->begin();
                 CScript::const_iterator pend = script->end();
 
-                uint256 prevoutHash;
                 CKey key;
 
                 while (pc < pend)

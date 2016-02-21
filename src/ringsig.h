@@ -9,6 +9,8 @@
 #include "state.h"
 #include "types.h"
 
+class CPubKey;
+
 enum ringsigType
 {
     RING_SIG_1 = 1,
@@ -31,7 +33,7 @@ int finaliseRingSigs();
 
 int splitAmount(int64_t nValue, std::vector<int64_t> &vOut);
 
-int getOldKeyImage(const uint8_t *, uint32_t len, ec_point &key_image);
+int getOldKeyImage(CPubKey &pubkey, ec_point &keyImage);
 
 int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage);
 

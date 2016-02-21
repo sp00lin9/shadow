@@ -429,7 +429,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     nDerivationMethodIndex = 0;
 
-    fTestNet = true;
+    fTestNet = GetBoolArg("-testnet", false);
 
     if (!SelectParamsFromCommandLine())
         return InitError("Invalid combination of -testnet and -regtest.");
