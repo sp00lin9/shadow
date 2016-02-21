@@ -5351,7 +5351,8 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         string strType;
         CPubKey pubKey;
         ssKey >> strType;
-        ssKey >> pubKey;
+        if(ssKey.str().size() == 34)
+            ssKey >> pubKey;
 
         if (strType != "ao")
             break;

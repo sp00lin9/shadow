@@ -79,7 +79,6 @@ int initialiseRingSigs()
     }
 
     EC_POINT_free(ptBaseKi);
-    EC_POINT_free(ptBase);
     BN_CTX_end(bnCtx);
     return 0;
 };
@@ -561,7 +560,7 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
     EC_POINT *ptKi  = NULL;
     EC_POINT *ptL   = NULL;
     EC_POINT *ptR   = NULL;
-    EC_POINT *ptSN  = NULL;
+    EC_POINT *ptSi  = NULL;
 
     uint8_t tempData[66]; // hold raw point data to hash
     uint256 commitHash;
@@ -582,7 +581,7 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
         || !(ptPk = EC_POINT_new(ecGrp))
         || !(ptKi = EC_POINT_new(ecGrp))
         || !(ptL  = EC_POINT_new(ecGrp))
-        || !(ptSN = EC_POINT_new(ecGrp))
+        || !(ptSi = EC_POINT_new(ecGrp))
         || !(ptR  = EC_POINT_new(ecGrp)))
     {
         LogPrintf("%s: EC_POINT_new failed.\n", __func__);
@@ -646,13 +645,13 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
         };
 
         // DEBUGGING: ------- check if we can find the signer...
-        // ptSN = Pi * bnT
-        if ((!EC_POINT_mul(ecGrp, ptSN, NULL, ptPk, bnT, bnCtx)
+        // ptSi = Pi * bnT
+        if ((!EC_POINT_mul(ecGrp, ptSi, NULL, ptPk, bnT, bnCtx)
            || false)
-        && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
+        && (rv = errorN(1, "%s: EC_POINT_mul failed.1", __func__)))
             goto End;
 
-        if (0 == EC_POINT_cmp(ecGrp, ptSN, ptKi, bnCtx) )
+        if (0 == EC_POINT_cmp(ecGrp, ptSi, ptKi, bnCtx) )
             LogPrintf("signer is index %d\n", i);
         // DEBUGGING: - End - check if we can find the signer...
 
@@ -732,6 +731,7 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
     EC_POINT_free(ptKi);
     EC_POINT_free(ptL);
     EC_POINT_free(ptR);
+    EC_POINT_free(ptSi);
 
     BN_CTX_end(bnCtx);
 
@@ -1061,11 +1061,15 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
     EC_POINT *ptT1 = NULL;
     EC_POINT *ptT2 = NULL;
     EC_POINT *ptT3 = NULL;
+    EC_POINT *ptPk = NULL;
+    EC_POINT *ptSi = NULL;
 
     if (   !(ptKi = EC_POINT_new(ecGrp))
         || !(ptT1 = EC_POINT_new(ecGrp))
         || !(ptT2 = EC_POINT_new(ecGrp))
-        || !(ptT3 = EC_POINT_new(ecGrp)))
+        || !(ptT3 = EC_POINT_new(ecGrp))
+        || !(ptPk = EC_POINT_new(ecGrp))
+        || !(ptSi = EC_POINT_new(ecGrp)))
     {
         LogPrintf("%s: EC_POINT_new failed.\n", __func__);
         rv = 1; goto End;
@@ -1099,14 +1103,14 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
         };
 
         // ptT2 <- pk
-        if (!EC_POINT_oct2point(ecGrp, ptT2, &pPubkeys[i * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE, bnCtx))
+        if (!EC_POINT_oct2point(ecGrp, ptPk, &pPubkeys[i * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE, bnCtx))
         {
             LogPrintf("%s: EC_POINT_oct2point failed.\n", __func__);
             rv = 1; goto End;
         };
 
         // ptT1 = e_i=s_i*G+c_i*P_i
-        if (!EC_POINT_mul(ecGrp, ptT1, bnS, ptT2, bnC, bnCtx))
+        if (!EC_POINT_mul(ecGrp, ptT1, bnS, ptPk, bnC, bnCtx))
         {
             LogPrintf("%s: EC_POINT_mul failed.\n", __func__);
             rv = 1; goto End;
@@ -1126,6 +1130,17 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
             LogPrintf("%s: hashToEC failed.\n", __func__);
             rv = 1; goto End;
         };
+
+        // DEBUGGING: ------- check if we can find the signer...
+        // ptSi = Pi * bnT
+        if ((!EC_POINT_mul(ecGrp, ptSi, NULL, ptPk, bnT, bnCtx)
+           || false)
+        && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
+            goto End;
+
+        if (0 == EC_POINT_cmp(ecGrp, ptSi, ptKi, bnCtx) )
+            LogPrintf("signer is index %d\n", i);
+        // DEBUGGING: - End - check if we can find the signer...
 
         // ptT3 = s_i*ptT2
         if (!EC_POINT_mul(ecGrp, ptT3, NULL, ptT2, bnS, bnCtx))
@@ -1189,6 +1204,8 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
     EC_POINT_free(ptT1);
     EC_POINT_free(ptT2);
     EC_POINT_free(ptT3);
+    EC_POINT_free(ptPk);
+    EC_POINT_free(ptSi);
 
     return rv;
 };

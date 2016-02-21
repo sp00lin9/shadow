@@ -4067,7 +4067,6 @@ int LoadBlockIndex(bool fAllowNew)
     //
     CTxDB txdb("cr+");
 
-    LogPrintf("load!\n");
     // CheckVersion() will wipe old databases, try reload db from chain with reindex
     // before reinexing the genesis block must be created
     int tryReindex = txdb.CheckVersion() == 2 ? 1 : 0;
