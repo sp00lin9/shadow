@@ -54,14 +54,10 @@ int initialiseRingSigs()
     bnBaseKi2 = BN_new();
     BIGNUM *bnBaseKiAdd1 = BN_CTX_get(bnCtx);
     BIGNUM *bnBaseKiAdd2 = BN_CTX_get(bnCtx);
-    int      n1 = 2099999974; // randomly chosen integer
-    uint64_t n2 = 18446744073702659837;
-    std::ostringstream num_str1;
-    std::ostringstream num_str2;
-    num_str1 << n1;
-    num_str2 << n2;
-    BN_dec2bn(&bnBaseKiAdd1, num_str1.str().c_str());
-    BN_dec2bn(&bnBaseKiAdd2, num_str1.str().c_str());
+    std::string num_str1 = "1";
+    std::string num_str2 = "18446744073702659837";
+    BN_dec2bn(&bnBaseKiAdd1, num_str1.c_str());
+    BN_dec2bn(&bnBaseKiAdd2, num_str2.c_str());
 
     // get current basepoint
     EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi1, bnCtx);
@@ -210,7 +206,7 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
 
     
     if (!ptRet
-      ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
+      ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx)) // Temporarily reverted
 //      ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx)
 //      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
         return errorN(1, "hashToEC(): EC_POINT_mul failed.");
