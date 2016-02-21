@@ -162,34 +162,52 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
     return 0;
 };
 
-int getOldKeyImage(CPubKey &publickey, ec_point &keyImage)
+int getOldKeyImage(CPubKey &publicKey, ec_point &keyImage)
 {
     // - PublicKey * Hash(PublicKey)
-    uint256 pkHash = publickey.GetHash();
+    if (publicKey.size() != EC_COMPRESSED_SIZE)
+        return errorN(1, "%s: Invalid publicKey.", __func__);
+
+    int rv = 0;
+
+    uint256 pkHash = publicKey.GetHash();
+
     BN_CTX_start(bnCtx);
     BIGNUM *bnTmp = BN_CTX_get(bnCtx);
     EC_POINT *ptPk = NULL;
 
     // Hash to BIGNUM
-    if (!BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
-        return errorN(1, "getOldKeyImage(): BN_bin2bn failed.");
+    if (!BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp)
+    && (rv = errorN(1, "%s: BN_bin2bn failed.", __func__)))
+        goto End;
 
     // PublicKey point
-    if (!(ptPk  = EC_POINT_new(ecGrp)))
-        return errorN(1, "%s: EC_POINT_new failed.", __func__);
+    if (!(ptPk = EC_POINT_new(ecGrp))
+    && (rv = errorN(1, "%s: EC_POINT_new failed.", __func__)))
+        goto End;
 
-    EC_POINT_oct2point(ecGrp, ptPk, publickey.begin(), EC_UNCOMPRESSED_SIZE, bnCtx);
+    if(!EC_POINT_oct2point(ecGrp, ptPk, publicKey.begin(), EC_COMPRESSED_SIZE, bnCtx)
+    && (rv = errorN(1, "%s: EC_POINT_oct2point failed.", __func__)))
+        goto End;
 
     // PublicKey * Hash(PublicKey)
-    if (!ptPk||!EC_POINT_mul(ecGrp, ptPk, NULL, ptPk, bnTmp, bnCtx))
-        return errorN(1, "hashToEC(): EC_POINT_mul failed.");
+    if (!EC_POINT_mul(ecGrp, ptPk, NULL, ptPk, bnTmp, bnCtx)
+    && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
+        goto End;
+
+    try { keyImage.resize(EC_COMPRESSED_SIZE); } catch (std::exception& e)
+    {
+        LogPrintf("%s: keyImage.resize threw: %s.\n", __func__, e.what());
+        rv = 1; goto End;
+    }
 
     // Point to BIGNUM to bin
-    if ((!(EC_POINT_point2bn(ecGrp, ptPk, POINT_CONVERSION_COMPRESSED, bnTmp, bnCtx))
-        || BN_num_bytes(bnTmp) != (int) EC_COMPRESSED_SIZE
-        || BN_bn2bin(bnTmp, &keyImage[0]) != (int) EC_COMPRESSED_SIZE))
-        return errorN(1, "%s: point -> keyImage failed. %d", __func__, BN_num_bytes(bnTmp));
+    if (!(EC_POINT_point2bn(ecGrp, ptPk, POINT_CONVERSION_COMPRESSED, bnTmp, bnCtx))
+     ||BN_num_bytes(bnTmp) != (int) EC_COMPRESSED_SIZE
+     ||BN_bn2bin(bnTmp, &keyImage[0]) != (int) EC_COMPRESSED_SIZE)
+        rv = errorN(1, "%s: point -> keyImage failed.", __func__);
 
+    End:
     EC_POINT_free(ptPk);
     BN_CTX_end(bnCtx);
 
@@ -202,14 +220,14 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
     uint256 pkHash = Hash(p, p + len);
 
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
-        return errorN(1, "hashToEC(): BN_bin2bn failed.");
+        return errorN(1, "%s: BN_bin2bn failed.", __func__);
 
     
     if (!ptRet
       ||!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx)) // Temporarily reverted
 //      ||!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx)
 //      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
-        return errorN(1, "hashToEC(): EC_POINT_mul failed.");
+        return errorN(1, "%s: EC_POINT_mul failed.", __func__);
 
     return 0;
 };
@@ -219,7 +237,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     // - keyImage = secret * hash(publicKey) * G
 
     if (publicKey.size() != EC_COMPRESSED_SIZE)
-        return errorN(1, "%s Invalid publicKey.", __func__);
+        return errorN(1, "%s: Invalid publicKey.", __func__);
 
     BN_CTX_start(bnCtx);
     int rv = 0;
@@ -252,7 +270,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     if ((!(EC_POINT_point2bn(ecGrp, hG, POINT_CONVERSION_COMPRESSED, bnTmp, bnCtx))
         || BN_num_bytes(bnTmp) != (int) EC_COMPRESSED_SIZE
         || BN_bn2bin(bnTmp, &keyImage[0]) != (int) EC_COMPRESSED_SIZE)
-    && (rv = errorN(1, "%s: point -> keyImage failed. %d", __func__, BN_num_bytes(bnTmp))))
+    && (rv = errorN(1, "%s: point -> keyImage failed.", __func__)))
         goto End;
 
     if (fDebugRingSig)

@@ -3603,7 +3603,7 @@ bool CWallet::GetAnonChangeAddress(CStealthAddress &sxAddress)
 bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, std::map<int, std::string>& mapNarr, std::string& sError)
 {
     if (fDebugRingSig)
-        LogPrintf("CreateAnonOutputs()\n");
+        LogPrintf("CreateStealthOutput()\n");
 
     if (!sxAddress)
     {
@@ -5299,7 +5299,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
     // TODO: there are few enough possible coin values to preinitialise a vector with all of them
 
     LOCK(cs_main);
-    CTxDB txdb("r");
+    CTxDB txdb("r+");
 
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
@@ -5323,7 +5323,6 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
-        ssKey >> strType;
         CPubKey pubkey;
         ssKey >> strType;
         ssKey >> pubkey;
@@ -5346,7 +5345,8 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         {
             ao.nCompromised = 1;
             txdb.WriteAnonOutput(pubkey, ao);
-            LogPrintf("Spent key image, mark as compromised\n");
+            if(fDebugRingSig)
+                LogPrintf("Spent key image, mark as compromised: %s\n", pubkey.GetID().ToString());
         }
         //LogPrintf("kis: %s\n", pkImage);
 
