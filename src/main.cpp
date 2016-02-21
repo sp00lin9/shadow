@@ -41,7 +41,7 @@ unsigned int nStakeMinAge       = 8 * 60 * 60;      // 8 hours
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 120;
-int nStakeMinConfirmations = 500;
+int nStakeMinConfirmations = 450;
 CBlockIndex* pindexGenesisBlock = NULL;
 
 CBlockThinIndex* pindexGenesisBlockThin = NULL;
