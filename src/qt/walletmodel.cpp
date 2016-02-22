@@ -207,8 +207,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
     std::map<int, std::string> mapStealthNarr;
 
-
-
     {
         LOCK2(cs_main, wallet->cs_wallet);
 
@@ -428,13 +426,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                 // Check if we have a new address or an updated label
                 if (mi == wallet->mapAddressBook.end() || mi->second != strLabel)
-                {
                     wallet->SetAddressBookName(dest, strLabel);
-                };
             };
         } // wallet->cs_wallet
     };
-
 
     return SendCoinsReturn(OK, 0, hex);
 }

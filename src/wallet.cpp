@@ -2905,7 +2905,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
         if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
         {
             LogPrintf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, pkRingCoin.GetID().ToString());
-            LogPrintf("%s, %s\n", pkRingCoin.GetID().ToString(), CBitcoinAddress(pkRingCoin.GetID()).ToString());
+            //LogPrintf("%s, %s\n", pkRingCoin.GetID().ToString(), CBitcoinAddress(pkRingCoin.GetID()).ToString());
             return false;
         };
 
@@ -2949,6 +2949,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
             return false;
         };
 
+        LogPrintf("UpdateAnonTransaction(): updateDepth: %d, value: %d\n", nNewHeight, ao.nValue);
         mapAnonOutputStats[ao.nValue].updateDepth(nNewHeight, ao.nValue);
     };
 

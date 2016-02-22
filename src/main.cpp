@@ -601,7 +601,7 @@ bool CTransaction::IsStandard() const
             && txout.IsAnonOutput())
         {
             if (txout.nValue < 1
-                || txout.scriptPubKey.size() > MIN_ANON_OUT_SIZE + MAX_ANON_NARRATION_SIZE)
+             || txout.scriptPubKey.size() > MIN_ANON_OUT_SIZE + MAX_ANON_NARRATION_SIZE)
             {
                 LogPrintf("IsStandard() anon txout failed.\n");
                 return false;
@@ -612,6 +612,7 @@ bool CTransaction::IsStandard() const
 
         if (!::IsStandard(txout.scriptPubKey, whichType))
             return false;
+
         if (whichType == TX_NULL_DATA)
         {
             nDataOut++;
@@ -623,9 +624,7 @@ bool CTransaction::IsStandard() const
         };
 
         if (fEnforceCanonical && !txout.scriptPubKey.HasCanonicalPushes())
-        {
             return false;
-        };
     };
 
     // only one OP_RETURN txout per txn out is permitted
@@ -4389,7 +4388,6 @@ static void ProcessGetData(CNode* pfrom)
     vector<CInv> vNotFound;
     vector<CInv> vMerkleBlocks;
 
-    LOCK(cs_main);
     std::vector<CBlock> vMultiBlock;
     std::vector<CMBlkThinElement> vMultiBlockThin; // TODO: split ProcessGetDataThinPeer from ProcessGetData
     uint32_t nMultiBlockBytes = 0;
@@ -4416,6 +4414,7 @@ static void ProcessGetData(CNode* pfrom)
         if (inv.type == MSG_BLOCK
             || inv.type == MSG_FILTERED_BLOCK)
         {
+            LOCK(cs_main);
             bool send = false;
             CBlockIndex *pBlockIndex;
 
@@ -4464,6 +4463,7 @@ static void ProcessGetData(CNode* pfrom)
 
                 if (inv.type == MSG_BLOCK)
                 {
+                    LOCK(cs_main);
                     if (pfrom->nVersion >= MIN_MBLK_VERSION)
                     {
                         uint32_t nBlockBytes = ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION);
@@ -4578,6 +4578,7 @@ static void ProcessGetData(CNode* pfrom)
 
             if (!pushed && inv.type == MSG_TX)
             {
+                LOCK(cs_main);
                 CTransaction tx;
                 if (mempool.lookup(inv.hash, tx))
                 {
@@ -4944,7 +4945,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
-            // disconnect from peers older than this proto version			
+            // disconnect from peers older than this proto version
             LogPrintf("Peer %s using obsolete version %i; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion);
             pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE, strprintf("node < %d", MIN_PEER_PROTO_VERSION));
             pfrom->fDisconnect = true;
@@ -5364,7 +5365,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             };
         };
     }
-	else if (strCommand == "getheaders")
+    else if (strCommand == "getheaders")
     {
         if (nNodeMode != NT_FULL)
         {
@@ -5411,8 +5412,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 break;
         };
         pfrom->PushMessage("headers", vHeaders);
-    } else
-    if (strCommand == "tx")
+    }
+
+
+    else if (strCommand == "tx")
     {
         vector<uint256> vWorkQueue;
         vector<uint256> vEraseQueue;
@@ -5424,27 +5427,30 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         CTxDB txdb("r");
 
-
         if (nNodeMode == NT_FULL)
         {
             CInv inv(MSG_TX, tx.GetHash());
             pfrom->AddInventoryKnown(inv);
 
             bool fMissingInputs = false;
+
+            mapAlreadyAskedFor.erase(inv);
+
             if (AcceptToMemoryPool(mempool, tx, txdb, &fMissingInputs))
             {
                 SyncWithWallets(tx, NULL, true);
                 RelayTransaction(tx, inv.hash);
-                mapAlreadyAskedFor.erase(inv);
                 vWorkQueue.push_back(inv.hash);
                 vEraseQueue.push_back(inv.hash);
 
                 // Recursively process any orphan transactions that depended on this one
                 for (unsigned int i = 0; i < vWorkQueue.size(); i++)
                 {
-                    uint256 hashPrev = vWorkQueue[i];
-                    for (set<uint256>::iterator mi = mapOrphanTransactionsByPrev[hashPrev].begin();
-                         mi != mapOrphanTransactionsByPrev[hashPrev].end();
+                    map<uint256, set<uint256> >::iterator itByPrev = mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
+                    if (itByPrev == mapOrphanTransactionsByPrev.end())
+                        continue;
+                    for (set<uint256>::iterator mi = itByPrev->second.begin();
+                         mi != itByPrev->second.end();
                          ++mi)
                     {
                         const uint256& orphanTxHash = *mi;
@@ -5453,40 +5459,40 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                         if (AcceptToMemoryPool(mempool, orphanTx, txdb, &fMissingInputs2))
                         {
-                            LogPrintf("   accepted orphan tx %s\n", orphanTxHash.ToString().substr(0,10).c_str());
+                            LogPrint("mempool", "   accepted orphan tx %s\n", orphanTxHash.ToString());
                             SyncWithWallets(tx, NULL, true);
                             RelayTransaction(orphanTx, orphanTxHash);
-                            mapAlreadyAskedFor.erase(CInv(MSG_TX, orphanTxHash));
                             vWorkQueue.push_back(orphanTxHash);
                             vEraseQueue.push_back(orphanTxHash);
-                        } else
-                        if (!fMissingInputs2)
+                        }
+                        else if (!fMissingInputs2)
                         {
-                            // invalid orphan
+                            // invalid or too-little-fee orphan
                             vEraseQueue.push_back(orphanTxHash);
-                            LogPrintf("   removed invalid orphan tx %s\n", orphanTxHash.ToString().substr(0,10).c_str());
-                        };
-                    };
-                };
+                            LogPrint("mempool", "   removed orphan tx %s\n", orphanTxHash.ToString());
+                        }
+                    }
+                }
 
                 BOOST_FOREACH(uint256 hash, vEraseQueue)
                     EraseOrphanTx(hash);
-            } else
-            if (fMissingInputs)
+            }
+            else if (fMissingInputs)
             {
                 AddOrphanTx(tx);
 
                 // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
                 unsigned int nEvicted = LimitOrphanTxSize(MAX_ORPHAN_TRANSACTIONS);
                 if (nEvicted > 0)
-                    LogPrintf("mapOrphan overflow, removed %u tx\n", nEvicted);
-            };
+                    LogPrint("mempool", "mapOrphan overflow, removed %u tx\n", nEvicted);
+            }
         } else
         {
             uint256 txHash = tx.GetHash();
 
             CInv inv(MSG_TX, txHash);
             pfrom->AddInventoryKnown(inv);
+            mapAlreadyAskedFor.erase(inv);
 
             bool fProcessed = false;
             std::vector<CMerkleBlockIncoming>::iterator it;
@@ -5526,21 +5532,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     //SyncWithWallets(tx, NULL, true);
 
                     bool added = false;
-                    uint256 hash = tx.GetHash();
                     BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
-                    {
-                        added = added | pwallet->AddToWalletIfInvolvingMe(tx, hash, NULL, true);
-                    };
+                        added = added | pwallet->AddToWalletIfInvolvingMe(tx, txHash, NULL, true);
 
                     if (added)
-                    {
                         RelayTransaction(tx, inv.hash);
-                        mapAlreadyAskedFor.erase(inv);
-                    } else
-                    {
+                    else
                         // -- not interested in txn if not for this wallet
                         mempool.remove(tx);
-                    }
                 }
             }
         }
@@ -5572,34 +5571,33 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         LogPrintf("Received mblk %d\n", nBlocks);
         nTimeLastMblkRecv = GetTime();
 
-        for (uint32_t i = 0; i < nBlocks; ++i)
         {
-            CBlock &block = vBlocks[i];
-
-            uint256 hashBlock = block.GetHash();
-            //LogPrintf("received block %s\n", hashBlock.ToString().substr(0,20).c_str());
-            // block.print();
-
-            CInv inv(MSG_BLOCK, hashBlock);
-
+            LOCK(cs_main);
+            for (uint32_t i = 0; i < nBlocks; ++i)
             {
-                LOCK(cs_main);
+                CBlock &block = vBlocks[i];
+
+                uint256 hashBlock = block.GetHash();
+                //LogPrintf("received block %s\n", hashBlock.ToString().substr(0,20).c_str());
+                // block.print();
+
+                CInv inv(MSG_BLOCK, hashBlock);
+
                 // -- if peer is thin, it will want the (merkle) block sent if accepted
                 if (pfrom->nTypeInd == NT_FULL)
                     pfrom->AddInventoryKnown(inv);
 
-                if (ProcessBlock(pfrom, &block, hashBlock))
-                    mapAlreadyAskedFor.erase(inv);
+                mapAlreadyAskedFor.erase(inv);
+
+                ProcessBlock(pfrom, &block, hashBlock);
 
                 if (block.nDoS)
                     pfrom->Misbehaving(block.nDoS);
-            } // cs_main
 
-            if (fSecMsgEnabled)
-                SecureMsgScanBlock(block);
-        };
-
-
+                if (fSecMsgEnabled)
+                    SecureMsgScanBlock(block);
+            };
+        } // cs_main
     } else
     if (strCommand == "mblkt" && !fImporting && !fReindexing)  // Ignore blocks received while importing
     {
@@ -5615,7 +5613,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> vMultiBlockThin; // TODO: use a plain byte buffer?
         uint32_t nBlocks = vMultiBlockThin.size();
 
-
         if (nBlocks > MAX_MULTI_BLOCK_THIN_ELEMENTS)
         {
             LogPrintf("Warning: Peer sent too many blocks in mblkt %u.\n", vRecv.size());
@@ -5626,13 +5623,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         LogPrintf("Received mblkt %d\n", nBlocks);
 
         std::vector<CTransaction> vTxns;
-        for (uint32_t i = 0; i < nBlocks; ++i)
         {
             LOCK(cs_main);
-            CMerkleBlockIncoming mbi = CMerkleBlockIncoming(vMultiBlockThin[i].merkleBlock);
-            vTxns = vMultiBlockThin[i].vtx;
-            ProcessMerkleBlock(pfrom, mbi, &vTxns);
-        };
+            for (uint32_t i = 0; i < nBlocks; ++i)
+            {
+                CMerkleBlockIncoming mbi = CMerkleBlockIncoming(vMultiBlockThin[i].merkleBlock);
+                vTxns = vMultiBlockThin[i].vtx;
+                ProcessMerkleBlock(pfrom, mbi, &vTxns);
+            };
+        } // cs_main
     } else
     if (strCommand == "block" && !fImporting && !fReindexing) // Ignore blocks received while importing
     {
@@ -5649,14 +5648,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         LogPrint("net", "received block %s\n", hashBlock.ToString());
 
         CInv inv(MSG_BLOCK, hashBlock);
-
+        mapAlreadyAskedFor.erase(inv);
         // -- if peer is thin, it will want the (merkle) block sent if accepted
         if (pfrom->nTypeInd == NT_FULL)
             pfrom->AddInventoryKnown(inv);
 
-        LOCK(cs_main);
-        if (ProcessBlock(pfrom, &block, hashBlock))
-            mapAlreadyAskedFor.erase(inv);
+        {
+            LOCK(cs_main);
+            ProcessBlock(pfrom, &block, hashBlock);
+        } // cs_main
 
         if (block.nDoS)
             pfrom->Misbehaving(block.nDoS);
@@ -5692,8 +5692,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vector<CBlockThin> vHeaders;
         vRecv >> vHeaders;
 
-        LOCK(cs_main);
-
         if (fDebugChain)
             LogPrintf("Received %u headers\n", vHeaders.size());
 
@@ -5722,6 +5720,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 pfrom->Misbehaving(10);
             } else
             {
+                LOCK(cs_main);
                 ProcessBlockThin(pfrom, &(*it));
             };
         };

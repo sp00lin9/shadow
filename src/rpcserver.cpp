@@ -360,10 +360,9 @@ static const CRPCCommand vRPCCommands[] =
     { "anonoutputs",            &anonoutputs,            false,     false,     false },
     { "anoninfo",               &anoninfo,               false,     false,     false },
     { "reloadanondata",         &reloadanondata,         false,     false,     false },
-    
+
     { "txnreport",              &txnreport,              false,     false,     false },
-    
-    
+
     { "smsgenable",             &smsgenable,             false,     false,     false },
     { "smsgdisable",            &smsgdisable,            false,     false,     false },
     { "smsglocalkeys",          &smsglocalkeys,          false,     false,     false },

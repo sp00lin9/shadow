@@ -226,7 +226,6 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 dPriority += (double)nValueIn * nConf;
             };
 
-
             if (tx.nVersion == ANON_TXN_VERSION)
             {
                 int64_t nSumAnon;
@@ -348,10 +347,8 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 nFee = nTxFees;
             };
 
-
             // TODO: must this be done twice!?
             // Need to look at COrphan
-
 
             if (nFee < nMinFee)
                 continue;
@@ -360,6 +357,9 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
                 continue;
 
+            // Note that flags: we don't want to set mempool/IsStandard()
+            // policy here, but we still have to ensure that the block we
+            // create only contains transactions that are valid in new blocks.
             if (!tx.ConnectInputs(txdb, mapInputs, mapTestPoolTmp, CDiskTxPos(1,1,1), pindexPrev, false, true, MANDATORY_SCRIPT_VERIFY_FLAGS))
                 continue;
 
