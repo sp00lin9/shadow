@@ -33,39 +33,50 @@ int initialiseRingSigs()
     if (!(bnCtx = BN_CTX_new()))
         return errorN(1, "initialiseRingSigs(): BN_CTX_new failed.");
 
-    ecGrpKi = EC_GROUP_dup(ecGrp);
+    BN_CTX_start(bnCtx);
+
+    //Create a new EC group for the keyImage with all of the characteristics of ecGrp.
+    if(!(ecGrpKi = EC_GROUP_dup(ecGrp))){
+	return errorN(1, "initialiseRingSigs(): EC_GROUP_dup failed.");
+    }
 
     // get order and cofactor
     bnOrder = BN_new();
-    EC_GROUP_get_order(ecGrp, bnOrder, bnCtx);
+    if(!EC_GROUP_get_order(ecGrp, bnOrder, bnCtx)){
+        return errorN(1, "initialiseRingSigs(): EC_GROUP_get_order failed.");
+    }
 
-    BN_CTX_start(bnCtx);
     BIGNUM *bnCofactor = BN_CTX_get(bnCtx);
-    EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx);
+    if(!EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx)){
+    	return errorN(1, "initialiseRingSigs(): EC_GROUP_get_cofactor failed.");
+    }
 
-    // get the generators
-    EC_POINT *ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp));
+    // get the original generator
+    EC_POINT *ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp)); //PS: never clear this point
+
+    // create key image basepoint variable
     EC_POINT *ptBaseKi = EC_POINT_new(ecGrpKi);
-
-    // ki basepoint
     BIGNUM *bnBaseKi = BN_CTX_get(bnCtx);
+
+    // get original basepoint in BIG NUMS.
+    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx);
+
+    //create "1" in BIG NUMS
     BIGNUM *bnBaseKiAdd = BN_CTX_get(bnCtx);
     std::string num_str = "1";
     BN_dec2bn(&bnBaseKiAdd, num_str.c_str());
 
-    // get current basepoint
-    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx);
-
-    // add n
+    // add 1 to original base point and store in key image basepoint (BIG NUMS)
     BN_add(bnBaseKi, bnBaseKi, bnBaseKiAdd);
 
-    // new basepoint bignum to point
+    // key image basepoint from bignum to point in ptBaseKi
     if(!EC_POINT_bn2point(ecGrp, bnBaseKi, ptBaseKi, bnCtx))
-       errorN(1, "FAILED!!!");
+       return errorN(1, "initialiseRingSigs(): EC_POINT_bn2point failed.");
 
-    // Add the old basepoint to the new base point
-    EC_POINT_add(ecGrp, ptBaseKi, ptBaseKi, ptBase, bnCtx);
-    EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor);
+    // set generator of ecGrpKi
+    if(!EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor)){
+	 return errorN(1, "initialiseRingSigs(): EC_GROUP_set_generator failed.");
+    }
 
     if (fDebugRingSig)
     {
@@ -198,7 +209,7 @@ int getOldKeyImage(CPubKey &publicKey, ec_point &keyImage)
 
 static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet)
 {
-    // - bn(hash(data)) * (G + bn1) * (bn2)
+    // - bn(hash(data)) * (G + bn1)
     uint256 pkHash = Hash(p, p + len);
 
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
@@ -210,7 +221,6 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
             return errorN(1, "%s: EC_POINT_mul failed.", __func__);
     } else
     if (!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
-//      ||!EC_POINT_mul(ecGrpKi, ptRet, NULL, ptRet, bnBaseKi2, bnCtx))
         return errorN(1, "%s: EC_POINT_mul failed.", __func__);
 
     return 0;
