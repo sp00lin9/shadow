@@ -12,7 +12,7 @@
 #include "sync.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "checkpoints.h"
+
 #include "smessage.h"
 #include "ringsig.h"
 #include "miner.h"
@@ -224,7 +224,6 @@ std::string HelpMessage()
     strUsage += "  -minstakeinterval=<n>  " + _("Minimum time in seconds between successful stakes (default: 30)") + "\n";
     strUsage += "  -minersleep=<n>        " + _("Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)") + "\n";
     strUsage += "  -synctime              " + _("Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)") + "\n";
-    strUsage += "  -cppolicy              " + _("Sync checkpoints policy (default: strict)") + "\n";
     strUsage += "  -banscore=<n>          " + _("Threshold for disconnecting misbehaving peers (default: 100)") + "\n";
     strUsage += "  -bantime=<n>           " + _("Number of seconds to keep misbehaving peers from reconnecting (default: 86400)") + "\n";
     strUsage += "  -softbantime=<n>       " + _("Number of seconds to keep soft banned peers from reconnecting (default: 3600)") + "\n";
@@ -415,17 +414,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fDebug)
         LogPrintf("nMinerSleep %u\n", nMinerSleep);
 
-    CheckpointsMode = Checkpoints::STRICT;
-    std::string strCpMode = GetArg("-cppolicy", "strict");
-
-    if (strCpMode == "strict")
-        CheckpointsMode = Checkpoints::STRICT;
-
-    if (strCpMode == "advisory")
-        CheckpointsMode = Checkpoints::ADVISORY;
-
-    if (strCpMode == "permissive")
-        CheckpointsMode = Checkpoints::PERMISSIVE;
 
     nDerivationMethodIndex = 0;
 
@@ -815,13 +803,6 @@ bool AppInit2(boost::thread_group& threadGroup)
         };
     };
     
-    // TODO: posv2 remove
-    if (mapArgs.count("-checkpointkey")) // ppcoin: checkpoint master priv key
-    {
-        if (!Checkpoints::SetCheckpointPrivKey(GetArg("-checkpointkey", "")))
-            InitError(_("Unable to sign checkpoint, wrong checkpointkey?\n"));
-    };
-
     BOOST_FOREACH(std::string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
 

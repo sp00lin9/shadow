@@ -87,10 +87,10 @@ double GetPoWMHashPS()
             nTargetSpacingWork = ((nPoWInterval - 1) * nTargetSpacingWork + nActualSpacingWork + nActualSpacingWork) / (nPoWInterval + 1);
             nTargetSpacingWork = max(nTargetSpacingWork, nTargetSpacingWorkMin);
             pindexPrevWork = pindex;
-        };
+        }
 
         pindex = pindex->pnext;
-    };
+    }
 
     return GetDifficulty() * 4294.967296 / nTargetSpacingWork;
 }
@@ -118,14 +118,14 @@ double GetPoSKernelPS()
                 };
                 pindexPrevStake = pindex;
             };
-            
+
             pindex = pindex->pprev;
         };
     } else
     {
         CBlockIndex* pindex = pindexBest;;
         CBlockIndex* pindexPrevStake = NULL;
-        
+
         while (pindex && nStakesHandled < nPoSInterval)
         {
             if (pindex->IsProofOfStake())
@@ -135,17 +135,16 @@ double GetPoSKernelPS()
                     dStakeKernelsTriedAvg += GetDifficulty(pindex) * 4294967296.0;
                     nStakesTime += pindexPrevStake ? (pindexPrevStake->nTime - pindex->nTime) : 0;
                     nStakesHandled++;
-                };
+                }
                 pindexPrevStake = pindex;
-            };
-            
+            }
+
             pindex = pindex->pprev;
-        };
-    };
-    
-    
+		}
+    }
+
     double result = 0;
-    
+
     if (nStakesTime)
         result = dStakeKernelsTriedAvg / nStakesTime;
     
@@ -182,7 +181,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
     result.push_back(Pair("proofhash", blockindex->hashProof.GetHex()));
     result.push_back(Pair("entropybit", (int)blockindex->GetStakeEntropyBit()));
     result.push_back(Pair("modifier", strprintf("%016x", blockindex->nStakeModifier)));
-    
+    result.push_back(Pair("modifierv2", blockindex->bnStakeModifierV2.GetHex()));
     Array txinfo;
     BOOST_FOREACH (const CTransaction& tx, block.vtx)
     {
@@ -194,9 +193,10 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
             TxToJSON(tx, 0, entry);
 
             txinfo.push_back(entry);
-        } else
+        }
+        else
             txinfo.push_back(tx.GetHash().GetHex());
-    };
+    }
 
     result.push_back(Pair("tx", txinfo));
 
@@ -234,7 +234,7 @@ Object blockHeaderToJSON(const CBlockThin& block, const CBlockThinIndex* blockin
     result.push_back(Pair("proofhash", blockindex->hashProof.GetHex()));
     result.push_back(Pair("entropybit", (int)blockindex->GetStakeEntropyBit()));
     result.push_back(Pair("modifier", strprintf("%016x", blockindex->nStakeModifier)));
-    
+    //result.push_back(Pair("modifierv2", blockindex->bnStakeModifierV2.GetHex()));
     //if (block.IsProofOfStake())
     //    result.push_back(Pair("signature", HexStr(block.vchBlockSig.begin(), block.vchBlockSig.end())));
 
@@ -271,6 +271,7 @@ Object diskBlockThinIndexToJSON(CDiskBlockThinIndex& diskBlock)
     result.push_back(Pair("proofhash", diskBlock.hashProof.GetHex()));
     result.push_back(Pair("entropybit", (int)diskBlock.GetStakeEntropyBit()));
     result.push_back(Pair("modifier", strprintf("%016x", diskBlock.nStakeModifier)));
+    //result.push_back(Pair("modifierv2", diskBlock.bnStakeModifierV2.GetHex()));
     //result.push_back(Pair("modifierchecksum", strprintf("%08x", diskBlock.nStakeModifierChecksum)));
     
     //if (block.IsProofOfStake())
@@ -796,25 +797,13 @@ Value getcheckpoint(const Array& params, bool fHelp)
             "Show info of synchronized checkpoint.\n");
 
     Object result;
-    CBlockIndex* pindexCheckpoint;
+    const CBlockIndex* pindexCheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
 
-    result.push_back(Pair("synccheckpoint", Checkpoints::hashSyncCheckpoint.ToString().c_str()));
-    pindexCheckpoint = mapBlockIndex[Checkpoints::hashSyncCheckpoint];
+    result.push_back(Pair("synccheckpoint", pindexCheckpoint->GetBlockHash().ToString().c_str()));
     result.push_back(Pair("height", pindexCheckpoint->nHeight));
     result.push_back(Pair("timestamp", DateTimeStrFormat(pindexCheckpoint->GetBlockTime()).c_str()));
 
-    // Check that the block satisfies synchronized checkpoint
-    if (CheckpointsMode == Checkpoints::STRICT)
-        result.push_back(Pair("policy", "strict"));
-
-    if (CheckpointsMode == Checkpoints::ADVISORY)
-        result.push_back(Pair("policy", "advisory"));
-
-    if (CheckpointsMode == Checkpoints::PERMISSIVE)
-        result.push_back(Pair("policy", "permissive"));
-
-    if (mapArgs.count("-checkpointkey")) // TODO: posv2 remove
-        result.push_back(Pair("checkpointmaster", true));
+    result.push_back(Pair("policy", "rolling"));
 
     return result;
 }
