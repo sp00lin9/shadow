@@ -180,8 +180,8 @@ int CTxDB::CheckVersion()
             
             int rv = 1;
             if (nNodeMode == NT_FULL
-                && nVersion == 70509
-                && MigrateFrom70509() == 0)
+                && nVersion == 70510
+                && MigrateFrom70510() == 0)
             {
                 // -- migration successfull, update version
                 WriteVersion(DATABASE_VERSION);
@@ -227,9 +227,9 @@ int CTxDB::RecreateDB()
     return 0;
 };
 
-int CTxDB::MigrateFrom70509()
+int CTxDB::MigrateFrom70510()
 {
-    LogPrintf("Migrating TXDB 70509 -> %d.\n", DATABASE_VERSION);
+    LogPrintf("Migrating TXDB 70510 -> %d.\n", DATABASE_VERSION);
     
     TxnBegin();
     
@@ -526,25 +526,25 @@ bool CTxDB::LoadBlockIndex()
         ssValue >> diskindex;
         
         // Construct block index object
-        CBlockIndex* pindexNew    = InsertBlockIndex(blockHash);
-        pindexNew->pprev          = InsertBlockIndex(diskindex.hashPrev);
-        pindexNew->pnext          = InsertBlockIndex(diskindex.hashNext);
-        pindexNew->nFile          = diskindex.nFile;
-        pindexNew->nBlockPos      = diskindex.nBlockPos;
-        pindexNew->nHeight        = diskindex.nHeight;
-        pindexNew->nMint          = diskindex.nMint;
-        pindexNew->nMoneySupply   = diskindex.nMoneySupply;
-        pindexNew->nFlags         = diskindex.nFlags;
-        pindexNew->nStakeModifier = diskindex.nStakeModifier;
+        CBlockIndex* pindexNew       = InsertBlockIndex(blockHash);
+        pindexNew->pprev             = InsertBlockIndex(diskindex.hashPrev);
+        pindexNew->pnext             = InsertBlockIndex(diskindex.hashNext);
+        pindexNew->nFile             = diskindex.nFile;
+        pindexNew->nBlockPos         = diskindex.nBlockPos;
+        pindexNew->nHeight           = diskindex.nHeight;
+        pindexNew->nMint             = diskindex.nMint;
+        pindexNew->nMoneySupply      = diskindex.nMoneySupply;
+        pindexNew->nFlags            = diskindex.nFlags;
+        pindexNew->nStakeModifier    = diskindex.nStakeModifier;
         pindexNew->bnStakeModifierV2 = diskindex.bnStakeModifierV2;
-        pindexNew->prevoutStake   = diskindex.prevoutStake;
-        pindexNew->nStakeTime     = diskindex.nStakeTime;
-        pindexNew->hashProof      = diskindex.hashProof;
-        pindexNew->nVersion       = diskindex.nVersion;
-        pindexNew->hashMerkleRoot = diskindex.hashMerkleRoot;
-        pindexNew->nTime          = diskindex.nTime;
-        pindexNew->nBits          = diskindex.nBits;
-        pindexNew->nNonce         = diskindex.nNonce;
+        pindexNew->prevoutStake      = diskindex.prevoutStake;
+        pindexNew->nStakeTime        = diskindex.nStakeTime;
+        pindexNew->hashProof         = diskindex.hashProof;
+        pindexNew->nVersion          = diskindex.nVersion;
+        pindexNew->hashMerkleRoot    = diskindex.hashMerkleRoot;
+        pindexNew->nTime             = diskindex.nTime;
+        pindexNew->nBits             = diskindex.nBits;
+        pindexNew->nNonce            = diskindex.nNonce;
 
         // Watch for genesis block
         if (pindexGenesisBlock == NULL && blockHash == Params().HashGenesisBlock())

@@ -391,10 +391,10 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
     // or it's possible to connect to the same peer twice
     // don't want to lock cs_vNodes as ConnectSocket may be slow
     LOCK(cs_connectNode);
-    
+
     if (pszDest == NULL)
     {
-        
+
         if (IsLocal(addrConnect))
             return NULL;
 
@@ -406,8 +406,8 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
             return pnode;
         };
     };
-    
-    
+
+
     /// debug print
     LogPrintf("trying connection %s lastseen=%.1fhrs\n",
         pszDest ? pszDest : addrConnect.ToString().c_str(),
@@ -420,10 +420,10 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
                   ConnectSocket(addrConnect, hSocket, nConnectTimeout, &proxyConnectionFailed))
     {
         addrman.Attempt(addrConnect);
-        
+
         /// debug print
         LogPrintf("connected %s\n", pszDest ? pszDest : addrConnect.ToString().c_str());
-        
+
         // Add node
         CNode* pnode = new CNode(hSocket, addrConnect, pszDest ? pszDest : "", false);
         pnode->AddRef();
@@ -443,7 +443,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         // the proxy, mark this as an attempt.
         addrman.Attempt(addrConnect);
     }
-    
+
     return NULL;
 }
 
@@ -614,7 +614,7 @@ void CNode::copyStats(CNodeStats &stats)
     // Raw ping time is in microseconds, but show it to user as whole seconds (Bitcoin users should be well used to small numbers with many decimal places by now :)
     stats.dPingTime = (((double)nPingUsecTime) / 1e6);
     stats.dPingWait = (((double)nPingUsecWait) / 1e6);
-    
+
     // Leave string empty if addrLocal invalid (not filled in yet)
     stats.addrLocal = addrLocal.IsValid() ? addrLocal.ToString() : "";
 }
@@ -902,12 +902,12 @@ void ThreadSocketHandler()
                 };
             };
         }
-        
+
         int nSelect = select(have_fds ? hSocketMax + 1 : 0,
                              &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
-        
+
         boost::this_thread::interruption_point();
-        
+
         if (nSelect == SOCKET_ERROR)
         {
             if (have_fds)
@@ -1200,7 +1200,7 @@ void MapPort(bool fUseUPnP)
             upnp_thread->join();
             delete upnp_thread;
         }
-        
+
         upnp_thread = new boost::thread(boost::bind(&TraceThread<void (*)()>, "upnp", &ThreadMapPort));
     }
     else if (upnp_thread) {
@@ -1227,9 +1227,9 @@ void ThreadDNSAddressSeed()
 {
     const vector<CDNSSeedData> &vSeeds = Params().DNSSeeds();
     int found = 0;
-    
+
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
-    
+
     BOOST_FOREACH(const CDNSSeedData &seed, vSeeds)
     {
         if (HaveNameProxy())
@@ -1243,11 +1243,11 @@ void ThreadDNSAddressSeed()
             {
                 BOOST_FOREACH(CNetAddr& ip, vIPs)
                 {
-                    
+
                     int nOneDay = 24*3600;
                     CAddress addr = CAddress(CService(ip, Params().GetDefaultPort()));
                     SetReachable(addr.GetNetwork());
-                    
+
                     addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
                     vAdd.push_back(addr);
                     found++;
@@ -1256,7 +1256,7 @@ void ThreadDNSAddressSeed()
             addrman.Add(vAdd, CNetAddr(seed.name, true));
         };
     };
-    
+
     LogPrintf("%d addresses found from DNS seeds\n", found);
 };
 
@@ -1281,7 +1281,7 @@ void static ProcessOneShot()
         strDest = vOneShots.front();
         vOneShots.pop_front();
     } // cs_vOneShots
-    
+
     CAddress addr;
     CSemaphoreGrant grant(*semOutbound, true);
     if (grant)
@@ -1302,7 +1302,7 @@ void ThreadOpenConnections()
             BOOST_FOREACH(string strAddr, mapMultiArgs["-connect"])
             {
                 CAddress addr;
-                
+
                 OpenNetworkConnection(addr, NULL, strAddr.c_str());
                 for (int i = 0; i < 10 && i < nLoop; i++)
                 {
@@ -1319,13 +1319,13 @@ void ThreadOpenConnections()
     while (true)
     {
         ProcessOneShot();
-        
+
         MilliSleep(500);
-        
+
         boost::this_thread::interruption_point();
-        
+
         CSemaphoreGrant grant(*semOutbound);
-        
+
         // Add seed nodes
         if (addrman.size() == 0 && (GetTime() - nStart > 60))
         {
@@ -1347,7 +1347,7 @@ void ThreadOpenConnections()
         // Do this here so we don't have to critsect vNodes inside mapAddresses critsect.
         int nOutbound = 0;
         std::set<std::vector<unsigned char> > setConnected;
-        
+
         {
             LOCK(cs_vNodes);
             BOOST_FOREACH(CNode* pnode, vNodes)
@@ -1359,7 +1359,7 @@ void ThreadOpenConnections()
                 };
             };
         } // cs_vNodes
-        
+
         int64_t nANow = GetAdjustedTime();
 
         int nTries = 0;
@@ -1368,11 +1368,11 @@ void ThreadOpenConnections()
             boost::this_thread::interruption_point();
             // use an nUnkBias between 10 (no outgoing connections) and 90 (8 outgoing connections)
             CAddress addr = addrman.Select(10 + min(nOutbound,8)*10);
-            
+
             // if we selected an invalid address, restart
             if (!addr.IsValid() || setConnected.count(addr.GetGroup()) || IsLocal(addr))
                 break;
-            
+
             // If we didn't find an appropriate destination after trying 100 addresses fetched from addrman,
             // stop this loop, and let the outer loop run again (which sleeps, adds seed nodes, recalculates
             // already-connected network ranges, ...) before trying new addrman addresses.
@@ -1394,7 +1394,7 @@ void ThreadOpenConnections()
             addrConnect = addr;
             break;
         };
-        
+
         if (addrConnect.IsValid())
         {
             OpenNetworkConnection(addrConnect, &grant);
@@ -1467,7 +1467,7 @@ void ThreadOpenAddedConnections()
                             break;
                         };
         }
-        
+
         BOOST_FOREACH(std::vector<CService>& vserv, lservAddressesToAdd)
         {
             CSemaphoreGrant grant(*semOutbound);
@@ -1485,7 +1485,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     // Initiate outbound network connection
     //
     boost::this_thread::interruption_point();
-    
+
     if (!strDest)
     {
         if (IsLocal(addrConnect)
@@ -1496,10 +1496,10 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     } else
     if (FindNode(strDest))
         return false;
-    
+
     CNode* pnode = ConnectNode(addrConnect, strDest);
     boost::this_thread::interruption_point();
-    
+
     if (!pnode)
         return false;
     if (grantOutbound)
@@ -1536,12 +1536,12 @@ void ThreadMessageHandler()
         bool fSleep = true;
 
         //BOOST_FOREACH(CNode* pnode, vNodesCopy)
-        
+
         size_t r = GetRandInt(vNodesCopy.size()-1); // randomise the order
         for (size_t i = 0; i < vNodesCopy.size(); ++i)
         {
             CNode *pnode = vNodesCopy[(i + r) % vNodesCopy.size()];
-            
+
             if (pnode->fDisconnect)
                 continue;
 
@@ -1765,21 +1765,21 @@ void StartNode(boost::thread_group& threadGroup)
         LogPrintf("DNS seeding disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "dnsseed", &ThreadDNSAddressSeed));
-    
+
     MapPort(GetBoolArg("-upnp", DEFAULT_UPNP));
-    
+
     // Send and receive from sockets, accept connections
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
-    
+
     // Initiate outbound connections from -addnode
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "addcon", &ThreadOpenAddedConnections));
-    
+
     // Initiate outbound connections
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "opencon", &ThreadOpenConnections));
-    
+
     // Process messages
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "msghand", &ThreadMessageHandler));
-    
+
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 };

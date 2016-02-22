@@ -489,6 +489,86 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB& txdb, bool *p
 
 
 
+/** A transaction with a merkle branch linking it to the block chain. */
+class CMerkleTx : public CTransaction
+{
+private:
+    int GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const;
+    int GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const;
+public:
+    uint256 hashBlock;
+    std::vector<uint256> vMerkleBranch;
+    int nIndex;
+
+    // memory only
+    mutable bool fMerkleVerified;
+
+
+    CMerkleTx()
+    {
+        Init();
+    }
+
+    CMerkleTx(const CTransaction& txIn) : CTransaction(txIn)
+    {
+        Init();
+    }
+
+    void Init()
+    {
+        hashBlock = 0;
+        nIndex = -1;
+        fMerkleVerified = false;
+    }
+
+
+    IMPLEMENT_SERIALIZE
+    (
+        nSerSize += SerReadWrite(s, *(CTransaction*)this, nType, nVersion, ser_action);
+        nVersion = this->nVersion;
+        READWRITE(hashBlock);
+        READWRITE(vMerkleBranch);
+        READWRITE(nIndex);
+    )
+
+
+    int SetMerkleBranch(const CBlock* pblock=NULL);
+
+    // Return depth of transaction in blockchain:
+    // -1  : not in blockchain, and not in memory pool (conflicted transaction)
+    //  0  : in memory pool, waiting to be included in a block
+    // >=1 : this many blocks deep in the main chain
+    int GetDepthInMainChain(CBlockIndex* &pindexRet) const;
+    int GetDepthInMainChain(CBlockThinIndex* &pindexRet) const;
+    int GetDepthInMainChain() const
+    {
+        if (nNodeMode == NT_FULL)
+        {
+            CBlockIndex *pindexRet;
+            return GetDepthInMainChain(pindexRet);
+        };
+
+        CBlockThinIndex *pindexRet;
+        return GetDepthInMainChain(pindexRet);
+    }
+    bool IsInMainChain() const
+    {
+        if (nNodeMode == NT_THIN)
+        {
+            CBlockThinIndex *pindexRet;
+            return GetDepthInMainChainINTERNAL(pindexRet) > 0;
+        };
+
+        CBlockIndex *pindexRet;
+        return GetDepthInMainChainINTERNAL(pindexRet) > 0;
+    }
+
+    int GetBlocksToMaturity() const;
+    bool AcceptToMemoryPool(CTxDB& txdb);
+    bool AcceptToMemoryPool();
+};
+
+
 
 
 /**  A txdb record that contains the disk location of a transaction and the
@@ -665,8 +745,8 @@ public:
         {
             READWRITE(vtx);
             READWRITE(vchBlockSig);
-        } else
-        if (fRead)
+        }
+        else if (fRead)
         {
             const_cast<CBlock*>(this)->vtx.clear();
             const_cast<CBlock*>(this)->vchBlockSig.clear();
@@ -810,8 +890,8 @@ public:
         // Read block
         try {
             filein >> *this;
-        } catch (std::exception &e)
-        {
+        }
+        catch (std::exception &e) {
             return error("%s() : deserialize or I/O error", __PRETTY_FUNCTION__);
         }
 
@@ -1882,85 +1962,6 @@ public:
             return 0;
         return pindex->nHeight;
     }
-};
-
-/** A transaction with a merkle branch linking it to the block chain. */
-class CMerkleTx : public CTransaction
-{
-private:
-    int GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const;
-    int GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const;
-public:
-    uint256 hashBlock;
-    std::vector<uint256> vMerkleBranch;
-    int nIndex;
-
-    // memory only
-    mutable bool fMerkleVerified;
-
-
-    CMerkleTx()
-    {
-        Init();
-    }
-
-    CMerkleTx(const CTransaction& txIn) : CTransaction(txIn)
-    {
-        Init();
-    }
-
-    void Init()
-    {
-        hashBlock = 0;
-        nIndex = -1;
-        fMerkleVerified = false;
-    }
-
-
-    IMPLEMENT_SERIALIZE
-    (
-        nSerSize += SerReadWrite(s, *(CTransaction*)this, nType, nVersion, ser_action);
-        nVersion = this->nVersion;
-        READWRITE(hashBlock);
-        READWRITE(vMerkleBranch);
-        READWRITE(nIndex);
-    )
-
-
-    int SetMerkleBranch(const CBlock* pblock=NULL);
-
-    // Return depth of transaction in blockchain:
-    // -1  : not in blockchain, and not in memory pool (conflicted transaction)
-    //  0  : in memory pool, waiting to be included in a block
-    // >=1 : this many blocks deep in the main chain
-    int GetDepthInMainChain(CBlockIndex* &pindexRet) const;
-    int GetDepthInMainChain(CBlockThinIndex* &pindexRet) const;
-    int GetDepthInMainChain() const
-    {
-        if (nNodeMode == NT_FULL)
-        {
-            CBlockIndex *pindexRet;
-            return GetDepthInMainChain(pindexRet);
-        };
-
-        CBlockThinIndex *pindexRet;
-        return GetDepthInMainChain(pindexRet);
-    }
-    bool IsInMainChain() const
-    {
-        if (nNodeMode == NT_THIN)
-        {
-            CBlockThinIndex *pindexRet;
-            return GetDepthInMainChainINTERNAL(pindexRet) > 0;
-        };
-
-        CBlockIndex *pindexRet;
-        return GetDepthInMainChainINTERNAL(pindexRet) > 0;
-    }
-
-    int GetBlocksToMaturity() const;
-    bool AcceptToMemoryPool(CTxDB& txdb);
-    bool AcceptToMemoryPool();
 };
 
 /** Data structure that represents a partial merkle tree.

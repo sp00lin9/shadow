@@ -226,7 +226,7 @@ public:
     
     int CheckVersion();
     int RecreateDB();
-    int MigrateFrom70509();
+    int MigrateFrom70510();
     
     bool WriteKeyImage(ec_point& keyImage, CKeyImageSpent& keyImageSpent);
     bool ReadKeyImage(ec_point& keyImage, CKeyImageSpent& keyImageSpent);

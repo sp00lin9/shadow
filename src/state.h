@@ -40,11 +40,11 @@ enum eBlockFlags
 
 enum
 {
-    NODE_NETWORK        = (1 << 0),
-    THIN_SUPPORT        = (1 << 1),
-    THIN_STAKE          = (1 << 2),  // deprecated
-    THIN_STEALTH        = (1 << 3),
-    SMSG_RELAY          = (1 << 4),
+    NODE_NETWORK = (1 << 0),
+    THIN_SUPPORT = (1 << 1),
+    THIN_STAKE   = (1 << 2),  // deprecated
+    THIN_STEALTH = (1 << 3),
+    SMSG_RELAY   = (1 << 4),
 };
 
 const int64_t GENESIS_BLOCK_TIME = 1405769613;

@@ -36,20 +36,17 @@ int initialiseRingSigs()
     BN_CTX_start(bnCtx);
 
     //Create a new EC group for the keyImage with all of the characteristics of ecGrp.
-    if(!(ecGrpKi = EC_GROUP_dup(ecGrp))){
-	return errorN(1, "initialiseRingSigs(): EC_GROUP_dup failed.");
-    }
+    if (!(ecGrpKi = EC_GROUP_dup(ecGrp)))
+        return errorN(1, "initialiseRingSigs(): EC_GROUP_dup failed.");
 
     // get order and cofactor
     bnOrder = BN_new();
-    if(!EC_GROUP_get_order(ecGrp, bnOrder, bnCtx)){
+    if (!EC_GROUP_get_order(ecGrp, bnOrder, bnCtx))
         return errorN(1, "initialiseRingSigs(): EC_GROUP_get_order failed.");
-    }
 
     BIGNUM *bnCofactor = BN_CTX_get(bnCtx);
-    if(!EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx)){
-    	return errorN(1, "initialiseRingSigs(): EC_GROUP_get_cofactor failed.");
-    }
+    if (!EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx))
+        return errorN(1, "initialiseRingSigs(): EC_GROUP_get_cofactor failed.");
 
     // get the original generator
     EC_POINT *ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp)); //PS: never clear this point
@@ -70,12 +67,12 @@ int initialiseRingSigs()
     BN_add(bnBaseKi, bnBaseKi, bnBaseKiAdd);
 
     // key image basepoint from bignum to point in ptBaseKi
-    if(!EC_POINT_bn2point(ecGrp, bnBaseKi, ptBaseKi, bnCtx))
+    if (!EC_POINT_bn2point(ecGrp, bnBaseKi, ptBaseKi, bnCtx))
        return errorN(1, "initialiseRingSigs(): EC_POINT_bn2point failed.");
 
     // set generator of ecGrpKi
-    if(!EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor)){
-	 return errorN(1, "initialiseRingSigs(): EC_GROUP_set_generator failed.");
+    if (!EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor)){
+        return errorN(1, "initialiseRingSigs(): EC_GROUP_set_generator failed.");
     }
 
     if (fDebugRingSig)
@@ -91,6 +88,7 @@ int initialiseRingSigs()
 
     EC_POINT_free(ptBaseKi);
     BN_CTX_end(bnCtx);
+
     return 0;
 };
 
@@ -104,10 +102,10 @@ int finaliseRingSigs()
     EC_GROUP_clear_free(ecGrp);
     EC_GROUP_clear_free(ecGrpKi);
 
-    ecGrp     = NULL;
-    ecGrpKi   = NULL;
-    bnCtx     = NULL;
-    bnOrder   = NULL;
+    ecGrp   = NULL;
+    ecGrpKi = NULL;
+    bnCtx   = NULL;
+    bnOrder = NULL;
 
     return 0;
 };
@@ -179,7 +177,7 @@ int getOldKeyImage(CPubKey &publicKey, ec_point &keyImage)
     && (rv = errorN(1, "%s: EC_POINT_new failed.", __func__)))
         goto End;
 
-    if(!EC_POINT_oct2point(ecGrp, ptPk, publicKey.begin(), EC_COMPRESSED_SIZE, bnCtx)
+    if (!EC_POINT_oct2point(ecGrp, ptPk, publicKey.begin(), EC_COMPRESSED_SIZE, bnCtx)
     && (rv = errorN(1, "%s: EC_POINT_oct2point failed.", __func__)))
         goto End;
 
@@ -217,7 +215,7 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
 
     if (Params().IsProtocolV3(pindexBest->nHeight))
     {
-        if(!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
+        if (!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
             return errorN(1, "%s: EC_POINT_mul failed.", __func__);
     } else
     if (!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
