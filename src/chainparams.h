@@ -59,6 +59,8 @@ public:
         MAX_BASE58_TYPES
     };
 
+    const char* pszTimestamp;
+
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }

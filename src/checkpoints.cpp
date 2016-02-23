@@ -95,6 +95,21 @@ namespace Checkpoints
         return NULL;
     }
 
+    CBlockThinIndex* GetLastCheckpoint(const std::map<uint256, CBlockThinIndex*>& mapBlockThinIndex)
+    {
+        MapCheckpoints& checkpoints = (fTestNet ? mapCheckpointsTestnet : mapCheckpoints);
+
+        BOOST_REVERSE_FOREACH(const MapCheckpoints::value_type& i, checkpoints)
+        {
+            const uint256& hash = i.second;
+            std::map<uint256, CBlockThinIndex*>::const_iterator t = mapBlockThinIndex.find(hash);
+            if (t != mapBlockThinIndex.end())
+                return t->second;
+        }
+        return NULL;
+    }
+
+
     // Automatically select a suitable sync-checkpoint 
     const CBlockIndex* AutoSelectSyncCheckpoint()
     {
@@ -105,13 +120,32 @@ namespace Checkpoints
         return pindex;
     }
 
+    // Automatically select a suitable sync-checkpoint - Thin mode
+    const CBlockThinIndex* AutoSelectSyncThinCheckpoint()
+    {
+        const CBlockThinIndex *pindex = pindexBestHeader;
+        // Search backward for a block within max span and maturity window
+        while (pindex->pprev && pindex->nHeight + nCheckpointSpan > pindexBest->nHeight)
+            pindex = pindex->pprev;
+        return pindex;
+    }
+
     // Check against synchronized checkpoint
     bool CheckSync(int nHeight)
     {
-        const CBlockIndex* pindexSync = AutoSelectSyncCheckpoint();
+        if(nNodeMode == NT_FULL)
+        {
+            const CBlockIndex* pindexSync = AutoSelectSyncCheckpoint();
 
-        if (nHeight <= pindexSync->nHeight)
-            return false;
+            if (nHeight <= pindexSync->nHeight)
+                return false;
+        }
+        else {
+            const CBlockThinIndex *pindexSync = AutoSelectSyncThinCheckpoint();
+
+            if (nHeight <= pindexSync->nHeight)
+                return false;
+        }
         return true;
     }
 }

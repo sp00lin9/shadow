@@ -1442,6 +1442,9 @@ bool CBlockThin::AcceptBlockThin()
     if (!Checkpoints::CheckHardened(nHeight, hash))
         return error("AcceptBlockThin() : rejected by hardened checkpoint lock-in at %d", nHeight);
 
+    // Check that the block satisfies synchronized checkpoint
+    if (!Checkpoints::CheckSync(nHeight))
+        return error("AcceptBlockThin() : rejected by synchronized checkpoint");
 
     // Write header to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK, CLIENT_VERSION)))
@@ -3726,7 +3729,7 @@ bool ProcessBlockThin(CNode* pfrom, CBlockThin* pblock)
     if (!pblock->CheckBlockThin())
         return error("ProcessBlockThin() : CheckBlockThin FAILED");
 
-    CBlockThinIndex* pcheckpoint; // TODO: Thin Mode = Checkpoints::GetLastSyncCheckpointHeader();
+    const CBlockThinIndex* pcheckpoint = Checkpoints::AutoSelectSyncThinCheckpoint();
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain)
     {
         // Extra checks to prevent "fill up memory by spamming with bogus blocks"

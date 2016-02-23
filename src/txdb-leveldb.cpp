@@ -34,16 +34,13 @@ static leveldb::Options GetOptions()
     return options;
 }
 
-void init_blockindex(leveldb::Options& options, bool fRemoveOld = false)
+static void init_blockindex(leveldb::Options& options, bool fRemoveOld = false)
 {
     // First time init.
     fs::path directory = GetDataDir() / "txleveldb";
 
     if (fRemoveOld)
-    {
         fs::remove_all(directory); // remove directory
-        //unsigned int nFile = 1;
-    };
 
     fs::create_directory(directory);
     LogPrintf("Opening LevelDB in %s\n", directory.string().c_str());
@@ -61,22 +58,21 @@ CTxDB::CTxDB(const char* pszMode)
     assert(pszMode);
     activeBatch = NULL;
     fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
-    
+
     if (txdb)
     {
         pdb = txdb;
         return;
     }
-    
+
     bool fCreate = strchr(pszMode, 'c');
-    
+
     options = GetOptions();
     options.create_if_missing = fCreate;
-    //options.filter_policy = leveldb::NewBloomFilterPolicy(10);
-    
+
     init_blockindex(options); // Init directory
     pdb = txdb;
-    
+
     LogPrintf("Opened LevelDB successfully\n");
 }
 
@@ -170,32 +166,14 @@ int CTxDB::CheckVersion()
     {
         ReadVersion(nVersion);
         LogPrintf("Transaction index version is %d\n", nVersion);
-        
+
         if (nVersion < DATABASE_VERSION)
         {
             LogPrintf("Required index version is %d.\n", DATABASE_VERSION);
-            
-            bool fTmp = fReadOnly;
-            fReadOnly = false;
-            
-            int rv = 1;
-            if (nNodeMode == NT_FULL
-                && nVersion == 70510
-                && MigrateFrom70510() == 0)
-            {
-                // -- migration successfull, update version
-                WriteVersion(DATABASE_VERSION);
-            } else
-            {
-                // -- different version and no/failed/migration
-                //    remove and recreate db, queue reindex (by returning 2)
-                RecreateDB();
-                rv = 2;
-            };
-            
-            fReadOnly = fTmp;
-            
-            return rv; 
+
+            RecreateDB();
+
+            return 2;
         };
     } else
     {
@@ -210,70 +188,20 @@ int CTxDB::CheckVersion()
 int CTxDB::RecreateDB()
 {
     LogPrintf("Recreating TXDB.\n");
-    
+
     delete txdb;
     txdb = pdb = NULL;
     delete activeBatch;
     activeBatch = NULL;
-    
+
     init_blockindex(options, true); // Remove directory and create new database
     pdb = txdb;
-    
+
     bool fTmp = fReadOnly;
     fReadOnly = false;
     WriteVersion(DATABASE_VERSION);
     fReadOnly = fTmp;
-    
-    return 0;
-};
 
-int CTxDB::MigrateFrom70510()
-{
-    LogPrintf("Migrating TXDB 70510 -> %d.\n", DATABASE_VERSION);
-    
-    TxnBegin();
-    
-    leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
-    CDataStream ssStartKey(SER_DISK, CLIENT_VERSION);
-    ssStartKey << make_pair(string("blockindex"), uint256(0));
-    iterator->Seek(ssStartKey.str());
-    
-    int nCount = 0;
-    CDiskBlockIndex diskindex;
-    while (iterator->Valid())
-    {
-        if (++nCount % 20000 == 0)
-            LogPrintf("Processed %d records and counting.\n", nCount);
-        boost::this_thread::interruption_point();
-        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
-        ssKey.write(iterator->key().data(), iterator->key().size());
-        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-        ssValue.write(iterator->value().data(), iterator->value().size());
-        string strType;
-        ssKey >> strType;
-        if (strType != "blockindex")
-            break;
-        
-        uint256 blockHash;
-        ssKey >> blockHash;
-        
-        ssValue >> diskindex;
-        
-        Erase(make_pair(string("blockindex"), blockHash));
-        WriteBlockIndex(diskindex);
-        
-        iterator->Next();
-    };
-    
-    delete iterator;
-    
-    TxnCommit();
-    
-    LogPrintf("TXDB compacting.\n");
-    
-    GetInstance()->CompactRange(NULL, NULL);
-    
-    LogPrintf("TXDB migration complete, %d records affected.\n", nCount);
     return 0;
 };
 
@@ -309,28 +237,28 @@ bool CTxDB::EraseAnonOutput(CPubKey& pkCoin)
 
 bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
 {
-    
+
     TxnBegin();
-    
+
     leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
     if (!iterator)
         LogPrintf("EraseRange(%s) - NewIterator failed.\n", sPrefix.c_str());
-    
+
     size_t nLenPrefix = sPrefix.length();
-    
+
     if (nLenPrefix > 252) // fit in 256 and compressed int is 1 byte
     {
         LogPrintf("EraseRange(%s) - Key length too long.\n", sPrefix.c_str());
         return false;
     };
-    
+
     // - key starts with strlen || str
     uint8_t data[256];
     data[0] = (uint8_t)nLenPrefix;
     memcpy(&data[1], sPrefix.data(), nLenPrefix);
-    
+
     iterator->Seek(leveldb::Slice((const char*)data, nLenPrefix+1));
-    
+
     leveldb::WriteOptions writeOptions;
     writeOptions.sync = true;
     while (iterator->Valid())
@@ -338,20 +266,20 @@ bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
         if (iterator->key().size() < nLenPrefix+1
             || memcmp(iterator->key().data(), data, nLenPrefix+1) != 0)
             break;
-        
+
         leveldb::Status s = pdb->Delete(writeOptions, iterator->key());
-        
+
         if (!s.ok())
             LogPrintf("EraseRange(%s) - Delete failed.\n", sPrefix.c_str());
-        
+
         nAffected++;
         iterator->Next();
     };
-    
-    
+
+
     delete iterator;
     TxnCommit();
-    
+
     return true;
 };
 
@@ -494,8 +422,8 @@ bool CTxDB::LoadBlockIndex()
         // from BDB.
         return true;
     };
-    
-    
+
+
     // The block index is an in-memory structure that maps hashes to on-disk
     // locations where the contents of the block can be found. Here, we scan it
     // out of the DB and into mapBlockIndex.
@@ -518,13 +446,13 @@ bool CTxDB::LoadBlockIndex()
         // Did we reach the end of the data to read?
         if (strType != "bidx")
             break;
-        
+
         uint256 blockHash;
         ssKey >> blockHash;
-        
+
         CDiskBlockIndex diskindex;
         ssValue >> diskindex;
-        
+
         // Construct block index object
         CBlockIndex* pindexNew       = InsertBlockIndex(blockHash);
         pindexNew->pprev             = InsertBlockIndex(diskindex.hashPrev);
@@ -590,14 +518,14 @@ bool CTxDB::LoadBlockIndex()
     BOOST_FOREACH(const PAIRTYPE(int, CBlockIndex*)& item, vSortedByHeight)
     {
         CBlockIndex* pindex = item.second;
-        
+
         if (!pindex->pprev && pindex->GetBlockHash() != Params().HashGenesisBlock())
         {
             if (fDebug)
                 LogPrintf("LoadBlockIndex(): Warning - Found orphaned block, height %d, hash %s. Suggest rewindchain, reindex.\n", pindex->nHeight, pindex->GetBlockHash().ToString().c_str());
             continue;
         };
-        
+
         pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + pindex->GetBlockTrust();
     }
 
@@ -784,15 +712,15 @@ bool CTxDB::LoadBlockThinIndex()
         };
 
         //LogPrintf("[rem] bhidx %s\n", hashNext.ToString().c_str());
-        
+
         // Construct block index object
         CBlockThinIndex* pindexNew      = new CBlockThinIndex();
         if (!pindexNew)
             return error("LoadBlockThinIndex() : new CBlockIndex failed");
-        
+
         mi = mapBlockThinIndex.insert(make_pair(hashNext, pindexNew)).first;
         pindexNew->phashBlock = &(mi->first);
-        
+
 
         pindexNew->nFile                = diskindex.nFile;
         pindexNew->nBlockPos            = diskindex.nBlockPos;
@@ -811,8 +739,8 @@ bool CTxDB::LoadBlockThinIndex()
             pIndexLast->pnext           = pindexNew;
 
         pindexNew->nChainTrust = (pIndexLast ? pIndexLast->nChainTrust : 0) + pindexNew->GetBlockTrust();
-        
-        
+
+
         // -- genesis block will always be first
         if (pindexGenesisBlockThin == NULL)
         {

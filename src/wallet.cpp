@@ -5263,7 +5263,7 @@ static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
 int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly)
 {
     LOCK(cs_main);
-    CTxDB txdb("r");
+    CTxDB txdb("r+");
 
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)

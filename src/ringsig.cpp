@@ -24,6 +24,8 @@ static BIGNUM   *bnOrder  = NULL;
 
 int initialiseRingSigs()
 {
+    int rv = 0;
+
     if (fDebugRingSig)
         LogPrintf("initialiseRingSigs()\n");
 
@@ -45,35 +47,52 @@ int initialiseRingSigs()
         return errorN(1, "initialiseRingSigs(): EC_GROUP_get_order failed.");
 
     BIGNUM *bnCofactor = BN_CTX_get(bnCtx);
+
     if (!EC_GROUP_get_cofactor(ecGrp, bnCofactor, bnCtx))
         return errorN(1, "initialiseRingSigs(): EC_GROUP_get_cofactor failed.");
-
-    // get the original generator
-    EC_POINT *ptBase = const_cast<EC_POINT*>(EC_GROUP_get0_generator(ecGrp)); //PS: never clear this point
-
     // create key image basepoint variable
     EC_POINT *ptBaseKi = EC_POINT_new(ecGrpKi);
+
+    // ki basepoint
     BIGNUM *bnBaseKi = BN_CTX_get(bnCtx);
+    BIGNUM *bnOne    = BN_CTX_get(bnCtx);
+    BIGNUM *bnX      = BN_CTX_get(bnCtx); // x coordinate
+    BIGNUM *bnP      = BN_CTX_get(bnCtx); // curve prime
 
-    // get original basepoint in BIG NUMS.
-    EC_POINT_point2bn(ecGrp, ptBase, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx);
+    BN_one(bnOne);
 
-    //create "1" in BIG NUMS
-    BIGNUM *bnBaseKiAdd = BN_CTX_get(bnCtx);
-    std::string num_str = "1";
-    BN_dec2bn(&bnBaseKiAdd, num_str.c_str());
+    // hash our known timestring
+    uint256 hash = Hash(Params().pszTimestamp, Params().pszTimestamp + strlen(Params().pszTimestamp));
 
-    // add 1 to original base point and store in key image basepoint (BIG NUMS)
-    BN_add(bnBaseKi, bnBaseKi, bnBaseKiAdd);
+    // Get curve's prime
+    EC_GROUP_get_curve_GFp(ecGrp, bnP, NULL, NULL, bnCtx);
 
-    // key image basepoint from bignum to point in ptBaseKi
-    if (!EC_POINT_bn2point(ecGrp, bnBaseKi, ptBaseKi, bnCtx))
-       return errorN(1, "initialiseRingSigs(): EC_POINT_bn2point failed.");
+    // hash to X
+    if(!BN_bin2bn(hash.begin(), EC_SECRET_SIZE, bnX)
+    && (rv = errorN(1, "%s: BN_bin2bn failed.", __func__)))
+        goto End;
 
-    // set generator of ecGrpKi
-    if (!EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor)){
-        return errorN(1, "initialiseRingSigs(): EC_GROUP_set_generator failed.");
-    }
+    // recover y
+    if(!EC_POINT_set_compressed_coordinates_GFp(ecGrpKi, ptBaseKi, bnX, 1, bnCtx)
+    && (rv = errorN(1, "%s: EC_POINT_set_compressed_coordinates_GFp failed.", __func__)))
+        goto End;
+
+    // get point as bignum
+    if(!EC_POINT_point2bn(ecGrpKi, ptBaseKi, POINT_CONVERSION_COMPRESSED, bnBaseKi, bnCtx)
+    && (rv = errorN(1, "%s: EC_POINT_set_compressed_coordinates_GFp failed.", __func__)))
+        goto End;
+
+    // add 1
+    BN_add(bnBaseKi, bnBaseKi, bnOne);
+
+    // new basepoint bignum to point
+    if (!EC_POINT_bn2point(ecGrpKi, bnBaseKi, ptBaseKi, bnCtx)
+    && (rv = errorN(1, "%s: EC_POINT_bn2point failed.", __func__)))
+        goto End;
+
+    if(!EC_GROUP_set_generator(ecGrpKi, ptBaseKi, bnOrder, bnCofactor)
+    && (rv = errorN(1, "%s: EC_POINT_set_compressed_coordinates_GFp failed.", __func__)))
+        goto End;
 
     if (fDebugRingSig)
     {
@@ -86,10 +105,11 @@ int initialiseRingSigs()
         LogPrintf("generator ecGrp:   %s\ngenerator ecGrpKi: %s\n", genPoint, genPointKi);
     }
 
+    End:
     EC_POINT_free(ptBaseKi);
     BN_CTX_end(bnCtx);
 
-    return 0;
+    return rv;
 };
 
 int finaliseRingSigs()
