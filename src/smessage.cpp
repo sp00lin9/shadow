@@ -3309,7 +3309,7 @@ int SecureMsgEncrypt(SecureMessage &smsg, const std::string &addressFrom, const 
     bool fSendAnonymous = (addressFrom.compare("anon") == 0);
 
 
-    if (message.size() >fSendAnonymous ? SMSG_MAX_AMSG_BYTES : SMSG_MAX_MSG_BYTES)
+    if (message.size() > (fSendAnonymous ? SMSG_MAX_AMSG_BYTES : SMSG_MAX_MSG_BYTES))
     {
         return errorN(2, "%s: Message is too long, %u.", __func__, message.size());
     };
