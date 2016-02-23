@@ -2856,6 +2856,27 @@ static int GetBlockHeightFromHash(const uint256& blockHash)
     return 0;
 }
 
+static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
+{
+    // check if its been compromised (signer known)
+    bool fInMemPool;
+    CKeyImageSpent kis;
+    ec_point pkImage;
+
+    getOldKeyImage(pubKey, pkImage);
+
+    if (GetKeyImage(&txdb, pkImage, kis, fInMemPool))
+    {
+        ao.nCompromised = 1;
+        txdb.WriteAnonOutput(pubKey, ao);
+
+        if(fDebugRingSig)
+            LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
+        return 1;
+    }
+    return 0;
+}
+
 bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash)
 {
     uint256 txnHash = tx.GetHash();
@@ -3550,7 +3571,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             bool fSpentAOut = false;
             bool fInMemPool;
             CKeyImageSpent kis;
-            if (GetKeyImage(ptxdb, pkImage, kis, fInMemPool)
+            if ((IsAnonCoinCompromised(*ptxdb, pkCoin, ao)
+              ||GetKeyImage(ptxdb, pkImage, kis, fInMemPool))
                 && !fInMemPool) // shouldn't be possible for kis to be in mempool here
                 fSpentAOut = true;
 
@@ -5004,7 +5026,11 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
         CKeyImageSpent kis;
 
         bool fInMemPool;
-        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool)
+        CAnonOutput ao;
+        txdb.ReadAnonOutput(pkCoin, ao);
+        IsAnonCoinCompromised(txdb, pkCoin, ao);
+        if ((IsAnonCoinCompromised(txdb, pkCoin, ao) ||
+            GetKeyImage(&txdb, pkImage, kis, fInMemPool))
             && !fInMemPool) // shouldn't be possible for kis to be in mempool here
         {
             fSpentAOut = true;
@@ -5237,28 +5263,6 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
     pcursor->close();
     return 0;
 }
-
-static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
-{
-        // check if its been compromised (signer known)
-        bool fInMemPool;
-        CKeyImageSpent kis;
-        ec_point pkImage;
-
-        getOldKeyImage(pubKey, pkImage);
-
-        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool))
-        {
-            ao.nCompromised = 1;
-            txdb.WriteAnonOutput(pubKey, ao);
-
-            if(fDebugRingSig)
-                LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
-        }
-        //LogPrintf("kis: %s\n", pkImage);
-
-}
-
 
 int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly)
 {

@@ -68,7 +68,7 @@ enum
 
     // Verify CHECKLOCKTIMEVERIFY (BIP65)
     //
-    SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY = (1U << 6),
+    SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY = (1U << 7),
 };
 
 // Mandatory script verification flags that all new blocks must comply with for
