@@ -2528,7 +2528,8 @@ Value sendanontoanon(const Array& params, bool fHelp)
         throw std::runtime_error(
             "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
-            "<ring_size> is a number of outputs of the same amount to include in the signature"
+            "<ring_size> is a number of outputs of the same amount to include in the signature\n"
+            "  warning: using a ring_size less than 3 is not recommended"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2539,8 +2540,12 @@ Value sendanontoanon(const Array& params, bool fHelp)
 
     uint32_t nRingSize = (uint32_t)params[2].get_int();
 
+    Object result;
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+    if (nRingSize < MIN_RING_SIZE)
+        result.push_back(Pair("warning", "Ring size was below the recommended size, your existing will be marked as compromised."));
+
+    if (nRingSize > MAX_RING_SIZE)
         ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
 
 
@@ -2569,6 +2574,12 @@ Value sendanontoanon(const Array& params, bool fHelp)
         LogPrintf("SendAnonToAnon failed %s\n", sError.c_str());
         throw JSONRPCError(RPC_WALLET_ERROR, sError);
     };
+
+    if (result.size() > 0)
+    {
+        result.push_back(Pair("txid", wtx.GetHash().ToString()));
+        return result;
+    }
     return wtx.GetHash().GetHex();
 }
 
@@ -2738,7 +2749,7 @@ Value anonoutputs(const Array& params, bool fHelp)
         if (pwalletMain->CountAnonOutputs(mOutputCounts, fMatureOnly) != 0)
             throw std::runtime_error("CountAnonOutputs() failed.");
 
-        result.push_back(Pair("No. of coins owned, No. of system coins", "amount"));
+        result.push_back(Pair("No. of coins owned, No. of system coins, No of system coins available", "amount"));
 
         // -- lAvailableCoins is ordered by value
         char cbuf[256];
@@ -2823,27 +2834,30 @@ Value anoninfo(const Array& params, bool fHelp)
         };
     };
 
-    result.push_back(Pair("No. Exists, No. Spends, Least Depth", "value"));
+    result.push_back(Pair("No. Exists, No. Spends, No. Compromised, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
     char cbuf[256];
     int64_t nTotalIn = 0;
     int64_t nTotalOut = 0;
+    int64_t nTotalCompromised = 0;
     int64_t nTotalCoins = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%05d, %05d, %05d", it->nExists, it->nSpends, it->nLeastDepth);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %7d, %3d", it->nExists, it->nSpends, it->nLeastDepth, it->nCompromised);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
 
         nTotalIn += it->nValue * it->nExists;
         nTotalOut += it->nValue * it->nSpends;
+        nTotalCompromised += it->nValue * it->nCompromised;
         nTotalCoins += it->nExists;
     };
 
     result.push_back(Pair("total anon value in", ValueFromAmount(nTotalIn)));
     result.push_back(Pair("total anon value out", ValueFromAmount(nTotalOut)));
+    result.push_back(Pair("total anon value compromised", ValueFromAmount(nTotalCompromised)));
     result.push_back(Pair("total anon outputs", nTotalCoins));
 
     return result;

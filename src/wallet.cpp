@@ -2869,7 +2869,6 @@ static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
     {
         ao.nCompromised = 1;
         txdb.WriteAnonOutput(pubKey, ao);
-
         if(fDebugRingSig)
             LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
         return 1;
@@ -3228,10 +3227,9 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         };
 
         int nRingSize = txin.ExtractRingSize();
-        if (nRingSize < (int)MIN_RING_SIZE
-         || nRingSize > (int)MAX_RING_SIZE)
+        if (nRingSize < 1
+          ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
             return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
-
 
         const uint8_t *pPubkeys;
         int rsType;
@@ -3259,18 +3257,26 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
                 return error("%s: Input %u AnonOutput %s not found, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
+            IsAnonCoinCompromised(*ptxdb, pkRingCoin, ao);
+            if (ao.nCompromised > 0 and Params().IsProtocolV3(nBestHeight))
+                return error("%s: Found spent pubkey at index %u: AnonOutput: %s, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
+
             if (nCoinValue == -1)
-            {
                 nCoinValue = ao.nValue;
-            } else
+            else
             if (nCoinValue != ao.nValue)
                 return error("%s: Input %u ring amount mismatch %d, %d.", __func__, i, nCoinValue, ao.nValue);
 
             if (ao.nBlockHeight == 0
                 || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
-            {
                 return error("%s: Input %u ring coin %u depth < MIN_ANON_SPEND_DEPTH.", __func__, i, ri);
-            };
+
+            if (nRingSize == 1)
+            {
+                ao.nCompromised = 1;
+                if (!ptxdb->WriteAnonOutput(pkRingCoin, ao))
+                    return error("%s: Input %d WriteAnonOutput failed %s.", __func__, i, HexStr(vchImage).c_str());
+            }
 
             // -- ring sig validation is done in CTransaction::CheckAnonInputs()
         };
@@ -3340,7 +3346,6 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         };
 
         ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0);
-
         if (!ptxdb->WriteAnonOutput(pkCoin, ao))
         {
             LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
@@ -3571,15 +3576,14 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             bool fSpentAOut = false;
             bool fInMemPool;
             CKeyImageSpent kis;
-            if ((IsAnonCoinCompromised(*ptxdb, pkCoin, ao)
-              ||GetKeyImage(ptxdb, pkImage, kis, fInMemPool))
+            if (GetKeyImage(ptxdb, pkImage, kis, fInMemPool)
                 && !fInMemPool) // shouldn't be possible for kis to be in mempool here
                 fSpentAOut = true;
 
             COwnedAnonOutput oao(outpoint, fSpentAOut);
 
             if (!pwdb->WriteOwnedAnonOutput(pkImage, oao)
-                || !pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
+              ||!pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
             {
                 LogPrintf("%s: WriteOwnedAnonOutput() failed.\n", __func__);
                 continue;
@@ -5028,9 +5032,7 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
         bool fInMemPool;
         CAnonOutput ao;
         txdb.ReadAnonOutput(pkCoin, ao);
-        IsAnonCoinCompromised(txdb, pkCoin, ao);
-        if ((IsAnonCoinCompromised(txdb, pkCoin, ao) ||
-            GetKeyImage(&txdb, pkImage, kis, fInMemPool))
+        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool)
             && !fInMemPool) // shouldn't be possible for kis to be in mempool here
         {
             fSpentAOut = true;
@@ -5291,9 +5293,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
-        CPubKey pubKey;
         ssKey >> strType;
-        ssKey >> pubKey;
 
         if (strType != "ao")
             break;
@@ -5303,8 +5303,6 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
 
         CAnonOutput anonOutput;
         ssValue >> anonOutput;
-
-        IsAnonCoinCompromised(txdb, pubKey, anonOutput);
 
         if (!fMatureOnly
             || (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH))
@@ -5354,10 +5352,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
-        CPubKey pubKey;
         ssKey >> strType;
-        if(ssKey.str().size() == 34)
-            ssKey >> pubKey;
 
         if (strType != "ao")
             break;
@@ -5367,8 +5362,6 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
 
         CAnonOutput ao;
         ssValue >> ao;
-
-        IsAnonCoinCompromised(txdb, pubKey, ao);
 
         if (strType != "ao")
             break;
