@@ -159,8 +159,10 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("timeoffset",    (int64_t)GetTimeOffset()));
 
     if (nNodeMode == NT_FULL)
-        obj.push_back(Pair("moneysupply",   ValueFromAmount(pindexBest->nMoneySupply)));
-
+    {
+        obj.push_back(Pair("moneysupply",  ValueFromAmount(pindexBest->nMoneySupply)));
+        obj.push_back(Pair("shadowsupply", ValueFromAmount(pindexBest->nAnonSupply)));
+    }
 
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("datareceived",  bytesReadable(CNode::GetTotalBytesRecv())));
@@ -2845,7 +2847,7 @@ Value anoninfo(const Array& params, bool fHelp)
     int64_t nTotalCoins = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %7d, %3d", it->nExists, it->nSpends, it->nLeastDepth, it->nCompromised);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %7d, %3d", it->nExists, it->nSpends, it->nCompromised, it->nLeastDepth);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
 

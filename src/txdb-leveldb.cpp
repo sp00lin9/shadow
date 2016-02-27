@@ -462,6 +462,7 @@ bool CTxDB::LoadBlockIndex()
         pindexNew->nHeight           = diskindex.nHeight;
         pindexNew->nMint             = diskindex.nMint;
         pindexNew->nMoneySupply      = diskindex.nMoneySupply;
+        pindexNew->nAnonSupply       = diskindex.nAnonSupply;
         pindexNew->nFlags            = diskindex.nFlags;
         pindexNew->nStakeModifier    = diskindex.nStakeModifier;
         pindexNew->bnStakeModifierV2 = diskindex.bnStakeModifierV2;

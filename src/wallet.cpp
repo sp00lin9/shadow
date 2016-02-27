@@ -1006,7 +1006,7 @@ int64_t CWallet::GetShadowCredit(const CTxOut& txout) const
 
         CWalletDB walletdb(strWalletFile, "r");
 
-        CPubKey pkCoin    = txout.ExtractAnonPk();
+        CPubKey pkCoin = txout.ExtractAnonPk();
 
         std::vector<uint8_t> vchImage;
         if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))

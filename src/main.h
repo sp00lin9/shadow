@@ -368,8 +368,8 @@ public:
         Note that lightweight clients may not know anything besides the hash of previous transactions,
         so may not be able to calculate this.
 
-        @param[in] mapInputs	Map of previous transactions that have outputs we're spending
-        @return	Sum of value of all inputs (scriptSigs)
+        @param[in] mapInputs    Map of previous transactions that have outputs we're spending
+        @return Sum of value of all inputs (scriptSigs)
         @see CTransaction::FetchInputs
      */
     int64_t GetValueIn(const MapPrevTx& mapInputs) const;
@@ -448,7 +448,7 @@ public:
 
     /** Fetch from memory and/or disk. inputsRet keys are transaction hashes.
 
-     @param[in] txdb	Transaction database
+     @param[in] txdb    Transaction database
      @param[in] mapTestPool	List of pending changes to the transaction index database
      @param[in] fBlock	True if being called to add a new best-block to the chain
      @param[in] fMiner	True if being called by CreateNewBlock
@@ -1101,6 +1101,7 @@ public:
 
     int64_t nMint;
     int64_t nMoneySupply;
+    int64_t nAnonSupply;
 
     unsigned int nFlags;  // ppcoin: block index flags
 
@@ -1131,6 +1132,7 @@ public:
         nChainTrust = 0;
         nMint = 0;
         nMoneySupply = 0;
+        nAnonSupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
         bnStakeModifierV2 = 0;
@@ -1156,6 +1158,7 @@ public:
         nChainTrust = 0;
         nMint = 0;
         nMoneySupply = 0;
+        nAnonSupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
         bnStakeModifierV2 = 0;
@@ -1544,6 +1547,7 @@ public:
         READWRITE(nHeight);
         READWRITE(nMint);
         READWRITE(nMoneySupply);
+        READWRITE(nAnonSupply);
         READWRITE(nFlags);
         READWRITE(nStakeModifier);
         READWRITE(bnStakeModifierV2);

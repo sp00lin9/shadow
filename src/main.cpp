@@ -2548,6 +2548,8 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     map<uint256, CTxIndex> mapQueuedChanges;
     int64_t nFees = 0;
+    int64_t nAnonIn = 0;
+    int64_t nAnonOut = 0;
     int64_t nValueIn = 0;
     int64_t nValueOut = 0;
     int64_t nStakeReward = 0;
@@ -2605,16 +2607,22 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
             if (tx.nVersion == ANON_TXN_VERSION)
             {
-                int64_t nSumAnon;
-                if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, true))
+                int64_t nTxAnonIn;
+
+                BOOST_FOREACH(const CTxOut& txout, tx.vout)
+                    if (txout.IsAnonOutput())
+                        nAnonOut += txout.nValue;
+
+                if (!tx.CheckAnonInputs(txdb, nTxAnonIn, fInvalid, true))
                 {
                     if (fInvalid)
                         return error("ConnectBlock() : CheckAnonInputs found invalid tx %s", tx.GetHash().ToString().substr(0,10).c_str());
                     return false;
                 };
 
-                nTxValueIn += nSumAnon;
-            };
+                nAnonIn += nTxAnonIn;
+                nTxValueIn += nTxAnonIn;
+            }
 
             nValueIn += nTxValueIn;
             nValueOut += nTxValueOut;
@@ -2658,6 +2666,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     // ppcoin: track money supply and mint amount info
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
+    pindex->nAnonSupply  = (pindex->pprev? pindex->pprev->nAnonSupply  : 0) + nAnonOut - nAnonIn;
     if (!txdb.WriteBlockIndex(CDiskBlockIndex(pindex)))
         return error("ConnectBlock() : WriteBlockIndex for pindex failed");
 
