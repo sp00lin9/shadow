@@ -2727,7 +2727,7 @@ Value anonoutputs(const Array& params, bool fHelp)
         {
             if (nLast > 0 && it->nValue != nLast)
             {
-                snprintf(cbuf, sizeof(cbuf), "%03d", nCount);
+                snprintf(cbuf, sizeof(cbuf), "%3d", nCount);
                 result.push_back(Pair(cbuf, ValueFromAmount(nLast)));
                 nCount = 0;
             };
@@ -2738,7 +2738,7 @@ Value anonoutputs(const Array& params, bool fHelp)
 
         if (nCount > 0)
         {
-            snprintf(cbuf, sizeof(cbuf), "%03d", nCount);
+            snprintf(cbuf, sizeof(cbuf), "%3d", nCount);
             result.push_back(Pair(cbuf, ValueFromAmount(nLast)));
         };
         result.push_back(Pair("total", ValueFromAmount(nTotal)));
@@ -2763,7 +2763,7 @@ Value anonoutputs(const Array& params, bool fHelp)
             if (nLast > 0 && it->nValue != nLast)
             {
                 nSystemCount = mOutputCounts[nLast];
-                std::string str = strprintf("%04d, %04d", nCount, nSystemCount);
+                std::string str = strprintf("%4d, %4d", nCount, nSystemCount);
                 result.push_back(Pair(str, ValueFromAmount(nLast)));
                 nCount = 0;
             };
@@ -2775,7 +2775,7 @@ Value anonoutputs(const Array& params, bool fHelp)
         if (nCount > 0)
         {
             nSystemCount = mOutputCounts[nLast];
-            std::string str = strprintf("%04d, %04d", nCount, nSystemCount);
+            std::string str = strprintf("%4d, %4d", nCount, nSystemCount);
             result.push_back(Pair(str, ValueFromAmount(nLast)));
         };
         result.push_back(Pair("total currency owned", ValueFromAmount(nTotal)));
