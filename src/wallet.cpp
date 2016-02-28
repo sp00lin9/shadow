@@ -2859,7 +2859,6 @@ static int GetBlockHeightFromHash(const uint256& blockHash)
 static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao, ec_point &pkSpentImage)
 {
     // check if its been compromised (signer known)
-    bool fInMemPool;
     CKeyImageSpent kis;
     ec_point pkImage;
 
@@ -4202,14 +4201,13 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
             if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH)
                 && anonOutput.nValue == nValue
-                && anonOutput.nCompromised == 0)
+                && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
                 {
                     LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
                     return 1;
-                };
-
-        };
+                }
+        }
 
         iterator->Next();
     };
@@ -4217,10 +4215,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
     delete iterator;
 
     if ((int)vHideKeys.size() < nRingSize-1)
-    {
-        LogPrintf("Not enough keys found.\n");
-        return 1;
-    };
+        return errorN(1, "%s: Not enough keys found.", __func__);
 
     for (int i = 0; i < nRingSize; ++i)
     {
@@ -4228,10 +4223,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
             continue;
 
         if (vHideKeys.size() < 1)
-        {
-            LogPrintf("vHideKeys.size() < 1\n");
-            return 1;
-        };
+            return errorN(1, "%s: vHideKeys.size() < 1", __func__);
 
         uint32_t pick = GetRand(vHideKeys.size());
 
@@ -5303,8 +5295,10 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
         CAnonOutput anonOutput;
         ssValue >> anonOutput;
 
-        if (!fMatureOnly
-            || (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH) && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
+
+        if ((!fMatureOnly
+           ||(anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH))
+          && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
             if (mi != mOutputCounts.end())
