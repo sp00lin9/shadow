@@ -1131,12 +1131,8 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
 {
     {
         LOCK(cs_main);
-        {
-            if (mempool.lookup(hash, tx))
-            {
-                return true;
-            }
-        }
+        if (mempool.lookup(hash, tx))
+            return true;
         CTxDB txdb("r");
         CTxIndex txindex;
         if (tx.ReadFromDisk(txdb, COutPoint(hash, 0), txindex))
@@ -3380,7 +3376,6 @@ bool CBlock::AddToBlockIndex(unsigned int nFile, unsigned int nBlockPos, const u
 
     LOCK(cs_main);
 
-
     // New best
     if (pindexNew->nChainTrust > nBestChainTrust)
         if (!SetBestChain(txdb, pindexNew))
@@ -4400,6 +4395,7 @@ static void ProcessGetData(CNode* pfrom)
     vector<CInv> vNotFound;
     vector<CInv> vMerkleBlocks;
 
+    LOCK(cs_main);
     std::vector<CBlock> vMultiBlock;
     std::vector<CMBlkThinElement> vMultiBlockThin; // TODO: split ProcessGetDataThinPeer from ProcessGetData
     uint32_t nMultiBlockBytes = 0;
@@ -4426,7 +4422,6 @@ static void ProcessGetData(CNode* pfrom)
         if (inv.type == MSG_BLOCK
             || inv.type == MSG_FILTERED_BLOCK)
         {
-            LOCK(cs_main);
             bool send = false;
             CBlockIndex *pBlockIndex;
 
@@ -4475,7 +4470,6 @@ static void ProcessGetData(CNode* pfrom)
 
                 if (inv.type == MSG_BLOCK)
                 {
-                    LOCK(cs_main);
                     if (pfrom->nVersion >= MIN_MBLK_VERSION)
                     {
                         uint32_t nBlockBytes = ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION);
@@ -4590,7 +4584,6 @@ static void ProcessGetData(CNode* pfrom)
 
             if (!pushed && inv.type == MSG_TX)
             {
-                LOCK(cs_main);
                 CTransaction tx;
                 if (mempool.lookup(inv.hash, tx))
                 {

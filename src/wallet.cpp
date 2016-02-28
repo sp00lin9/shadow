@@ -2856,7 +2856,7 @@ static int GetBlockHeightFromHash(const uint256& blockHash)
     return 0;
 }
 
-static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
+static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao, ec_point &pkSpentImage)
 {
     // check if its been compromised (signer known)
     bool fInMemPool;
@@ -2865,7 +2865,7 @@ static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao)
 
     getOldKeyImage(pubKey, pkImage);
 
-    if (GetKeyImage(&txdb, pkImage, kis, fInMemPool))
+    if (pkSpentImage == pkImage)
     {
         ao.nCompromised = 1;
         txdb.WriteAnonOutput(pubKey, ao);
@@ -2940,9 +2940,9 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
         {
             LogPrintf("UpdateAnonTransaction(): Error input %d WriteKeyImage failed %s .\n", i, HexStr(vchImage).c_str());
             return false;
-        };
+        }
 
-    };
+    }
 
     for (uint32_t i = 0; i < tx.vout.size(); ++i)
     {
@@ -3160,7 +3160,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
         const CScript &s = txin.scriptSig;
 
-        std::vector<uint8_t> vchImage;
+        ec_point vchImage;
         txin.ExtractKeyImage(vchImage);
 
         CKeyImageSpent spentKeyImage;
@@ -3257,8 +3257,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
                 return error("%s: Input %u AnonOutput %s not found, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
-            IsAnonCoinCompromised(*ptxdb, pkRingCoin, ao);
-            if (ao.nCompromised > 0 and Params().IsProtocolV3(nBestHeight))
+            if (IsAnonCoinCompromised(*ptxdb, pkRingCoin, ao, vchImage) and Params().IsProtocolV3(nBestHeight))
                 return error("%s: Found spent pubkey at index %u: AnonOutput: %s, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
             if (nCoinValue == -1)
@@ -3279,7 +3278,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             }
 
             // -- ring sig validation is done in CTransaction::CheckAnonInputs()
-        };
+        }
 
         spentKeyImage.txnHash = txnHash;
         spentKeyImage.inputNo = i;
@@ -3294,7 +3293,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             mempool.insertKeyImage(vchImage, spentKeyImage);
 
         mapAnonOutputStats[spentKeyImage.nValue].incSpends(spentKeyImage.nValue);
-    };
+    }
 
     ec_secret sSpendR;
     ec_secret sSpend;
@@ -5269,7 +5268,7 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
 int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly)
 {
     LOCK(cs_main);
-    CTxDB txdb("r+");
+    CTxDB txdb("r");
 
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
@@ -5328,7 +5327,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
     // TODO: there are few enough possible coin values to preinitialise a vector with all of them
 
     LOCK(cs_main);
-    CTxDB txdb("r+");
+    CTxDB txdb("r");
 
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
