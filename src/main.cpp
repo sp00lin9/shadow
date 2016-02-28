@@ -570,7 +570,7 @@ bool CTransaction::IsStandard() const
             int nRingSize = txin.ExtractRingSize();
 
             if (nVersion != ANON_TXN_VERSION
-                || nRingSize < (int)MIN_RING_SIZE
+                || nRingSize < 1
                 || nRingSize > (int)MAX_RING_SIZE
                 || txin.scriptSig.size() > sizeof(COutPoint) + 2 + (33 + 32 + 32) * nRingSize)
             {
@@ -2231,15 +2231,15 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
         int64_t nCoinValue = -1;
         int nRingSize = txin.ExtractRingSize();
-        if (nRingSize < (int)MIN_RING_SIZE
-            || nRingSize > (int)MAX_RING_SIZE)
+        if (nRingSize < 1
+          ||nRingSize > (int)MAX_RING_SIZE)
         {
             LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
             fInvalid = true; return false;
         };
 
 
-        if (s.size() == 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
+        if (nRingSize > 1 && s.size() == 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
         {
             // ringsig AB
             if (!CheckAnonInputAB(txdb, txin, i, nRingSize, vchImage, preimage, nCoinValue))
