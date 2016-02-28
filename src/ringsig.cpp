@@ -233,12 +233,7 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "%s: BN_bin2bn failed.", __func__);
 
-    if (Params().IsProtocolV3(pindexBest->nHeight))
-    {
-        if (!EC_POINT_mul(ecGrpKi, ptRet, bnTmp, NULL, NULL, bnCtx))
-            return errorN(1, "%s: EC_POINT_mul failed.", __func__);
-    } else
-    if (!EC_POINT_mul(ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
+    if (!EC_POINT_mul(Params().IsProtocolV3(pindexBest->nHeight) ? ecGrpKi : ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
         return errorN(1, "%s: EC_POINT_mul failed.", __func__);
 
     return 0;
@@ -255,7 +250,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     int rv = 0;
     BIGNUM *bnTmp = BN_CTX_get(bnCtx);
     BIGNUM *bnSec = BN_CTX_get(bnCtx);
-    EC_POINT *hG    = NULL;
+    EC_POINT *hG  = NULL;
 
     if (!(hG = EC_POINT_new(ecGrp))
     && (rv = errorN(1, "%s: EC_POINT_new failed.", __func__)))
@@ -364,12 +359,9 @@ int generateRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
     };
 
     // get keyimage as point
-    if (!(bnT = BN_bin2bn(&keyImage[0], EC_COMPRESSED_SIZE, bnT))
-        || !(ptKi) || !(ptKi = EC_POINT_bn2point(ecGrp, bnT, ptKi, bnCtx)))
-    {
-        LogPrintf("%s: extract ptKi failed.\n", __func__);
-        rv = 1; goto End;
-    };
+    if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx)
+      &&(rv = errorN(1, "%s: extract ptKi failed.", __func__)))
+        goto End;
 
     for (int i = 0; i < nRingSize; ++i)
     {
@@ -617,12 +609,9 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
     };
 
     // get keyimage as point
-    if (!(bnT = BN_bin2bn(&keyImage[0], EC_COMPRESSED_SIZE, bnT))
-        || !(ptKi) || !(ptKi = EC_POINT_bn2point(ecGrp, bnT, ptKi, bnCtx)))
-    {
-        LogPrintf("%s: extract ptKi failed.\n", __func__);
-        rv = 1; goto End;
-    };
+    if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx)
+      &&(rv = errorN(1, "%s: extract ptKi failed.", __func__)))
+        goto End;
 
     for (int i = 0; i < nRingSize; ++i)
     {
@@ -673,14 +662,17 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
         };
 
         // DEBUGGING: ------- check if we can find the signer...
-        // ptSi = Pi * bnT
-        if ((!EC_POINT_mul(ecGrp, ptSi, NULL, ptPk, bnT, bnCtx)
-           || false)
-        && (rv = errorN(1, "%s: EC_POINT_mul failed.1", __func__)))
-            goto End;
+        if (fDebugRingSig)
+        {
+            // ptSi = Pi * bnT
+            if ((!EC_POINT_mul(ecGrp, ptSi, NULL, ptPk, bnT, bnCtx)
+               || false)
+            && (rv = errorN(1, "%s: EC_POINT_mul failed.1", __func__)))
+                goto End;
 
-        if (0 == EC_POINT_cmp(ecGrp, ptSi, ptKi, bnCtx) )
-            LogPrintf("signer is index %d\n", i);
+            if (0 == EC_POINT_cmp(ecGrp, ptSi, ptKi, bnCtx) )
+                LogPrintf("signer is index %d\n", i);
+        }
         // DEBUGGING: - End - check if we can find the signer...
 
         // ptT1 = k1 * I
@@ -835,23 +827,21 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
     EC_POINT *ptT3 = NULL;
     EC_POINT *ptT4 = NULL;
 
-    if (   !(ptKi = EC_POINT_new(ecGrp))
-        || !(ptPk = EC_POINT_new(ecGrp))
-        || !(ptT1 = EC_POINT_new(ecGrp))
-        || !(ptT2 = EC_POINT_new(ecGrp))
-        || !(ptT3 = EC_POINT_new(ecGrp))
-        || !(ptT4 = EC_POINT_new(ecGrp)))
+    if (!(ptKi = EC_POINT_new(ecGrp))
+      ||!(ptPk = EC_POINT_new(ecGrp))
+      ||!(ptT1 = EC_POINT_new(ecGrp))
+      ||!(ptT2 = EC_POINT_new(ecGrp))
+      ||!(ptT3 = EC_POINT_new(ecGrp))
+      ||!(ptT4 = EC_POINT_new(ecGrp)))
     {
         LogPrintf("%s: EC_POINT_new failed.\n", __func__);
         rv = 1; goto End;
     };
 
     // get keyimage as point
-    if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx))
-    {
-        LogPrintf("%s: extract ptKi failed.\n", __func__);
-        rv = 1; goto End;
-    };
+    if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx)
+      &&(rv = errorN(1, "%s: extract ptKi failed.", __func__)))
+        goto End;
 
     // c_{j+1} = h(P_1,...,P_n,alpha*G,alpha*H(P_j))
     if (!bnA || !(BN_bin2bn(&sAlpha.e[0], EC_SECRET_SIZE, bnA)))
@@ -989,8 +979,8 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
             rv = 1; goto End;
         };
 
-        if (   !(EC_POINT_point2oct(ecGrp, ptT1, POINT_CONVERSION_COMPRESSED, &tempData[0],  33, bnCtx) == (int) EC_COMPRESSED_SIZE)
-            || !(EC_POINT_point2oct(ecGrp, ptT2, POINT_CONVERSION_COMPRESSED, &tempData[33], 33, bnCtx) == (int) EC_COMPRESSED_SIZE))
+        if (!(EC_POINT_point2oct(ecGrp, ptT1, POINT_CONVERSION_COMPRESSED, &tempData[0],  33, bnCtx) == (int) EC_COMPRESSED_SIZE)
+          ||!(EC_POINT_point2oct(ecGrp, ptT2, POINT_CONVERSION_COMPRESSED, &tempData[33], 33, bnCtx) == (int) EC_COMPRESSED_SIZE))
         {
             LogPrintf("%s: extract ptL and ptR failed.\n", __func__);
             rv = 1; goto End;
@@ -1001,19 +991,16 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
         ssCHash.write((const char*)&tempData[0], 66);
         tmpHash = ssCHash.GetHash();
 
-        if (!bnC || !(BN_bin2bn(tmpHash.begin(), EC_SECRET_SIZE, bnC)) // bnC lags i by 1
-            || !BN_mod(bnC, bnC, bnOrder, bnCtx))
-        {
-            LogPrintf("%s: hash -> bnC failed.\n", __func__);
-            rv = 1; goto End;
-        };
+        if ((!bnC
+           ||!BN_bin2bn(tmpHash.begin(), EC_SECRET_SIZE, bnC) // bnC lags i by 1
+           ||!BN_mod(bnC, bnC, bnOrder, bnCtx))
+          && (rv = errorN(1, "%s: hash -> bnC failed.", __func__)))
+            goto End;
 
         if (i == nSecretOffset
-            && !BN_copy(bnCj, bnC))
-        {
-            LogPrintf("%s: BN_copy failed.\n", __func__);
-            rv = 1; goto End;
-        };
+         &&!BN_copy(bnCj, bnC)
+         && (rv = errorN(1, "%s: BN_copy failed.\n", __func__)))
+            goto End;
 
         if (i == 0)
         {
@@ -1092,23 +1079,21 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
     EC_POINT *ptPk = NULL;
     EC_POINT *ptSi = NULL;
 
-    if (   !(ptKi = EC_POINT_new(ecGrp))
-        || !(ptT1 = EC_POINT_new(ecGrp))
-        || !(ptT2 = EC_POINT_new(ecGrp))
-        || !(ptT3 = EC_POINT_new(ecGrp))
-        || !(ptPk = EC_POINT_new(ecGrp))
-        || !(ptSi = EC_POINT_new(ecGrp)))
+    if (!(ptKi = EC_POINT_new(ecGrp))
+      ||!(ptT1 = EC_POINT_new(ecGrp))
+      ||!(ptT2 = EC_POINT_new(ecGrp))
+      ||!(ptT3 = EC_POINT_new(ecGrp))
+      ||!(ptPk = EC_POINT_new(ecGrp))
+      ||!(ptSi = EC_POINT_new(ecGrp)))
     {
         LogPrintf("%s: EC_POINT_new failed.\n", __func__);
         rv = 1; goto End;
     };
 
     // get keyimage as point
-    if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx))
-    {
-        LogPrintf("%s: extract ptKi failed.\n", __func__);
-        rv = 1; goto End;
-    };
+    if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx)
+      &&(rv = errorN(1, "%s: extract ptKi failed.", __func__)))
+        goto End;
 
     if (!bnC1 || !BN_bin2bn(&sigC[0], EC_SECRET_SIZE, bnC1))
     {
@@ -1160,14 +1145,17 @@ int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
         };
 
         // DEBUGGING: ------- check if we can find the signer...
-        // ptSi = Pi * bnT
-        if ((!EC_POINT_mul(ecGrp, ptSi, NULL, ptPk, bnT, bnCtx)
-           || false)
-        && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
-            goto End;
+        if (fDebugRingSig)
+        {
+            // ptSi = Pi * bnT
+            if ((!EC_POINT_mul(ecGrp, ptSi, NULL, ptPk, bnT, bnCtx)
+               || false)
+            && (rv = errorN(1, "%s: EC_POINT_mul failed.", __func__)))
+                goto End;
 
-        if (0 == EC_POINT_cmp(ecGrp, ptSi, ptKi, bnCtx) )
-            LogPrintf("signer is index %d\n", i);
+            if (0 == EC_POINT_cmp(ecGrp, ptSi, ptKi, bnCtx) )
+                LogPrintf("signer is index %d\n", i);
+        }
         // DEBUGGING: - End - check if we can find the signer...
 
         // ptT3 = s_i*ptT2
