@@ -2751,10 +2751,9 @@ Value anonoutputs(const Array& params, bool fHelp)
         if (pwalletMain->CountAnonOutputs(mOutputCounts, fMatureOnly) != 0)
             throw std::runtime_error("CountAnonOutputs() failed.");
 
-        result.push_back(Pair("No. of coins owned, No. of system coins, No of system coins available", "amount"));
+        result.push_back(Pair("No. of coins owned, No. of system coins available", "amount"));
 
         // -- lAvailableCoins is ordered by value
-        char cbuf[256];
         int64_t nTotal = 0;
         int64_t nLast = 0;
         int64_t nCount = 0;
@@ -2764,7 +2763,7 @@ Value anonoutputs(const Array& params, bool fHelp)
             if (nLast > 0 && it->nValue != nLast)
             {
                 nSystemCount = mOutputCounts[nLast];
-                std::string str = strprintf(cbuf, sizeof(cbuf), "%04d, %04d", nCount, nSystemCount);
+                std::string str = strprintf("%04d, %04d", nCount, nSystemCount);
                 result.push_back(Pair(str, ValueFromAmount(nLast)));
                 nCount = 0;
             };
@@ -2776,7 +2775,7 @@ Value anonoutputs(const Array& params, bool fHelp)
         if (nCount > 0)
         {
             nSystemCount = mOutputCounts[nLast];
-            std::string str = strprintf(cbuf, sizeof(cbuf), "%04d, %04d", nCount, nSystemCount);
+            std::string str = strprintf("%04d, %04d", nCount, nSystemCount);
             result.push_back(Pair(str, ValueFromAmount(nLast)));
         };
         result.push_back(Pair("total currency owned", ValueFromAmount(nTotal)));

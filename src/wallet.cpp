@@ -5304,7 +5304,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
         ssValue >> anonOutput;
 
         if (!fMatureOnly
-            || (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH))
+            || (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH) && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
             if (mi != mOutputCounts.end())
