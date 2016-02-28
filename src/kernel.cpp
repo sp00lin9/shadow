@@ -749,19 +749,18 @@ bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned
     if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
         return fDebug? error("CheckProofOfStake() : read block failed") : false; // unable to read block of previous transaction
 
-    // TODO: IsConfirmedInNPrevBlocks // Min age requirement
-    // if (Params().IsProtocolV3(nHeight))
-    // {
-    //     int nDepth;
-    //     if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
-    //         return tx.DoS(100, error("CheckProofOfStake() : tried to stake at depth %d", nDepth + 1));
-    // }
-    // else
-    // {
-    unsigned int nTimeBlockFrom = block.GetBlockTime();
-    if (nTimeBlockFrom + nStakeMinAge > tx.nTime)
-        return error("CheckProofOfStake() : min age violation");
-    //}
+    if (Params().IsProtocolV3(pindexPrev->nHeight))
+    {
+        int nDepth;
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
+            return tx.DoS(100, error("CheckProofOfStake() : tried to stake at depth %d", nDepth + 1));
+    }
+    else
+    {
+        unsigned int nTimeBlockFrom = block.GetBlockTime();
+        if (nTimeBlockFrom + nStakeMinAge > tx.nTime)
+            return error("CheckProofOfStake() : min age violation");
+    }
 
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
     if (!CheckStakeKernelHash(pindexPrev->nHeight, &stakeMod, nBits, block, txindex.pos.nTxPos - txindex.pos.nBlockPos, txPrev, txin.prevout, tx.nTime, hashProofOfStake, targetProofOfStake, fDebugPoS))
@@ -795,16 +794,15 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
         return false;
 
-    // TODO: IsConfirmedInNPrevBlocks
-    // if (Params().IsProtocolV3(nTime))
-    // {
-    //     int nDepth;
-    //     if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
-    //         return false;
-    // }
-    // else
-    if (block.GetBlockTime() + nStakeMinAge > nTime)
-        return false; // only count coins meeting min age requirement
+    if (Params().IsProtocolV3(nTime))
+    {
+        int nDepth;
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
+            return false;
+    }
+    else
+        if (block.GetBlockTime() + nStakeMinAge > nTime)
+            return false; // only count coins meeting min age requirement
 
     if (pBlockTime)
         *pBlockTime = block.GetBlockTime();
