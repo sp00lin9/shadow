@@ -571,7 +571,7 @@ bool CTransaction::IsStandard() const
 
             if (nVersion != ANON_TXN_VERSION
                 || nRingSize < 1
-                || nRingSize > (int)MAX_RING_SIZE
+                || nRingSize > (Params().IsProtocolV3(pindexBest->nHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD)
                 || txin.scriptSig.size() > sizeof(COutPoint) + 2 + (33 + 32 + 32) * nRingSize)
             {
                 LogPrintf("IsStandard() anon txin failed.\n");
@@ -2243,7 +2243,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
         int64_t nCoinValue = -1;
         int nRingSize = txin.ExtractRingSize();
         if (nRingSize < 1
-          ||nRingSize > (int)MAX_RING_SIZE)
+          ||nRingSize > (Params().IsProtocolV3(pindexBest->nHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
         {
             LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
             fInvalid = true; return false;

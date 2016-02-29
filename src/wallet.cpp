@@ -1301,7 +1301,9 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 
     int ret = 0;
     int64_t nTimeFirstKeyTmp = nTimeFirstKey;
+    int nCurBestHeight = nBestHeight;
 
+    fReindexing = true;
     // When scanning from a certain height, people could be interested in rebuilding stealth address and anonymous transaction cache.
     if(pindexStart->nHeight > 1)
         nTimeFirstKey = pindexStart->nTime;
@@ -1321,6 +1323,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 
             CBlock block;
             block.ReadFromDisk(pindex, true);
+            nBestHeight = pindex->nHeight;
             BOOST_FOREACH(CTransaction& tx, block.vtx)
             {
                 uint256 hash = tx.GetHash();
@@ -1333,6 +1336,8 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 
     // Reset nTimeFirstKey
     nTimeFirstKey = nTimeFirstKeyTmp;
+    nBestHeight = nCurBestHeight;
+    fReindexing = false;
 
     return ret;
 }
@@ -2856,18 +2861,19 @@ static int GetBlockHeightFromHash(const uint256& blockHash)
     return 0;
 }
 
-static int IsAnonCoinCompromised(CTxDB &txdb, CPubKey &pubKey, CAnonOutput &ao, ec_point &pkSpentImage)
+static int IsAnonCoinCompromised(CTxDB *txdb, CPubKey &pubKey, CAnonOutput &ao, ec_point &vchSpentImage)
 {
     // check if its been compromised (signer known)
     CKeyImageSpent kis;
     ec_point pkImage;
+    bool fInMempool;
 
     getOldKeyImage(pubKey, pkImage);
 
-    if (pkSpentImage == pkImage)
+    if (vchSpentImage == pkImage || GetKeyImage(txdb, pkImage, kis, fInMempool))
     {
         ao.nCompromised = 1;
-        txdb.WriteAnonOutput(pubKey, ao);
+        txdb->WriteAnonOutput(pubKey, ao);
         if(fDebugRingSig)
             LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
         return 1;
@@ -2910,7 +2916,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
         CTxIndex txindex;
 
         const uint8_t *pPubkeys;
-        if (s.size() == 2 + EC_SECRET_SIZE + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize)
+        if (nRingSize > 1 && s.size() == 2 + EC_SECRET_SIZE + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize)
         {
             pPubkeys = &s[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
         } else
@@ -2921,15 +2927,14 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
             return error("%s: Input %d scriptSig too small.", __func__, i);
 
         pkRingCoin = CPubKey(&pPubkeys[0 * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
+
         if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
         {
             LogPrintf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, pkRingCoin.GetID().ToString());
             //LogPrintf("%s, %s\n", pkRingCoin.GetID().ToString(), CBitcoinAddress(pkRingCoin.GetID()).ToString());
             return false;
         };
-
         int64_t nCoinValue = ao.nValue;
-
 
         spentKeyImage.txnHash = txnHash;
         spentKeyImage.inputNo = i;
@@ -3190,7 +3195,11 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
 
         COwnedAnonOutput oao;
-        if (pwdb->ReadOwnedAnonOutput(vchImage, oao))
+        ec_point vchNewImage;
+        if (!pwdb->ReadOldOutputLink(vchImage, vchNewImage))
+            vchNewImage = vchImage;
+
+        if (pwdb->ReadOwnedAnonOutput(vchNewImage, oao))
         {
             if (fDebugRingSig)
                 LogPrintf("%s: input %d keyimage %s found in wallet (owned).\n", __func__, i, HexStr(vchImage).c_str());
@@ -3219,7 +3228,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             };
 
             oao.fSpent = true;
-            if (!pwdb->WriteOwnedAnonOutput(vchImage, oao))
+            if (!pwdb->WriteOwnedAnonOutput(vchNewImage, oao))
             {
                 return error("%s: Input %d WriteOwnedAnonOutput failed %s.", __func__, i, HexStr(vchImage).c_str());
             };
@@ -3256,7 +3265,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
                 return error("%s: Input %u AnonOutput %s not found, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
-            if (IsAnonCoinCompromised(*ptxdb, pkRingCoin, ao, vchImage) and Params().IsProtocolV3(nBestHeight))
+            if (IsAnonCoinCompromised(ptxdb, pkRingCoin, ao, vchImage) and Params().IsProtocolV3(nBestHeight))
                 return error("%s: Found spent pubkey at index %u: AnonOutput: %s, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
             if (nCoinValue == -1)
@@ -3324,8 +3333,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
         const CScript &s = txout.scriptPubKey;
 
-        CPubKey pkCoin    = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
-        CKeyID  ckCoinId  = pkCoin.GetID();
+        CPubKey pkCoin   = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
+        CKeyID  ckCoinId = pkCoin.GetID();
 
         COutPoint outpoint = COutPoint(tx.GetHash(), i);
 
@@ -3565,22 +3574,24 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
             // -- store keyImage
             ec_point pkImage;
+            ec_point pkOldImage;
+            getOldKeyImage(pkCoin, pkOldImage);
             if (generateKeyImage(pkTestSpendR, sSpendR, pkImage) != 0)
             {
                 LogPrintf("%s: generateKeyImage() failed.\n", __func__);
                 continue;
-            };
+            }
 
-            bool fSpentAOut = false;
-            bool fInMemPool;
             CKeyImageSpent kis;
-            if (GetKeyImage(ptxdb, pkImage, kis, fInMemPool)
-                && !fInMemPool) // shouldn't be possible for kis to be in mempool here
-                fSpentAOut = true;
+            bool fInMemPool;
+            bool fSpentAOut = false;
+            // shouldn't be possible for kis to be in mempool here
+            fSpentAOut = (GetKeyImage(ptxdb, pkImage, kis, fInMemPool));
 
             COwnedAnonOutput oao(outpoint, fSpentAOut);
 
             if (!pwdb->WriteOwnedAnonOutput(pkImage, oao)
+              ||!pwdb->WriteOldOutputLink(pkOldImage, pkImage)
               ||!pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
             {
                 LogPrintf("%s: WriteOwnedAnonOutput() failed.\n", __func__);
@@ -4201,7 +4212,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
             if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH)
                 && anonOutput.nValue == nValue
-                && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
+                && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
                 {
                     LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
@@ -5023,8 +5034,7 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
         bool fInMemPool;
         CAnonOutput ao;
         txdb.ReadAnonOutput(pkCoin, ao);
-        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool)
-            && !fInMemPool) // shouldn't be possible for kis to be in mempool here
+        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool) && !fInMemPool) // shouldn't be possible for kis to be in mempool here
         {
             fSpentAOut = true;
 
@@ -5535,6 +5545,7 @@ bool CWallet::EraseAllAnonData()
     uint32_t nLao = 0;
     uint32_t nOao = 0;
     uint32_t nOal = 0;
+    uint32_t nOol = 0;
 
     LogPrintf("Erasing locked anon outputs.\n");
     walletdb.EraseRange(std::string("lao"), nLao);
@@ -5542,8 +5553,10 @@ bool CWallet::EraseAllAnonData()
     walletdb.EraseRange(std::string("oao"), nOao);
     LogPrintf("Erasing anon output links.\n");
     walletdb.EraseRange(std::string("oal"), nOal);
+    LogPrintf("Erasing old output links.\n");
+    walletdb.EraseRange(std::string("ool"), nOol);
 
-    LogPrintf("EraseAllAnonData() Complete, %d %d %d %d %d, %15dms\n", nAo, nKi, nLao, nOao, nOal, GetTimeMillis() - nStart);
+    LogPrintf("EraseAllAnonData() Complete, %d %d %d %d %d %d, %15dms\n", nAo, nKi, nLao, nOao, nOal, nOol, GetTimeMillis() - nStart);
     return true;
 };
 

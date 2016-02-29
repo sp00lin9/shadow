@@ -225,7 +225,7 @@ int getOldKeyImage(CPubKey &publicKey, ec_point &keyImage)
     return 0;
 }
 
-static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet)
+static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptRet, bool fNew=false)
 {
     // - bn(hash(data)) * (G + bn1)
     uint256 pkHash = Hash(p, p + len);
@@ -233,7 +233,7 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
     if (!bnTmp || !BN_bin2bn(pkHash.begin(), EC_SECRET_SIZE, bnTmp))
         return errorN(1, "%s: BN_bin2bn failed.", __func__);
 
-    if (!EC_POINT_mul(Params().IsProtocolV3(pindexBest->nHeight) ? ecGrpKi : ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
+    if (!EC_POINT_mul(fNew || Params().IsProtocolV3(nBestHeight) ? ecGrpKi : ecGrp, ptRet, bnTmp, NULL, NULL, bnCtx))
         return errorN(1, "%s: EC_POINT_mul failed.", __func__);
 
     return 0;
@@ -256,7 +256,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
     && (rv = errorN(1, "%s: EC_POINT_new failed.", __func__)))
         goto End;
 
-    if (hashToEC(&publicKey[0], publicKey.size(), bnTmp, hG)
+    if (hashToEC(&publicKey[0], publicKey.size(), bnTmp, hG, true)
     && (rv = errorN(1, "%s: hashToEC failed.", __func__)))
         goto End;
 
