@@ -46,7 +46,7 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
     int64_t nSubsidy;
 
     if (IsProtocolV3(pindexPrev->nHeight))
-        nSubsidy = ((pindexPrev->nMoneySupply - pindexPrev->nAnonSupply) / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
+        nSubsidy = (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
     else
         nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
 
