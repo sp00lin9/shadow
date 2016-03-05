@@ -613,6 +613,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
 
                 LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
+                if (!Params().IsProtocolV3(nBestHeight))
+                    sError += "\nTry again after block 783000.";
+
                 return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
 

@@ -3587,7 +3587,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             bool fInMemPool;
             bool fSpentAOut = false;
             // shouldn't be possible for kis to be in mempool here
-            fSpentAOut = (GetKeyImage(ptxdb, pkImage, kis, fInMemPool));
+            fSpentAOut = (GetKeyImage(ptxdb, pkImage, kis, fInMemPool)
+                        ||GetKeyImage(ptxdb, pkOldImage, kis, fInMemPool));
 
             COwnedAnonOutput oao(outpoint, fSpentAOut);
 
@@ -5018,6 +5019,8 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
 
     // -- store keyimage
     ec_point pkImage;
+    ec_point pkOldImage;
+    getOldKeyImage(pkCoin, pkOldImage);
     if (generateKeyImage(pkTestSpendR, sSpendR, pkImage) != 0)
         return error("%s: generateKeyImage failed.", __func__);
 
@@ -5035,7 +5038,8 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
         bool fInMemPool;
         CAnonOutput ao;
         txdb.ReadAnonOutput(pkCoin, ao);
-        if (GetKeyImage(&txdb, pkImage, kis, fInMemPool) && !fInMemPool) // shouldn't be possible for kis to be in mempool here
+        if ((GetKeyImage(&txdb, pkImage, kis, fInMemPool) && !fInMemPool)
+          ||(GetKeyImage(&txdb, pkOldImage, kis, fInMemPool) && !fInMemPool)) // shouldn't be possible for kis to be in mempool here
         {
             fSpentAOut = true;
 
@@ -5055,7 +5059,8 @@ bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAno
 
     COwnedAnonOutput oao(lao.outpoint, fSpentAOut);
     if (!pwdb->WriteOwnedAnonOutput(pkImage, oao)
-        || !pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
+      ||!pwdb->WriteOldOutputLink(pkOldImage, pkImage)
+      ||!pwdb->WriteOwnedAnonOutputLink(pkCoin, pkImage))
     {
         return error("%s: WriteOwnedAnonOutput() failed.", __func__);
     };
