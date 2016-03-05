@@ -3283,6 +3283,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 ao.nCompromised = 1;
                 if (!ptxdb->WriteAnonOutput(pkRingCoin, ao))
                     return error("%s: Input %d WriteAnonOutput failed %s.", __func__, i, HexStr(vchImage).c_str());
+                mapAnonOutputStats[ao.nValue].nCompromised++;
             }
 
             // -- ring sig validation is done in CTransaction::CheckAnonInputs()
