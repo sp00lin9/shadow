@@ -4227,6 +4227,27 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
     RenameThread("shadow-loadblk");
     CImportingNow imp;
 
+    // -reindex
+    if (mapArgs.count("-reindex"))
+    {
+        uiInterface.InitMessage(_("Reindexing from blk000?.dat files."));
+        
+        fReindexing = true;
+        int nFile = 1;
+        while (true) 
+        {
+            FILE* file = OpenBlockFile(false, nFile, 0, "rb");
+            if (!file)
+                break;
+            LogPrintf("Reindexing block file blk%04u.dat...\n", (unsigned int)nFile);
+            LoadExternalBlockFile(nFile, file);
+            nFile++;
+        };
+        
+        fReindexing = false;
+        LogPrintf("Reindexing finished\n");
+    };
+
     // -loadblock=
     BOOST_FOREACH(boost::filesystem::path &path, vImportFiles) {
         FILE *file = fopen(path.string().c_str(), "rb");
