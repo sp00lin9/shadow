@@ -970,27 +970,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
 	threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
     
-    if (mapArgs.count("-reindex"))
-    {
-        uiInterface.InitMessage(_("Reindexing from blk000?.dat files."));
-        
-        fReindexing = true;
-        int nFile = 1;
-        while (true) 
-        {
-            FILE* file = OpenBlockFile(false, nFile, 0, "rb");
-            if (!file)
-                break;
-            LogPrintf("Reindexing block file blk%04u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(nFile, file);
-            nFile++;
-        };
-        
-        LogPrintf("Terminating: reindex completed.\n");
-        Finalise();
-        exit(0);
-    };
-    
     // ********************************************************* Step 10: load peers
 
     uiInterface.InitMessage(_("Loading addresses..."));
