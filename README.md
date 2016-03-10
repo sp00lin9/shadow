@@ -17,7 +17,7 @@ or are controversial.
 
 The master branch is regularly built and tested, but is not guaranteed
 to be completely stable. Tags are regularly created to indicate new
-stable release versions of ShadowCoin.
+stable release versions of ShadowCash.
 
 Feature branches are created when there are major new features being
 worked on by several people.
@@ -31,3 +31,17 @@ in this manner will have their corresponding issue labeled 'stagnant'.
 Issues with no commits will be given a similar warning, and closed after
 15 days from their last activity. Issues closed in this manner will be 
 labeled 'stale'.
+
+Building Shadow
+===========================
+
+See [doc/readme-qt.rst](https://github.com/shadowproject/shadow/blob/master/doc/readme-qt.rst) for instructions on building **ShadowCoin QT** | *the intended-for-end-users, nice-graphical-interface, reference implementation of ShadowCash.*
+
+See [doc/build-msw.txt](https://github.com/shadowproject/shadow/blob/master/doc/build-msw.txt) for instructions on building **shadowcoind (Windows)** | *the intended-for-services, no-graphical-interface, reference implementation of ShadowCash.*
+
+See [doc/build-osx.txt](https://github.com/shadowproject/shadow/blob/master/doc/build-osx.txt) for instructions on building **shadowcoind (Mac)**
+
+See [doc/build-unix.txt](https://github.com/shadowproject/shadow/blob/master/doc/build-unix.txt) for instructions on building **shadowcoind (UNIX)**
+
+
+> For guides and technical documentation please refer to [doc.shadowproject.io (en)](https://shadowproject.io/en/documentation)
