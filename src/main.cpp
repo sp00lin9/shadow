@@ -1856,6 +1856,7 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     orphan->hashBlock = pblock->GetHash();
     orphan->hashPrev = pblock->hashPrevBlock;
     orphan->stake = pblock->GetProofOfStake();
+    nOrphanBlocksSize += orphan->vchBlock.size();
     mapOrphanBlocks.insert(make_pair(pblock->GetHash(), orphan));
     mapOrphanBlocksByPrev.insert(make_pair(orphan->hashPrev, orphan));
 
@@ -1868,6 +1869,7 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
 // Remove a random orphan block (which does not have any dependent orphans).
 void static PruneOrphanBlocks()
 {
+    LogPrintf("nMaxOrphanBlocksSize = \n");
     size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
     while (nOrphanBlocksSize > nMaxOrphanBlocksSize)
     {
@@ -3702,10 +3704,8 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
     {
         LogPrintf("ProcessBlock: ORPHAN BLOCK %lu, prev=%s\n", (unsigned long)mapOrphanBlocks.size(), pblock->hashPrevBlock.ToString());
 
-        LogPrintf("pfrom\n");
         // Accept orphans as long as there is a node to request its parents from
         if (pfrom) {
-            LogPrintf("pblock->IsProofOfStake()\n");
             // ppcoin: check proof-of-stake
             if (pblock->IsProofOfStake())
             {
@@ -3715,9 +3715,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                     return error("ProcessBlock() : duplicate proof-of-stake (%s, %d) for orphan block %s", pblock->GetProofOfStake().first.ToString(), pblock->GetProofOfStake().second, hash.ToString());
             }
             PruneOrphanBlocks();
-            LogPrintf("before AddOprhanBlock\n");
             const COrphanBlock* orphan = AddOrphanBlock(pblock);
-            LogPrintf("after AddOprhanBlock\n");
 
             // Ask this guy to fill in what we're missing
             pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));

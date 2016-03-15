@@ -100,7 +100,6 @@ void CNode::PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd)
     pindexLastGetBlocksBegin = pindexBegin;
     hashLastGetBlocksEnd = hashEnd;
 
-    LogPrintf("pindexBegin: %s\npindex->pprev: %s\n\n\n", pindexBegin->ToString(), pindexBegin->pprev->ToString());
     PushMessage("getblocks", CBlockLocator(pindexBegin), hashEnd);
 }
 
