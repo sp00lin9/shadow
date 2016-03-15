@@ -36,6 +36,8 @@ static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
 static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
+/** Default for -maxorphanblocksmib, maximum number of memory to keep orphan blocks */
+static const unsigned int DEFAULT_MAX_ORPHAN_BLOCKS = 40;
 static const unsigned int MAX_INV_SZ = 50000;
 static const unsigned int MAX_GETHEADERS_SZ = 2000;
 
@@ -43,6 +45,8 @@ static const unsigned int MAX_MULTI_BLOCK_SIZE = 5120000;    // 5MiB, most likel
 static const unsigned int MAX_MULTI_BLOCK_ELEMENTS = 64;     // processing larger blocks is cpu intensive
 static const unsigned int MAX_MULTI_BLOCK_THIN_ELEMENTS = 128;
 
+/** No amount larger than this (in satoshi) is valid */
+static const int64_t MAX_MONEY = std::numeric_limits<int64_t>::max();
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
@@ -84,7 +88,13 @@ extern int64_t nTimeBestReceived;
 extern bool fImporting;
 extern CCriticalSection cs_setpwalletRegistered;
 extern std::set<CWallet*> setpwalletRegistered;
-extern std::map<uint256, CBlock*> mapOrphanBlocks;
+struct COrphanBlock {
+    uint256 hashBlock;
+    uint256 hashPrev;
+    std::pair<COutPoint, unsigned int> stake;
+    std::vector<unsigned char> vchBlock;
+};
+extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
 extern std::map<int64_t, CAnonOutputCount> mapAnonOutputStats;
@@ -140,6 +150,7 @@ bool TxnHashInSystem(CTxDB* ptxdb, uint256& txnHash);
 
 uint256 WantedByOrphan(const CBlock* pblockOrphan);
 uint256 WantedByOrphanHeader(const CBlockThin* pblockOrphan);
+const COrphanBlock* AddOrphanBlock(const CBlock* pblock);
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
 const CBlockThinIndex* GetLastBlockThinIndex(const CBlockThinIndex* pindex, bool fProofOfStake);
 void ResendWalletTransactions(bool fForce = false);
@@ -616,13 +627,13 @@ public:
         return (a.pos    == b.pos &&
                 a.vSpent == b.vSpent);
     }
-    
+
     friend bool operator!=(const CTxIndex& a, const CTxIndex& b)
     {
         return !(a == b);
     }
     int GetDepthInMainChainFromIndex() const;
-    
+
 };
 
 
@@ -652,12 +663,12 @@ public:
     unsigned int nTime;
     unsigned int nBits;
     unsigned int nNonce;
-    
+
     CBlockHeader()
     {
         SetHdrNull();
     }
-    
+
     void SetHdrNull()
     {
         nVersion = CBlockHeader::CURRENT_VERSION;
@@ -667,7 +678,7 @@ public:
         nBits = 0;
         nNonce = 0;
     }
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(this->nVersion);
@@ -678,12 +689,12 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
     )
-    
+
     bool IsNull() const
     {
         return (nBits == 0);
     }
-    
+
     uint256 GetHash() const
     {
         if (nVersion > 6)
@@ -691,12 +702,12 @@ public:
         else
             return scrypt_blockhash(CVOIDBEGIN(nVersion));
     }
-    
+
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
     }
-    
+
     CBlockHeader GetBlockHeaderOnly() const
     {
         CBlockHeader block;
@@ -708,7 +719,7 @@ public:
         block.nNonce         = nNonce;
         return block;
     }
-    
+
 };
 
 
@@ -930,7 +941,7 @@ public:
     CBlockThin GetBlockThinOnly() const;
 
 
-    
+
     bool DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex);
     bool ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck=false);
 
@@ -941,7 +952,7 @@ public:
     bool AcceptBlock();
     bool SignBlock(CWallet& keystore, int64_t nFees);
     bool CheckBlockSignature() const;
-    
+
     bool GetHashProof(uint256& hashProof);
 
 private:
@@ -1761,6 +1772,7 @@ public:
             // Exponentially larger steps back
             for (int i = 0; pindex && i < nStep; i++)
                 pindex = pindex->pprev;
+
             if (vHave.size() > 10)
                 nStep *= 2;
         }

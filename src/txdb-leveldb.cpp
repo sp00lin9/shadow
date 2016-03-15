@@ -25,8 +25,7 @@ namespace fs = boost::filesystem;
 
 leveldb::DB *txdb; // global pointer for LevelDB object instance
 
-static leveldb::Options GetOptions()
-{
+static leveldb::Options GetOptions() {
     leveldb::Options options;
     int nCacheSizeMB = GetArg("-dbcache", 25);
     options.block_cache = leveldb::NewLRUCache(nCacheSizeMB * 1048576);
@@ -45,9 +44,8 @@ static void init_blockindex(leveldb::Options& options, bool fRemoveOld = false)
     fs::create_directory(directory);
     LogPrintf("Opening LevelDB in %s\n", directory.string().c_str());
     leveldb::Status status = leveldb::DB::Open(options, directory.string(), &txdb);
-    if (!status.ok())
-    {
-        throw runtime_error(strprintf("init_blockindex(): error opening database environment %s", status.ToString().c_str()));
+    if (!status.ok()) {
+        throw runtime_error(strprintf("init_blockindex(): error opening database environment %s", status.ToString()));
     }
 }
 
@@ -59,8 +57,7 @@ CTxDB::CTxDB(const char* pszMode)
     activeBatch = NULL;
     fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
 
-    if (txdb)
-    {
+    if (txdb) {
         pdb = txdb;
         return;
     }
@@ -106,9 +103,8 @@ bool CTxDB::TxnCommit()
     leveldb::Status status = pdb->Write(leveldb::WriteOptions(), activeBatch);
     delete activeBatch;
     activeBatch = NULL;
-    if (!status.ok())
-    {
-        LogPrintf("LevelDB batch commit failure: %s\n", status.ToString().c_str());
+    if (!status.ok()) {
+        LogPrintf("LevelDB batch commit failure: %s\n", status.ToString());
         return false;
     }
     return true;
@@ -144,8 +140,7 @@ public:
 // a database transaction begins reads are consistent with it. It would be good
 // to change that assumption in future and avoid the performance hit, though in
 // practice it does not appear to be large.
-bool CTxDB::ScanBatch(const CDataStream &key, string *value, bool *deleted) const
-{
+bool CTxDB::ScanBatch(const CDataStream &key, string *value, bool *deleted) const {
     assert(activeBatch);
     *deleted = false;
     CBatchScanner scanner;
@@ -153,8 +148,7 @@ bool CTxDB::ScanBatch(const CDataStream &key, string *value, bool *deleted) cons
     scanner.deleted = deleted;
     scanner.foundValue = value;
     leveldb::Status status = activeBatch->Iterate(&scanner);
-    if (!status.ok())
-    {
+    if (!status.ok()) {
         throw runtime_error(status.ToString());
     }
     return scanner.foundEntry;
@@ -432,9 +426,12 @@ bool CTxDB::LoadBlockIndex()
     CDataStream ssStartKey(SER_DISK, CLIENT_VERSION);
     ssStartKey << make_pair(string("bidx"), uint256(0));
     iterator->Seek(ssStartKey.str());
+
+    int count = 0;
     // Now read each entry.
     while (iterator->Valid())
     {
+        count++;
         boost::this_thread::interruption_point();
         // Unpack keys and values.
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -452,6 +449,7 @@ bool CTxDB::LoadBlockIndex()
 
         CDiskBlockIndex diskindex;
         ssValue >> diskindex;
+
 
         // Construct block index object
         CBlockIndex* pindexNew       = InsertBlockIndex(blockHash);
@@ -475,37 +473,53 @@ bool CTxDB::LoadBlockIndex()
         pindexNew->nBits             = diskindex.nBits;
         pindexNew->nNonce            = diskindex.nNonce;
 
+        if (diskindex.bnStakeModifierV2 == 0)
+        {
+            CBlock block;
+            if (block.ReadFromDisk(pindexNew))
+            {
+
+                pindexNew->bnStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, pindexNew->IsProofOfWork() ? blockHash : block.vtx[1].vin[0].prevout.hash);
+                diskindex.bnStakeModifierV2 = pindexNew->bnStakeModifierV2;
+                WriteBlockIndex(diskindex);
+                if (count % 30000 == 0)
+                    LogPrintf("Updated %d blocks\n", count);
+            }
+            else
+                LogPrintf("Failed to read block at height: %d\n", diskindex.nHeight);
+        }
+
         // Watch for genesis block
         if (pindexGenesisBlock == NULL && blockHash == Params().HashGenesisBlock())
             pindexGenesisBlock = pindexNew;
 
-        if (!pindexNew->CheckIndex())
-        {
+        if (!pindexNew->CheckIndex()) {
             delete iterator;
             return error("LoadBlockIndex() : CheckIndex failed at %d", pindexNew->nHeight);
-        };
+        }
 
         // NovaCoin: build setStakeSeen
         if (pindexNew->IsProofOfStake())
-        {
-            // don't setStakeSeen for orphan blocks
-            if (diskindex.hashPrev == 0)
-            {
-                if (fDebug)
-                    LogPrintf("setStakeSeen, found orphan block.\n");
-                setStakeSeenOrphan.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
-            } else
-            {
-                setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
-            };
+            setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
-            //setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
-        };
         iterator->Next();
     }
     delete iterator;
 
     boost::this_thread::interruption_point();
+
+    // Load hashBestChain pointer to end of best chain
+    if (!ReadHashBestChain(hashBestChain))
+    {
+        if (pindexGenesisBlock == NULL)
+            return true;
+        return error("CTxDB::LoadBlockIndex() : hashBestChain not loaded");
+    }
+    if (!mapBlockIndex.count(hashBestChain))
+        return error("CTxDB::LoadBlockIndex() : hashBestChain not found in the block index");
+
+    pindexBest = mapBlockIndex[hashBestChain];
+    nBestHeight = pindexBest->nHeight;
 
     // Calculate nChainTrust
     vector<pair<int, CBlockIndex*> > vSortedByHeight;
@@ -520,27 +534,24 @@ bool CTxDB::LoadBlockIndex()
     {
         CBlockIndex* pindex = item.second;
 
-        if (!pindex->pprev && pindex->GetBlockHash() != Params().HashGenesisBlock())
+        uint256 blockhash = pindex->GetBlockHash();
+        if ((!pindex->pprev && blockhash != Params().HashGenesisBlock()) || pindex->nHeight > nBestHeight)
         {
+            mapBlockIndex.erase(blockhash);
             if (fDebug)
                 LogPrintf("LoadBlockIndex(): Warning - Found orphaned block, height %d, hash %s. Suggest rewindchain, reindex.\n", pindex->nHeight, pindex->GetBlockHash().ToString().c_str());
+            if (pindex->nHeight > nBestHeight)
+            {
+                CBlock block;
+                if (block.ReadFromDisk(pindex))
+                    AddOrphanBlock(&block);
+            }
             continue;
         };
 
         pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + pindex->GetBlockTrust();
     }
 
-    // Load hashBestChain pointer to end of best chain
-    if (!ReadHashBestChain(hashBestChain))
-    {
-        if (pindexGenesisBlock == NULL)
-            return true;
-        return error("CTxDB::LoadBlockIndex() : hashBestChain not loaded");
-    }
-    if (!mapBlockIndex.count(hashBestChain))
-        return error("CTxDB::LoadBlockIndex() : hashBestChain not found in the block index");
-    pindexBest = mapBlockIndex[hashBestChain];
-    nBestHeight = pindexBest->nHeight;
     nBestChainTrust = pindexBest->nChainTrust;
 
     LogPrintf("LoadBlockIndex(): hashBestChain=%s  height=%d  trust=%s  date=%s\n",
@@ -554,7 +565,7 @@ bool CTxDB::LoadBlockIndex()
 
     // Verify blocks in the best chain
     int nCheckLevel = GetArg("-checklevel", 1);
-    int nCheckDepth = GetArg("-checkblocks", 1000);
+    int nCheckDepth = GetArg("-checkblocks", 2500);
     if (nCheckDepth == 0)
         nCheckDepth = 1000000000; // suffices until the year 19000
     if (nCheckDepth > nBestHeight)

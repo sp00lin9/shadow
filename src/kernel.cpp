@@ -559,11 +559,10 @@ static inline bool CheckStakeKernelHashV1(unsigned int nBits, const CBlock& bloc
     
     CBigNum bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
-    int64_t nValueIn = txPrev.vout[prevout.n].nValue;
 
     uint256 hashBlockFrom = blockFrom.GetHash();
 
-    CBigNum bnCoinDayWeight = CBigNum(nValueIn) * GetWeight((int64_t)txPrev.nTime, (int64_t)nTimeTx) / COIN / (24 * 60 * 60);
+    CBigNum bnCoinDayWeight = CBigNum(txPrev.vout[prevout.n].nValue) * GetWeight((int64_t)txPrev.nTime, (int64_t)nTimeTx) / COIN / (24 * 60 * 60);
     targetProofOfStake = (bnCoinDayWeight * bnTargetPerCoinDay).getuint256();
 
     // Calculate hash
@@ -670,8 +669,7 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
     bnTarget.SetCompact(nBits);
 
     // Weighted target
-    int64_t nValueIn = txPrev.vout[prevout.n].nValue;
-    CBigNum bnWeight = CBigNum(nValueIn);
+    CBigNum bnWeight = CBigNum(txPrev.vout[prevout.n].nValue);
     bnTarget *= bnWeight;
 
     targetProofOfStake = bnTarget.getuint256();
@@ -682,6 +680,7 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
     else
         ss << pStakeMod->nModifier << nTimeBlockFrom;
     ss << txPrev.nTime << prevout.hash << prevout.n << nTimeTx;
+
     hashProofOfStake = Hash(ss.begin(), ss.end());
 
     if (fPrintProofOfStake)
@@ -690,16 +689,17 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
             pStakeMod->nModifier, pStakeMod->nHeight,
             DateTimeStrFormat(pStakeMod->nTime),
             DateTimeStrFormat(nTimeBlockFrom));
-        LogPrintf("CheckStakeKernelHash() : check modifier=0x%016x nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
+        LogPrintf("CheckStakeKernelHash() : check modifier=0x%016x nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s target=%s\n",
             pStakeMod->nModifier,
             nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
-            hashProofOfStake.ToString());
+            hashProofOfStake.ToString(),
+            bnTarget.ToString());
     }
 
     // Now check if proof-of-stake hash meets target protocol
     if (CBigNum(hashProofOfStake) > bnTarget)
         return false;
-    
+
     if (fDebug && !fPrintProofOfStake)
     {
         LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from timestamp=%s\n",

@@ -29,16 +29,15 @@ double BitsToDouble(unsigned int nBits)
     {
         dDiff *= 256.0;
         nShift++;
-    };
-
+    }
     while (nShift > 29)
     {
         dDiff /= 256.0;
         nShift--;
-    };
+    }
 
     return dDiff;
-};
+}
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -459,7 +458,7 @@ Value getblockbynumber(const Array& params, bool fHelp)
         }
 
 
-    };
+    }
 
     CBlock block;
     CBlockIndex* pblockindex = mapBlockIndex[hashBestChain];
@@ -673,7 +672,7 @@ Value rewindchain(const Array& params, bool fHelp)
                     if (!blockPrev.ReadFromDisk(mi->second->pprev))
                     {
                         LogPrintf("blockPrev.ReadFromDisk failed %s.\n", mi->second->pprev->GetBlockHash().ToString().c_str());
-                        break;
+                        //break;
                     };
 
                     CTxDB txdb;
@@ -689,7 +688,7 @@ Value rewindchain(const Array& params, bool fHelp)
             mapBlockIndex.erase(mi);
         };
 
-        std::map<uint256, CBlock*>::iterator miOph = mapOrphanBlocks.find(hashblock);
+        std::map<uint256, COrphanBlock*>::iterator miOph = mapOrphanBlocks.find(hashblock);
         if (miOph != mapOrphanBlocks.end())
         {
             LogPrintf("block is an orphan.\n");
@@ -757,16 +756,16 @@ Value nextorphan(const Array& params, bool fHelp)
 
     Object result;
 
-    std::map<uint256, CBlock*> mapNextOrphanBlocks;
+    std::map<uint256, COrphanBlock*> mapNextOrphanBlocks;
 
     LOCK(cs_main);
 
     //mapOrphanBlocks.clear();
     uint256 besthash = *pindexBest->phashBlock;
-    std::map<uint256, CBlock*>::iterator it;
+    std::map<uint256, COrphanBlock*>::iterator it;
     for (it = mapOrphanBlocks.begin(); it != mapOrphanBlocks.end(); ++it)
     {
-        if (it->second->hashPrevBlock == besthash)
+        if (it->second->hashPrev == besthash)
         {
             mapNextOrphanBlocks[it->first] = it->second;
         };
@@ -777,7 +776,7 @@ Value nextorphan(const Array& params, bool fHelp)
 
     } else
     {
-        std::map<uint256, CBlock*>::iterator it;
+        std::map<uint256, COrphanBlock*>::iterator it;
         for (it = mapNextOrphanBlocks.begin(); it != mapNextOrphanBlocks.end(); ++it)
         {
             result.push_back(Pair("block", it->first.ToString()));

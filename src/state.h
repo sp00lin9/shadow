@@ -57,8 +57,6 @@ static const int64_t MIN_TX_FEE = 10000;
 static const int64_t MIN_TX_FEE_ANON = 1000000;
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
 static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
-/** No amount larger than this (in satoshi) is valid */
-static const int64_t MAX_MONEY = std::numeric_limits<int64_t>::max();
 static const int64_t COIN_YEAR_REWARD = 2 * CENT; // 2% per year
 
 static const int64_t MBLK_RECEIVE_TIMEOUT = 60; // seconds
