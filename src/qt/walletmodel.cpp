@@ -207,8 +207,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
     std::map<int, std::string> mapStealthNarr;
 
-
-
     {
         LOCK2(cs_main, wallet->cs_wallet);
 
@@ -409,6 +407,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     // Add addresses / update labels that we've sent to to the address book
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
+        if(rcp.label.isEmpty()) // Don't add addresses without labels...
+            continue;
+
         std::string strAddress = rcp.address.toStdString();
         std::string strLabel = rcp.label.toStdString();
 
@@ -425,13 +426,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
 
                 // Check if we have a new address or an updated label
                 if (mi == wallet->mapAddressBook.end() || mi->second != strLabel)
-                {
                     wallet->SetAddressBookName(dest, strLabel);
-                };
             };
         } // wallet->cs_wallet
     };
-
 
     return SendCoinsReturn(OK, 0, hex);
 }
@@ -615,6 +613,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
 
                 LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
+                if (!Params().IsProtocolV3(nBestHeight))
+                    sError += "\nTry again after block 783000.";
+
                 return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
 
@@ -648,12 +649,15 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         };
 
         hex = QString::fromStdString(wtxNew.GetHash().GetHex());
-    }
+    } // LOCK2(cs_main, wallet->cs_wallet)
 
 
     // Add addresses / update labels that we've sent to to the address book
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
+        if(rcp.label.isEmpty()) // Don't add addresses without labels...
+            continue;
+
         std::string strAddress = rcp.address.toStdString();
         std::string strLabel = rcp.label.toStdString();
 
