@@ -726,6 +726,27 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, _1, func));
 }
 
+CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address)
+{
+    CNetAddr netaddr;
+    // Make sure that IPv4-compatible and IPv4-mapped IPv6 addresses are treated as IPv4 addresses
+    if (address.is_v6()
+        && (address.to_v6().is_v4_compatible()
+            || address.to_v6().is_v4_mapped()))
+        address = address.to_v6().to_v4();
+
+    if (address.is_v4())
+    {
+        boost::asio::ip::address_v4::bytes_type bytes = address.to_v4().to_bytes();
+        netaddr.SetRaw(NET_IPV4, &bytes[0]);
+    } else
+    {
+        boost::asio::ip::address_v6::bytes_type bytes = address.to_v6().to_bytes();
+        netaddr.SetRaw(NET_IPV6, &bytes[0]);
+    };
+    
+    return netaddr;
+}
 
 void JSONRequest::parse(const Value& valRequest)
 {

@@ -170,7 +170,7 @@ Value getinfo(const Array& params, bool fHelp)
 
 
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : std::string())));
-    obj.push_back(Pair("ip",            GetLocalAddress(NULL).ToStringIP()));
+    obj.push_back(Pair("ip",            addrSeenByPeer.ToStringIP()));
 
 
     if (nNodeMode == NT_FULL)
