@@ -9,10 +9,10 @@ Introduction
 The Shadow Project  is a decentralized peer-to-peer platform, created under an open source license, featuring a built-in cryptocurrency, end-to-end encrypted messaging and E-commerce. The decentralized network aims to provide anonymity and privacy for everyone through a simple user-friendly interface by taking care of all the advanced cryptography in the background. 
 
 Links:
-[Website](https://shadowproject.io/)
-[Blog](https://blog.shadowproject.io/)
-[Documentation](https://doc.shadowproject.io/)
-[Forum](https://talk.shadowproject.io/)
+>[Website](https://shadowproject.io/)
+>[Blog](https://blog.shadowproject.io/)
+>[Documentation](https://doc.shadowproject.io/)
+>[Forum](https://talk.shadowproject.io/)
 
 Development process
 ===========================
