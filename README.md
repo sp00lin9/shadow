@@ -1,7 +1,6 @@
+![ShadowCash Logo](https://i.imgur.com/ovemJA3.png)
 
 [![Build Status](https://travis-ci.org/shadowproject/shadow.svg?branch=master)](https://travis-ci.org/shadowproject/shadow) [![Code Climate](https://codeclimate.com/github/shadowproject/shadow/badges/gpa.svg)](https://codeclimate.com/github/shadowproject/shadow) [![Test Coverage](https://codeclimate.com/github/shadowproject/shadow/badges/coverage.svg)](https://codeclimate.com/github/shadowproject/shadow/coverage) [![Issue Count](https://codeclimate.com/github/shadowproject/shadow/badges/issue_count.svg)](https://codeclimate.com/github/shadowproject/shadow)
-
-![ShadowCash Logo](https://ip.bitcointalk.org/?u=http%3A%2F%2Fi.imgur.com%2FovemJA3.png&t=562&c=nyNSCCzYNV4Zhg)
 
 Development process
 ===========================
