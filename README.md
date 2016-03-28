@@ -7,7 +7,6 @@ Introduction
 
 The Shadow Project  is a decentralized peer-to-peer platform, created under an open source license, featuring a built-in cryptocurrency, end-to-end encrypted messaging and E-commerce. The decentralized network aims to provide anonymity and privacy for everyone through a simple user-friendly interface by taking care of all the advanced cryptography in the background. 
 
-
 * [Website](https://shadowproject.io/)
 * [Blog](https://blog.shadowproject.io/)
 * [Documentation](https://doc.shadowproject.io/)
@@ -20,10 +19,14 @@ Releases
 [Click on this link to take you to our latest release - 1.4.0.3](https://github.com/shadowproject/shadow/releases/latest)
 
 Supported Operating Systems:
-* Unix (64 bit)
+* Linux (64 bit)
+* ~~Linux (32 bit)~~
 * Windows (32 bit)
 * Windows (64 bit)
 * OSX 
+
+
+Linux releases will not work out of the box on the Raspberry Pi, you'll have to compile from source.
 
 Development process
 ===========================
