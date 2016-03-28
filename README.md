@@ -8,15 +8,22 @@ Introduction
 The Shadow Project  is a decentralized peer-to-peer platform, created under an open source license, featuring a built-in cryptocurrency, end-to-end encrypted messaging and E-commerce. The decentralized network aims to provide anonymity and privacy for everyone through a simple user-friendly interface by taking care of all the advanced cryptography in the background. 
 
 
-[Website](https://shadowproject.io/)
-
-[Blog](https://blog.shadowproject.io/)
-
-[Documentation](https://doc.shadowproject.io/)
-
-[Forum](https://talk.shadowproject.io/)
+* [Website](https://shadowproject.io/)
+* [Blog](https://blog.shadowproject.io/)
+* [Documentation](https://doc.shadowproject.io/)
+* [Forum](https://talk.shadowproject.io/)
 
 "They who can give up essential liberty to obtain a little temporary safety deserve neither liberty nor safety." 
+
+Releases
+===========================
+[Click on this link to take you to our latest release - 1.4.0.3](https://github.com/shadowproject/shadow/releases/latest)
+
+Supported Operating Systems:
+* Unix (64 bit)
+* Windows (32 bit)
+* Windows (64 bit)
+* OSX 
 
 Development process
 ===========================
