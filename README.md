@@ -10,8 +10,11 @@ The Shadow Project  is a decentralized peer-to-peer platform, created under an o
 
 Links:
 *[Website](https://shadowproject.io/)
+
 *[Blog](https://blog.shadowproject.io/)
+
 *[Documentation](https://doc.shadowproject.io/)
+
 *[Forum](https://talk.shadowproject.io/)
 
 Development process
