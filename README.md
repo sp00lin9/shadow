@@ -4,7 +4,6 @@
 
 Introduction
 ===========================
-"They who can give up essential liberty to obtain a little temporary safety deserve neither liberty nor safety." Benjamin Franklin
 
 The Shadow Project  is a decentralized peer-to-peer platform, created under an open source license, featuring a built-in cryptocurrency, end-to-end encrypted messaging and E-commerce. The decentralized network aims to provide anonymity and privacy for everyone through a simple user-friendly interface by taking care of all the advanced cryptography in the background. 
 
@@ -16,6 +15,8 @@ The Shadow Project  is a decentralized peer-to-peer platform, created under an o
 [Documentation](https://doc.shadowproject.io/)
 
 [Forum](https://talk.shadowproject.io/)
+
+"They who can give up essential liberty to obtain a little temporary safety deserve neither liberty nor safety." 
 
 Development process
 ===========================
