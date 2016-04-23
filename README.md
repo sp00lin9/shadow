@@ -1,8 +1,32 @@
-ShadowCash development tree
-
-ShadowCash is a PoS-based cryptocurrency.
+![ShadowCash Logo](https://i.imgur.com/ovemJA3.png)
 
 [![Build Status](https://travis-ci.org/shadowproject/shadow.svg?branch=master)](https://travis-ci.org/shadowproject/shadow) [![Code Climate](https://codeclimate.com/github/shadowproject/shadow/badges/gpa.svg)](https://codeclimate.com/github/shadowproject/shadow) [![Test Coverage](https://codeclimate.com/github/shadowproject/shadow/badges/coverage.svg)](https://codeclimate.com/github/shadowproject/shadow/coverage) [![Issue Count](https://codeclimate.com/github/shadowproject/shadow/badges/issue_count.svg)](https://codeclimate.com/github/shadowproject/shadow)
+
+Introduction
+===========================
+
+The Shadow Project  is a decentralized peer-to-peer platform, created under an open source license, featuring a built-in cryptocurrency, end-to-end encrypted messaging and decentralized marketplace. The decentralized network aims to provide anonymity and privacy for everyone through a simple user-friendly interface by taking care of all the advanced cryptography in the background. 
+
+* [Website](https://shadowproject.io/)
+* [Blog](https://blog.shadowproject.io/)
+* [Documentation](https://doc.shadowproject.io/)
+* [Forum](https://talk.shadowproject.io/)
+
+"They who can give up essential liberty to obtain a little temporary safety deserve neither liberty nor safety." 
+
+Releases
+===========================
+[Click on this link to go to the latest release - 1.4.0.3](https://github.com/shadowproject/shadow/releases/latest)
+
+Supported Operating Systems:
+* Linux (64 bit)
+* ~~Linux (32 bit)~~
+* Windows (32 bit)
+* Windows (64 bit)
+* OSX 
+
+
+Linux releases will not work out of the box on the Raspberry Pi, you'll have to compile from source.
 
 Development process
 ===========================
