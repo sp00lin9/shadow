@@ -96,7 +96,6 @@ static const unsigned char REJECT_INSUFFICIENTFEE = 0x42;
 static const unsigned char REJECT_CHECKPOINT = 0x43;
 
 bool IsPeerAddrLocalGood(CNode *pnode);
-void AdvertizeLocal(CNode *pnode);
 void SetLimited(enum Network net, bool fLimited = true);
 bool IsLimited(enum Network net);
 bool IsLimited(const CNetAddr& addr);
@@ -150,6 +149,7 @@ extern bool fDiscover;
 extern bool fUseUPnP;
 
 extern uint64_t nLocalHostNonce;
+extern CAddress addrSeenByPeer;
 extern CAddrMan addrman;
 
 extern std::vector<CNode*> vNodes;
@@ -332,7 +332,6 @@ public:
     CBlockThinIndex* pindexLastGetBlockThinsBegin;
     uint256 hashLastGetBlocksEnd;
     int nChainHeight; // updates only with ping message, every 2 mins
-    bool fStartSync;
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
@@ -394,7 +393,6 @@ public:
         pindexLastGetBlockThinsBegin = 0;
         hashLastGetBlocksEnd = 0;
         nChainHeight = -1;
-        fStartSync = false;
         fGetAddr = false;
         nMisbehavior = 0;
         setInventoryKnown.max_size(SendBufferSize() / 1000);

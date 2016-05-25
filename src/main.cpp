@@ -5056,10 +5056,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             return true;
         }
 
-        pfrom->addrLocal = addrMe;
-        if (pfrom->fInbound && addrMe.IsRoutable())
+        // record my external IP reported by peer
+        if (addrFrom.IsRoutable() && addrMe.IsRoutable())
         {
-            SeenLocal(addrMe);
+            addrSeenByPeer = addrMe;
+            AddLocal(addrSeenByPeer, LOCAL_BIND);
         }
 
         // Be shy and don't send version until we hear
@@ -5084,12 +5085,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable())
-                {
                     pfrom->PushAddress(addr);
-                } else if (IsPeerAddrLocalGood(pfrom)) {
-                    addr.SetIP(pfrom->addrLocal);
-                    pfrom->PushAddress(addr);
-                }
             }
 
             // Get recent addresses
@@ -5115,10 +5111,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (pfrom->nTypeInd == NT_FULL && !pfrom->fClient &&
                !pfrom->fOneShot && !fImporting &&
                (pfrom->nChainHeight > (nBestHeight - 144)) &&
-               (nAskedForBlocks < 1 || vNodes.size() <= 1 || pfrom->fStartSync))
+               (nAskedForBlocks < 1 || vNodes.size() <= 1))
             {
                 nAskedForBlocks++;
-                pfrom->fStartSync = false;
                 pfrom->PushGetBlocks(pindexBest, uint256(0));
             };
         } else
@@ -6243,18 +6238,21 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
     static int64_t nLastRebroadcast;
     if (!IsInitialBlockDownload() && (GetTime() - nLastRebroadcast > 24 * 60 * 60))
     {
-        LOCK(cs_vNodes);
-        BOOST_FOREACH(CNode* pnode, vNodes)
+        BOOST_FOREACH(CNode* pnode, vNodesCopy)
         {
             // Periodically clear setAddrKnown to allow refresh broadcasts
             if (nLastRebroadcast)
                 pnode->setAddrKnown.clear();
 
             // Rebroadcast our address
-            AdvertizeLocal(pnode);
+            if (!fNoListen)
+            {
+                CAddress addr = GetLocalAddress(&pnode->addr);
+                if (addr.IsRoutable())
+                    pnode->PushAddress(addr);
+            }
         }
-        if (!vNodes.empty())
-            nLastRebroadcast = GetTime();
+        nLastRebroadcast = GetTime();
     }
 
     //

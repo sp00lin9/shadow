@@ -170,7 +170,7 @@ Value getinfo(const Array& params, bool fHelp)
 
 
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : std::string())));
-    obj.push_back(Pair("ip",            GetLocalAddress(NULL).ToStringIP()));
+    obj.push_back(Pair("ip",            addrSeenByPeer.ToStringIP()));
 
 
     if (nNodeMode == NT_FULL)
@@ -2239,17 +2239,20 @@ Value sendtostealthaddress(const Array& params, bool fHelp)
 
 Value clearwallettransactions(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() > 0)
+    if (fHelp || params.size() > 1)
         throw std::runtime_error(
-            "clearwallettransactions \n"
+            "clearwallettransactions [unaccepted]\n"
+                "[unaccepted] optional to deleted unaccepted stakes only\n"
             "delete all transactions from wallet - reload with reloadanondata\n"
             "Warning: Backup your wallet first!");
-
-
 
     Object result;
 
     uint32_t nTransactions = 0;
+
+    bool fUnaccepted = false;
+    if (params.size() > 0)
+        fUnaccepted = params[0].get_bool();
 
     char cbuf[256];
 
@@ -2334,11 +2337,28 @@ Value clearwallettransactions(const Array& params, bool fHelp)
                 uint256 hash;
                 ssValue >> hash;
 
+                if (fUnaccepted)
+                {
+                    const CWalletTx& wtx = pwalletMain->mapWallet[hash];
+                    if (!wtx.IsInMainChain())
+                    {
+                        if ((ret = pcursor->del(0)) != 0)
+                        {
+                            LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
+                            continue;
+                        }
+                        pwalletMain->mapWallet.erase(hash);
+                        pwalletMain->NotifyTransactionChanged(pwalletMain, hash, CT_DELETED);
+                        nTransactions++;
+                    }
+                    continue;
+                }
+
                 if ((ret = pcursor->del(0)) != 0)
                 {
                     LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
                     continue;
-                };
+                }
 
                 pwalletMain->mapWallet.erase(hash);
                 pwalletMain->NotifyTransactionChanged(pwalletMain, hash, CT_DELETED);

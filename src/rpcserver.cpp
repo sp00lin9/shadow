@@ -276,9 +276,12 @@ static const CRPCCommand vRPCCommands[] =
     { "getpeerinfo",            &getpeerinfo,            true,      false,     false },
     { "addnode",                &addnode,                true,      true,      false },
     { "getaddednodeinfo",       &getaddednodeinfo,       true,      true,      false },
+    { "ping",                   &ping,                   true,      false,     false },
+    { "getnettotals",           &getnettotals,           true,      true,      false },
     { "getdifficulty",          &getdifficulty,          true,      false,     false },
     { "getinfo",                &getinfo,                true,      false,     false },
-    { "getsubsidy",             &getsubsidy,             true,      false,     false },
+    { "getsubsidy",             &getsubsidy,             true,      true,      false },
+    { "getstakesubsidy",        &getstakesubsidy,        true,      true,      false },
     { "getmininginfo",          &getmininginfo,          true,      false,     false },
     { "getstakinginfo",         &getstakinginfo,         true,      false,     false },
     { "getnewaddress",          &getnewaddress,          true,      false,     false },
@@ -344,6 +347,7 @@ static const CRPCCommand vRPCCommands[] =
     { "repairwallet",           &repairwallet,           false,     true,      false },
     { "resendtx",               &resendtx,               false,     true,      false },
     { "makekeypair",            &makekeypair,            false,     true,      false },
+    { "checkkernel",            &checkkernel,            true,      false,     true },
     
     { "sendalert",              &sendalert,              false,     false,     false },
     { "getnetworkinfo",         &getnetworkinfo,         false,     false,     false },
@@ -726,6 +730,27 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, _1, func));
 }
 
+CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address)
+{
+    CNetAddr netaddr;
+    // Make sure that IPv4-compatible and IPv4-mapped IPv6 addresses are treated as IPv4 addresses
+    if (address.is_v6()
+        && (address.to_v6().is_v4_compatible()
+            || address.to_v6().is_v4_mapped()))
+        address = address.to_v6().to_v4();
+
+    if (address.is_v4())
+    {
+        boost::asio::ip::address_v4::bytes_type bytes = address.to_v4().to_bytes();
+        netaddr.SetRaw(NET_IPV4, &bytes[0]);
+    } else
+    {
+        boost::asio::ip::address_v6::bytes_type bytes = address.to_v6().to_bytes();
+        netaddr.SetRaw(NET_IPV6, &bytes[0]);
+    };
+    
+    return netaddr;
+}
 
 void JSONRequest::parse(const Value& valRequest)
 {

@@ -473,22 +473,6 @@ bool CTxDB::LoadBlockIndex()
         pindexNew->nBits             = diskindex.nBits;
         pindexNew->nNonce            = diskindex.nNonce;
 
-        if (diskindex.bnStakeModifierV2 == 0)
-        {
-            CBlock block;
-            if (block.ReadFromDisk(pindexNew))
-            {
-
-                pindexNew->bnStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, pindexNew->IsProofOfWork() ? blockHash : block.vtx[1].vin[0].prevout.hash);
-                diskindex.bnStakeModifierV2 = pindexNew->bnStakeModifierV2;
-                WriteBlockIndex(diskindex);
-                if (count % 30000 == 0)
-                    LogPrintf("Updated %d blocks\n", count);
-            }
-            else
-                LogPrintf("Failed to read block at height: %d\n", diskindex.nHeight);
-        }
-
         // Watch for genesis block
         if (pindexGenesisBlock == NULL && blockHash == Params().HashGenesisBlock())
             pindexGenesisBlock = pindexNew;

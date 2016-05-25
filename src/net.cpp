@@ -44,6 +44,7 @@ static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
 static CNode* pnodeLocalHost = NULL;
 static CNode* pnodeSync = NULL;
+CAddress addrSeenByPeer(CService("0.0.0.0", 0), nLocalServices);
 uint64_t nLocalHostNonce = 0;
 static std::vector<SOCKET> vhListenSocket;
 CAddrMan addrman;
@@ -236,26 +237,25 @@ bool IsPeerAddrLocalGood(CNode *pnode)
            !IsLimited(pnode->addrLocal.GetNetwork());
 }
 
-// pushes our own address to a peer
-void AdvertizeLocal(CNode *pnode)
+// used when scores of local addresses may have changed
+// pushes better local address to peers
+void static AdvertizeLocal()
 {
-    if (!fNoListen && pnode->fSuccessfullyConnected)
+    LOCK(cs_vNodes);
+    BOOST_FOREACH(CNode* pnode, vNodes)
     {
-        CAddress addrLocal = GetLocalAddress(&pnode->addr);
-        // If discovery is enabled, sometimes give our peer the address it
-        // tells us that it sees us as in case it has a better idea of our
-        // address than we do.
-        if (IsPeerAddrLocalGood(pnode) && (!addrLocal.IsRoutable() ||
-             GetRand((GetnScore(addrLocal) > LOCAL_MANUAL) ? 8:2) == 0))
+        if (pnode->fSuccessfullyConnected)
         {
-            addrLocal.SetIP(pnode->addrLocal);
-        }
-        if (addrLocal.IsRoutable())
-        {
-            pnode->PushAddress(addrLocal);
-        }
-    }
+            CAddress addrLocal = GetLocalAddress(&pnode->addr);
+            if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
+            {
+                pnode->PushAddress(addrLocal);
+                pnode->addrLocal = addrLocal;
+            };
+        };
+    };
 }
+
 
 void SetReachable(enum Network net, bool fFlag)
 {
@@ -289,6 +289,8 @@ bool AddLocal(const CService& addr, int nScore)
         }
         SetReachable(addr.GetNetwork());
     }
+
+    AdvertizeLocal();
 
     return true;
 }
@@ -327,6 +329,9 @@ bool SeenLocal(const CService& addr)
             return false;
         mapLocalHost[addr].nScore++;
     }
+
+    AdvertizeLocal();
+
     return true;
 }
 
@@ -1474,57 +1479,20 @@ static int64_t NodeSyncScore(const CNode *pnode) {
     return pnode->nLastRecv;
 }
 
-void static StartSync(const vector<CNode*> &vNodes) {
-    CNode *pnodeNewSync = NULL;
-    int64_t nBestScore = 0;
-
-    // fImporting and fReindex are accessed out of cs_main here, but only
-    // as an optimization - they are checked again in SendMessages.
-    if (fImporting || fReindexing)
-        return;
-
-    // Iterate over all nodes
-    BOOST_FOREACH(CNode* pnode, vNodes) {
-        // check preconditions for allowing a sync
-        if (!pnode->fClient && !pnode->fOneShot &&
-            !pnode->fDisconnect &&
-            (pnode->nChainHeight > (nBestHeight - 144)))
-        {
-            // if ok, compare node's score with the best so far
-            int64_t nScore = NodeSyncScore(pnode);
-            if (pnodeNewSync == NULL || nScore > nBestScore) {
-                pnodeNewSync = pnode;
-                nBestScore = nScore;
-            }
-        }
-    }
-    // if a new sync candidate was found, start sync!
-    if (pnodeNewSync) {
-        pnodeNewSync->fStartSync = true;
-        pnodeSync = pnodeNewSync;
-    }
-}
 
 void ThreadMessageHandler()
 {
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true)
     {
-        bool fHaveSyncNode = false;
-
+        boost::this_thread::interruption_point();
         vector<CNode*> vNodesCopy;
         {
             LOCK(cs_vNodes);
             vNodesCopy = vNodes;
-            BOOST_FOREACH(CNode* pnode, vNodesCopy) {
+            BOOST_FOREACH(CNode* pnode, vNodesCopy)
                 pnode->AddRef();
-                if (pnode == pnodeSync)
-                    fHaveSyncNode = true;
-            }
-        }
-
-        if (!fHaveSyncNode)
-            StartSync(vNodesCopy);
+        } // cs_vNodes
 
         // Poll the connected nodes for messages
         CNode* pnodeTrickle = NULL;
@@ -1564,7 +1532,6 @@ void ThreadMessageHandler()
                 if (lockSend)
                     SendMessages(pnode, vNodesCopy, pnode == pnodeTrickle);
             } // cs_vSend
-            boost::this_thread::interruption_point();
         };
 
         {
