@@ -88,6 +88,7 @@ public:
                     labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo)); //returns "" if not found.
                     
                     LogPrintf("refreshMessageTable: addressTo: %s\n", smsgStored.sAddrTo);
+                    LogPrintf("refreshMessageTable: addressFrom: %s\n", msg.sFromAddress);
 
                     std::string publicKey;
                     int duplicateMessageFromOutBox = SecureMsgGetLocalPublicKey(msg.sFromAddress, publicKey);
@@ -97,11 +98,11 @@ public:
                         //a message has been received to our group but it was one of our own. Just don't process this at all. 
                         //MAY CAUSE LOOP?
 		                LogPrintf("refreshMessageTable: groupchat message, but duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
-                        break; 
+                        continue; 
                     } else if(labelTo.startsWith(groupPrefix) && (duplicateMessageFromOutBox == 4)) {
                         //a message has been received to our group and it was NOT one of our own. Yet retrieving the public key of it was succesful.
                         //Change the labelFrom to labelTo. Throws all the group chat messages together, might ruin nickname labels tho.
-                        label = labelTo;
+                        //label = labelTo;
 		                LogPrintf("refreshMessageTable: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
                     } else {
 	   	                LogPrintf("refreshMessageTable: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
@@ -115,6 +116,7 @@ public:
                     addMessageEntry(MessageTableEntry(vchKey,
                                                       MessageTableEntry::Received,
                                                       label,
+                                                      labelTo,
                                                       QString::fromStdString(smsgStored.sAddrTo),
                                                       QString::fromStdString(msg.sFromAddress),
                                                       sent_datetime,
@@ -135,7 +137,9 @@ public:
                 if (SecureMsgDecrypt(false, smsgStored.sAddrOutbox, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
                 {
                     label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
-
+                    labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
+                    LogPrintf("refreshMessageTable: sendMessage: label: %s, labelTo: %s\n", label.toStdString(), labelTo.toStdString());
+                    
                     sent_datetime    .setTime_t(msg.timestamp);
                     received_datetime.setTime_t(smsgStored.timeReceived);
 
@@ -144,6 +148,7 @@ public:
                     addMessageEntry(MessageTableEntry(vchKey,
                                                       MessageTableEntry::Sent,
                                                       label,
+                                                      labelTo,
                                                       QString::fromStdString(smsgStored.sAddrTo),
                                                       QString::fromStdString(msg.sFromAddress),
                                                       sent_datetime,
@@ -189,7 +194,7 @@ public:
             } else if(labelTo.startsWith(groupPrefix) && (duplicateMessageFromOutBox == 4)) {
                 //a message has been received to our group and it was NOT one of our own. Yet retrieving the public key of it was succesful.
                 //Change the labelFrom to labelTo. Throws all the group chat messages together, might ruin nickname labels tho.
-                label = labelTo;
+                //label = labelTo;
 		           LogPrintf("newMessage: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
             } else {
 	   	        LogPrintf("newMessage: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
@@ -211,6 +216,7 @@ public:
             addMessageEntry(MessageTableEntry(vchKey,
                                               MessageTableEntry::Received,
                                               label,
+                                              labelTo,
                                               QString::fromStdString(smsgStored.sAddrTo),
                                               QString::fromStdString(msg.sFromAddress),
                                               sent_datetime,
@@ -227,6 +233,7 @@ public:
         SecMsgStored smsgStored = outboxHdr;
         MessageData msg;
         QString label;
+        QString labelTo;
         QDateTime sent_datetime;
         QDateTime received_datetime;
 
@@ -234,7 +241,15 @@ public:
         if (SecureMsgDecrypt(false, smsgStored.sAddrOutbox, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
         {
             label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
-
+            labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
+            LogPrintf("newOutboxMessage: Label: %s, LabelTo: %s\n", label.toStdString(), labelTo.toStdString());
+           
+            /* 
+            This is kind of awkward, variable label is used to specifcy to specific the RECEIVER of the message.
+            While labelTo is the sender of the address in this case. 
+            This is only so it works properly with the current implemtation of the javascript.  
+            */
+            
             sent_datetime    .setTime_t(msg.timestamp);
             received_datetime.setTime_t(smsgStored.timeReceived);
 
@@ -249,6 +264,7 @@ public:
             addMessageEntry(MessageTableEntry(vchKey,
                                               MessageTableEntry::Sent,
                                               label,
+                                              labelTo,
                                               QString::fromStdString(smsgStored.sAddrTo),
                                               QString::fromStdString(msg.sFromAddress),
                                               sent_datetime,
@@ -422,6 +438,7 @@ QVariant MessageModel::data(const QModelIndex &index, int role) const
         switch(index.column())
         {
             case Label:	           return (rec->label.isEmpty() ? tr("(no label)") : rec->label);
+            case LabelTo:	       return (rec->labelTo.isEmpty() ? tr("(no label)") : rec->labelTo); 
             case ToAddress:	       return rec->to_address;
             case FromAddress:      return rec->from_address;
             case SentDateTime:     return rec->sent_datetime;

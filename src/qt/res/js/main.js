@@ -1880,12 +1880,14 @@ function appendMessages(messages, reset) {
     for(var i=0; i<messages.length; i++)
     {
         var message = messages[i];
+        alert("appendMessages: " + message.labelTo);
         appendMessage(message.id,
                       message.type,
                       message.sent_date,
                       message.received_date,
                       message.label_value,
                       message.label,
+                      message.labelTo,
                       message.to_address,
                       message.from_address,
                       message.read,
@@ -1901,7 +1903,7 @@ function appendMessages(messages, reset) {
 
 }
 
-function appendMessage(id, type, sent_date, received_date, label_value, label, to_address, from_address, read, message, initial) {
+function appendMessage(id, type, sent_date, received_date, label_value, label, labelTo, to_address, from_address, read, message, initial) {
     if(type=="R"&&read==false) {
         $(".user-notifications").show();
         $("#message-count").text(parseInt($("#message-count").text())+1);
@@ -1909,22 +1911,43 @@ function appendMessage(id, type, sent_date, received_date, label_value, label, t
 
     var them = type == "S" ? to_address   : from_address;
     var self = type == "S" ? from_address : to_address;
-
-    var key = (label_value == "" ? them : label_value).replace(/\s/g, '');
-
+    
+    var label_msg = type == "S" ? (labelTo == "" ? them : labelTo) : (label == "" ? self : label);
+    alert("Sender of message: " + label_msg + " message:" + message);
+    //var key = (label_value == "" ? them : label_value).replace(/\s/g, '');
+    
+    //Setup instructions: make sure the receiving address is named 'group_ANYTHING'. 
+    //It's best to add the sender of the message with a label so you get a nice overview!
+    
+    /* This is just a cheat to test the formatting, because the if clause down below is always returning false.
+    It will put all messages under the same contact*/
+     key = "group_lite"; //
+    
+    //this is just acting all weird.
+    if(type != "S" && label_value.lastIndexOf("group_", 0) === 0){
+        key = "group_lite";
+        alert("A message was sent to the group by " + label_msg + " putting it under " + key);
+    } else {
+        alert("Not a group message!");
+    }
+    
+    /* 
+    Basically I seperated the sender of the message (label_msg) from the contact[key].
+    So we can still group by the key, but the messages in the chat have the right sender label.
+    */
     var contact = contacts[key];
 
     if(contacts[key] == undefined)
         contacts[key] = {},
         contact = contacts[key],
         contact.key = key,
-        contact.label = label,
+        contact.label = key,
         contact.avatar = (false ? '' : 'qrc:///images/default'), // TODO: Avatars!!
         contact.messages  = new Array();
 
     if($.grep(contact.messages, function(a){ return a.id == id; }).length == 0)
     {
-        contact.messages.push({id:id, them: them, self: self, message: message, type: type, sent: sent_date, received: received_date, read: read});
+        contact.messages.push({id:id, them: them, self: self, label_msg: label_msg, message: message, type: type, sent: sent_date, received: received_date, read: read});
 
         if(!initial)
             appendContact(key, true);
@@ -1987,7 +2010,7 @@ function appendContact (key, newcontact) {
                     <span class='info'>\
                         <img src='"+contact.avatar+"' />\
                         <span class='user-name'>"
-                            +(message.type=='S'? (message.self == 'anon' ? 'anon' : Name) : contact.label)+"\
+                            +(message.type=='S'? (message.self == 'anon' ? 'anon' : Name) : message.label_msg)+"\
                         </span>\
                     </span>\
                     <span class='message-content'>\

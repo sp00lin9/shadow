@@ -90,7 +90,7 @@ signals:
     void emitTransactions(QVariantList transactions);
     void emitAddresses(QVariantList addresses);
     void emitMessages(QString messages, bool reset);
-    void emitMessage(QString id, QString type, qint64 sent, qint64 received, QString label_v, QString label, QString to, QString from, bool read, QString message);
+    void emitMessage(QString id, QString type, qint64 sent, qint64 received, QString label_v, QString label, QString labelTo, QString to, QString from, bool read, QString message);
     void emitCoinControlUpdate(unsigned int quantity, qint64 amount, qint64 fee, qint64 afterfee, unsigned int bytes, QString priority, QString low, qint64 change);
     void emitAddressBookReturn(QString address, QString label);
     void emitReceipient(QString address, QString label, QString narration, qint64 amount);

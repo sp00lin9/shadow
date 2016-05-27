@@ -268,7 +268,7 @@ public:
 
     QString addMessage(int row)
     {
-        return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
+        return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
                 .arg(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())
                 .arg(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())
@@ -278,7 +278,8 @@ public:
                 .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
                 .arg(mtm->index(row, MessageModel::Message)         .data().toString().toHtmlEscaped().replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
                 .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
-                .arg(mtm->index(row, MessageModel::Key)             .data().toString());
+                .arg(mtm->index(row, MessageModel::Key)             .data().toString())
+                .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
     }
 
 protected:
@@ -863,6 +864,7 @@ void ShadowBridge::appendMessage(int row)
                 window->messageModel->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t(),
                 window->messageModel->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString(),
                 window->messageModel->index(row, MessageModel::Label)           .data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/"),
+                window->messageModel->index(row, MessageModel::LabelTo)           .data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/"),
                 window->messageModel->index(row, MessageModel::ToAddress)       .data().toString(),
                 window->messageModel->index(row, MessageModel::FromAddress)     .data().toString(),
                 window->messageModel->index(row, MessageModel::Read)            .data().toBool(),
