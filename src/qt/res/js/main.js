@@ -1880,7 +1880,6 @@ function appendMessages(messages, reset) {
     for(var i=0; i<messages.length; i++)
     {
         var message = messages[i];
-        alert("appendMessages: " + message.labelTo);
         appendMessage(message.id,
                       message.type,
                       message.sent_date,
@@ -1912,23 +1911,22 @@ function appendMessage(id, type, sent_date, received_date, label_value, label, l
     var them = type == "S" ? to_address   : from_address;
     var self = type == "S" ? from_address : to_address;
     
-    var label_msg = type == "S" ? (labelTo == "" ? them : labelTo) : (label == "" ? self : label);
+    var label_msg = type == "S" ? (labelTo == "(no label)" ? self : labelTo) : (label == "(no label)" ? them : label);
     alert("Sender of message: " + label_msg + " message:" + message);
-    //var key = (label_value == "" ? them : label_value).replace(/\s/g, '');
+    var key = (label_value == "" ? them : label_value).replace(/\s/g, '');
     
     //Setup instructions: make sure the receiving address is named 'group_ANYTHING'. 
     //It's best to add the sender of the message with a label so you get a nice overview!
     
     /* This is just a cheat to test the formatting, because the if clause down below is always returning false.
     It will put all messages under the same contact*/
-     key = "group_lite"; //
+     
     
-    //this is just acting all weird.
-    if(type != "S" && label_value.lastIndexOf("group_", 0) === 0){
-        key = "group_lite";
-        alert("A message was sent to the group by " + label_msg + " putting it under " + key);
-    } else {
-        alert("Not a group message!");
+    if(type != "S" && labelTo.lastIndexOf("group_", 0) === 0){
+        key = labelTo.replace('group_', '');
+        them = self;
+    } else if(label_value.lastIndexOf("group_", 0) === 0){
+        key = label_value.replace('group_', '');
     }
     
     /* 
@@ -2010,7 +2008,7 @@ function appendContact (key, newcontact) {
                     <span class='info'>\
                         <img src='"+contact.avatar+"' />\
                         <span class='user-name'>"
-                            +(message.type=='S'? (message.self == 'anon' ? 'anon' : Name) : message.label_msg)+"\
+                            +(message.type=='S'? (message.self == 'anon' ? 'anon' : message.label_msg) : message.label_msg)+"\
                         </span>\
                     </span>\
                     <span class='message-content'>\
