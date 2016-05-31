@@ -82,13 +82,16 @@ public:
                 uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
                 if (SecureMsgDecrypt(false, smsgStored.sAddrTo, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
                 {
-                    LogPrintf("refreshMessageTable: secureMsgDecrypt succesful\n");
+                    if (fDebugSmsg)
+                        LogPrintf("refreshMessageTable: secureMsgDecrypt succesful\n");
                     
                     label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
                     labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo)); //returns "" if not found.
                     
-                    LogPrintf("refreshMessageTable: addressTo: %s\n", smsgStored.sAddrTo);
-                    LogPrintf("refreshMessageTable: addressFrom: %s\n", msg.sFromAddress);
+                    if (fDebugSmsg){
+                        LogPrintf("refreshMessageTable: addressTo: %s\n", smsgStored.sAddrTo);
+                        LogPrintf("refreshMessageTable: addressFrom: %s\n", msg.sFromAddress);
+                    }
 
                     std::string publicKey;
                     int duplicateMessageFromOutBox = SecureMsgGetLocalPublicKey(msg.sFromAddress, publicKey);
@@ -96,13 +99,16 @@ public:
 
                     if((labelTo.startsWith(groupPrefix)) && (duplicateMessageFromOutBox == 0)){
                         //a message has been received to our group but it was one of our own. Just don't process this at all. 
-		                //LogPrintf("refreshMessageTable: groupchat message, but duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
+		                if(fDebugSmsg)
+                            LogPrintf("refreshMessageTable: groupchat message, but duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
                         continue; 
                     } else if(labelTo.startsWith(groupPrefix) && (duplicateMessageFromOutBox == 4)) {
                         //a message has been received to our group and it was NOT one of our own. Yet retrieving the public key of it was succesful.
-		                //LogPrintf("refreshMessageTable: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
+		                if(fDebugSmsg)
+                            LogPrintf("refreshMessageTable: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
                     } else {
-	   	                //LogPrintf("refreshMessageTable: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
+	   	                if(fDebugSmsg)
+                           LogPrintf("refreshMessageTable: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
   	                }
             
                     sent_datetime    .setTime_t(msg.timestamp);
@@ -135,7 +141,9 @@ public:
                 {
                     label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
                     labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
-                    LogPrintf("refreshMessageTable: sendMessage: label: %s, labelTo: %s\n", label.toStdString(), labelTo.toStdString());
+                    
+                    if(fDebugSmsg)
+                        LogPrintf("refreshMessageTable: sendMessage: label: %s, labelTo: %s\n", label.toStdString(), labelTo.toStdString());
                     
                     sent_datetime    .setTime_t(msg.timestamp);
                     received_datetime.setTime_t(smsgStored.timeReceived);
@@ -174,10 +182,13 @@ public:
         uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
         if (SecureMsgDecrypt(false, smsgStored.sAddrTo, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
         {
-		    LogPrintf("newMessage: secureMsgDecrypt succesful\n");
+		    
             label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
             labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo)); //returns "" if not found.
-            LogPrintf("newMessage: addressTo: %s\n", smsgStored.sAddrTo);
+            
+            if(fDebugSmsg)
+                LogPrintf("newMessage: secureMsgDecrypt succesful\n");
+                LogPrintf("newMessage: addressTo: %s\n", smsgStored.sAddrTo);
 
             std::string publicKey;
             int duplicateMessageFromOutBox = SecureMsgGetLocalPublicKey(msg.sFromAddress, publicKey);
@@ -186,13 +197,16 @@ public:
             if((labelTo.startsWith(groupPrefix)) && (duplicateMessageFromOutBox == 0)){
                 //a message has been received to our group but it was one of our own. Just don't process this at all. 
                 //MAY CAUSE LOOP?
-		        //LogPrintf("newMessage: groupchat message, but duplicate.");
+		        if(fDebugSmsg)
+                    LogPrintf("newMessage: groupchat message, but duplicate.");
                 return; 
             } else if(labelTo.startsWith(groupPrefix) && (duplicateMessageFromOutBox == 4)) {
                 //a message has been received to our group and it was NOT one of our own. Yet retrieving the public key of it was succesful.
-		        //LogPrintf("newMessage: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
+		        if(fDebugSmsg)
+                    LogPrintf("newMessage: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
             } else {
-	   	        //LogPrintf("newMessage: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
+	   	        if(fDebugSmsg)
+                    LogPrintf("newMessage: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
   	        }
                 
             
@@ -237,7 +251,9 @@ public:
         {
             label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
             labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
-            //LogPrintf("newOutboxMessage: Label: %s, LabelTo: %s\n", label.toStdString(), labelTo.toStdString());
+            
+            if(fDebugSmsg)
+                LogPrintf("newOutboxMessage: Label: %s, LabelTo: %s\n", label.toStdString(), labelTo.toStdString());
             
             sent_datetime    .setTime_t(msg.timestamp);
             received_datetime.setTime_t(smsgStored.timeReceived);

@@ -906,6 +906,14 @@ int SecureMsgBuildBucketSet()
     return 0;
 };
 
+/* 
+SecureMsgAddWalletAddresses
+Enumerates the AddressBook, filters out anon outputs and checks the "real addresses"
+Adds these to the vector smsgAddresses to be used for decryption
+
+Returns  on success!
+*/
+
 int SecureMsgAddWalletAddresses()
 {
     if (fDebugSmsg)

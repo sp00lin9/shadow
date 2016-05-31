@@ -1912,7 +1912,6 @@ function appendMessage(id, type, sent_date, received_date, label_value, label, l
     var self = type == "S" ? from_address : to_address;
     
     var label_msg = type == "S" ? (labelTo == "(no label)" ? self : labelTo) : (label == "(no label)" ? them : label);
-    alert("Sender of message: " + label_msg + " message:" + message);
     var key = (label_value == "" ? them : label_value).replace(/\s/g, '');
     
     //Setup instructions: make sure the receiving address is named 'group_ANYTHING'. 
