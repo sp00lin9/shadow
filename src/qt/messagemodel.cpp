@@ -96,16 +96,13 @@ public:
 
                     if((labelTo.startsWith(groupPrefix)) && (duplicateMessageFromOutBox == 0)){
                         //a message has been received to our group but it was one of our own. Just don't process this at all. 
-                        //MAY CAUSE LOOP?
-		                LogPrintf("refreshMessageTable: groupchat message, but duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
+		                //LogPrintf("refreshMessageTable: groupchat message, but duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
                         continue; 
                     } else if(labelTo.startsWith(groupPrefix) && (duplicateMessageFromOutBox == 4)) {
                         //a message has been received to our group and it was NOT one of our own. Yet retrieving the public key of it was succesful.
-                        //Change the labelFrom to labelTo. Throws all the group chat messages together, might ruin nickname labels tho.
-                        //label = labelTo;
-		                LogPrintf("refreshMessageTable: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
+		                //LogPrintf("refreshMessageTable: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
                     } else {
-	   	                LogPrintf("refreshMessageTable: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
+	   	                //LogPrintf("refreshMessageTable: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
   	                }
             
                     sent_datetime    .setTime_t(msg.timestamp);
@@ -189,15 +186,13 @@ public:
             if((labelTo.startsWith(groupPrefix)) && (duplicateMessageFromOutBox == 0)){
                 //a message has been received to our group but it was one of our own. Just don't process this at all. 
                 //MAY CAUSE LOOP?
-		        LogPrintf("newMessage: groupchat message, but duplicate.");
+		        //LogPrintf("newMessage: groupchat message, but duplicate.");
                 return; 
             } else if(labelTo.startsWith(groupPrefix) && (duplicateMessageFromOutBox == 4)) {
                 //a message has been received to our group and it was NOT one of our own. Yet retrieving the public key of it was succesful.
-                //Change the labelFrom to labelTo. Throws all the group chat messages together, might ruin nickname labels tho.
-                //label = labelTo;
-		           LogPrintf("newMessage: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
+		        //LogPrintf("newMessage: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
             } else {
-	   	        LogPrintf("newMessage: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
+	   	        //LogPrintf("newMessage: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
   	        }
                 
             
@@ -242,13 +237,7 @@ public:
         {
             label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
             labelTo = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
-            LogPrintf("newOutboxMessage: Label: %s, LabelTo: %s\n", label.toStdString(), labelTo.toStdString());
-           
-            /* 
-            This is kind of awkward, variable label is used to specifcy to specific the RECEIVER of the message.
-            While labelTo is the sender of the address in this case. 
-            This is only so it works properly with the current implemtation of the javascript.  
-            */
+            //LogPrintf("newOutboxMessage: Label: %s, LabelTo: %s\n", label.toStdString(), labelTo.toStdString());
             
             sent_datetime    .setTime_t(msg.timestamp);
             received_datetime.setTime_t(smsgStored.timeReceived);
