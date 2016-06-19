@@ -1433,14 +1433,7 @@ function appendAddresses(addresses) {
     for(var i=0; i< addresses.length;i++)
     {
         var address = addresses[i];
-        
-        if(address.label.lastIndexOf("group_", 0) === 0){
-            //don't show anywhere if group address
-            //continue;
-        }
-        
-        alert(address.label + " type: " + address.type);
-        
+      
         var addrRow = $("#"+address.address);
         
         var page = (address.type == "S" ? "#addressbook" : (address.label.lastIndexOf("group_", 0) !== 0 ? "#receive" : "#addressbook"));
