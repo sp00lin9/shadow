@@ -205,7 +205,7 @@ public:
 		        if(fDebugSmsg)
                     LogPrintf("newMessage: grouchat message and it was not a duplicate. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox);
             } else {
-	   	        if(fDebugSmsg)
+                if(fDebugSmsg)
                     LogPrintf("newMessage: not groupchat. Label: %s, LabelTo: %s, SecureMsgGetLocalPublicKey: %i\n", label.toStdString(), labelTo.toStdString(), duplicateMessageFromOutBox); 
   	        }
                 
