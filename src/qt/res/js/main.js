@@ -1924,7 +1924,6 @@ function appendMessage(id, type, sent_date, received_date, label_value, label, l
     /* This is just a cheat to test the formatting, because the if clause down below is always returning false.
     It will put all messages under the same contact*/
      
-    
     if(type != "S" && labelTo.lastIndexOf("group_", 0) === 0){
         key = labelTo.replace('group_', '');
         //them = self;
