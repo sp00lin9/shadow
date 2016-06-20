@@ -922,7 +922,9 @@ int SecureMsgAddWalletAddresses()
     std::string sAnonPrefix("ao ");
 
     uint32_t nAdded = 0;
-    BOOST_FOREACH(const PAIRTYPE(CTxDestination, std::string)& entry, pwalletMain->mapAddressBook)
+    
+    //When using importprivkey, is our privkey enumerated in here? mapAddressBook?
+    BOOST_FOREACH(const PAIRTYPE(CTxDestination, std::string)& entry, pwalletMain->mapAddressBook) 
     {
         if (!IsDestMine(*pwalletMain, entry.first))
             continue;
@@ -940,7 +942,7 @@ int SecureMsgAddWalletAddresses()
         std::string address;
         std::string strPublicKey;
         address = coinAddress.ToString();
-
+        
         bool fExists        = 0;
         for (std::vector<SecMsgAddress>::iterator it = smsgAddresses.begin(); it != smsgAddresses.end(); ++it)
         {
@@ -955,7 +957,7 @@ int SecureMsgAddWalletAddresses()
 
         bool recvEnabled    = 1;
         bool recvAnon       = 1;
-
+        
         smsgAddresses.push_back(SecMsgAddress(address, recvEnabled, recvAnon));
         nAdded++;
     };
@@ -1125,9 +1127,14 @@ bool SecureMsgStart(bool fDontStart, bool fScanChain)
     if (smsgAddresses.size() < 1)
     {
         LogPrintf("No address keys loaded.\n");
-        if (SecureMsgAddWalletAddresses() != 0)
+         if (SecureMsgAddWalletAddresses() != 0){ 
             LogPrintf("Failed to load addresses from wallet.\n");
-    };
+        } else {
+            LogPrintf("Loaded addresses from wallet.\n");
+        }
+    } else {
+            LogPrintf("Loaded addresses from SMSG.ini\n");
+    }
 
     if (fScanChain)
     {
@@ -1889,7 +1896,9 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
 
 static int SecureMsgInsertAddress(CKeyID& hashKey, CPubKey& pubKey, SecMsgDB& addrpkdb)
 {
-    /* insert key hash and public key to addressdb
+    /* Insert key hash and public key to addressdb.
+    
+        (+) Called when receiving a message, it will automatically add the public key of the sender to our database so we can reply.
 
         should have LOCK(cs_smsg) where db is opened
 
@@ -2447,8 +2456,18 @@ int SecureMsgWalletUnlocked()
     return 0;
 };
 
+
 int SecureMsgWalletKeyChanged(std::string sAddress, std::string sLabel, ChangeType mode)
 {
+    /*
+        SecureMsgWalletKeyChanged():
+        When a key changes in the wallet, this function should be called to update the smsgAddresses vector.
+        
+        mode:
+            CT_NEW : a new key was added
+            CT_DELETED : delete an existing key from vector.
+    */
+
     if (!fSecMsgEnabled)
         return 0;
 
@@ -2525,7 +2544,7 @@ int SecureMsgScanMessage(uint8_t *pHeader, uint8_t *pPayload, uint32_t nPayload,
 
         CBitcoinAddress coinAddress(it->sAddress);
         addressTo = coinAddress.ToString();
-
+        
         if (!it->fReceiveAnon)
         {
             // -- have to do full decrypt to see address from
