@@ -648,7 +648,7 @@ Value smsginbox(const Array& params, bool fHelp)
             dbInbox.TxnBegin();
             
             leveldb::Iterator* it = dbInbox.pdb->NewIterator(leveldb::ReadOptions());
-            Object messageList;
+            Array messageList;
             
             while (dbInbox.NextSmesg(it, sPrefix, chKey, smsgStored))
             {
@@ -660,16 +660,19 @@ Value smsginbox(const Array& params, bool fHelp)
                 if (SecureMsgDecrypt(false, smsgStored.sAddrTo, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
                 {
                     Object objM;
+                    objM.push_back(Pair("success", "1"));
                     objM.push_back(Pair("received", getTimeString(smsgStored.timeReceived, cbuf, sizeof(cbuf))));
                     objM.push_back(Pair("sent", getTimeString(msg.timestamp, cbuf, sizeof(cbuf))));
                     objM.push_back(Pair("from", msg.sFromAddress));
                     objM.push_back(Pair("to", smsgStored.sAddrTo));
                     objM.push_back(Pair("text", std::string((char*)&msg.vchMessage[0]))); // ugh
                     
-                    messageList.push_back(Pair("message", objM));
+                    messageList.push_back(objM);
                 } else
                 {
-                    messageList.push_back(Pair("message", "Could not decrypt."));
+                    Object objM;
+                    objM.push_back(Pair("success", "0"));
+                    messageList.push_back(objM);
                 };
                 
                 if (fCheckReadStatus)
@@ -683,7 +686,7 @@ Value smsginbox(const Array& params, bool fHelp)
             dbInbox.TxnCommit();
             
             
-            result.push_back(Pair("list", messageList));
+            result.push_back(Pair("messages", messageList));
             result.push_back(Pair("result", strprintf("%u messages shown.", nMessages)));
             
         } else
@@ -756,7 +759,7 @@ Value smsgoutbox(const Array& params, bool fHelp)
             MessageData msg;
             leveldb::Iterator* it = dbOutbox.pdb->NewIterator(leveldb::ReadOptions());
             
-            Object messageList;
+            Array messageList;
             
             while (dbOutbox.NextSmesg(it, sPrefix, chKey, smsgStored))
             {
@@ -765,21 +768,22 @@ Value smsgoutbox(const Array& params, bool fHelp)
                 if (SecureMsgDecrypt(false, smsgStored.sAddrOutbox, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
                 {
                     Object objM;
+                    objM.push_back(Pair("success", "1"));
                     objM.push_back(Pair("sent", getTimeString(msg.timestamp, cbuf, sizeof(cbuf))));
                     objM.push_back(Pair("from", msg.sFromAddress));
                     objM.push_back(Pair("to", smsgStored.sAddrTo));
                     objM.push_back(Pair("text", std::string((char*)&msg.vchMessage[0]))); // ugh
                     
-                    messageList.push_back(Pair("message", objM));
+                    messageList.push_back(objM);
                 } else
                 {
-                    messageList.push_back(Pair("message", "Could not decrypt."));
+                    //messageList.push_back(Pair("success", "0"));
                 };
                 nMessages++;
             };
             delete it;
             
-            result.push_back(Pair("list" ,messageList));
+            result.push_back(Pair("messages" ,messageList));
             result.push_back(Pair("result", strprintf("%u sent messages shown.", nMessages)));
         } else
         {
