@@ -648,6 +648,8 @@ Value smsginbox(const Array& params, bool fHelp)
             dbInbox.TxnBegin();
             
             leveldb::Iterator* it = dbInbox.pdb->NewIterator(leveldb::ReadOptions());
+            Object messageList;
+            
             while (dbInbox.NextSmesg(it, sPrefix, chKey, smsgStored))
             {
                 if (fCheckReadStatus
@@ -664,10 +666,10 @@ Value smsginbox(const Array& params, bool fHelp)
                     objM.push_back(Pair("to", smsgStored.sAddrTo));
                     objM.push_back(Pair("text", std::string((char*)&msg.vchMessage[0]))); // ugh
                     
-                    result.push_back(Pair("message", objM));
+                    messageList.push_back(Pair("message", objM));
                 } else
                 {
-                    result.push_back(Pair("message", "Could not decrypt."));
+                    messageList.push_back(Pair("message", "Could not decrypt."));
                 };
                 
                 if (fCheckReadStatus)
@@ -680,6 +682,8 @@ Value smsginbox(const Array& params, bool fHelp)
             delete it;
             dbInbox.TxnCommit();
             
+            
+            result.push_back(Pair("list", messageList));
             result.push_back(Pair("result", strprintf("%u messages shown.", nMessages)));
             
         } else
@@ -751,6 +755,9 @@ Value smsgoutbox(const Array& params, bool fHelp)
             SecMsgStored smsgStored;
             MessageData msg;
             leveldb::Iterator* it = dbOutbox.pdb->NewIterator(leveldb::ReadOptions());
+            
+            Object messageList;
+            
             while (dbOutbox.NextSmesg(it, sPrefix, chKey, smsgStored))
             {
                 uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
@@ -763,15 +770,16 @@ Value smsgoutbox(const Array& params, bool fHelp)
                     objM.push_back(Pair("to", smsgStored.sAddrTo));
                     objM.push_back(Pair("text", std::string((char*)&msg.vchMessage[0]))); // ugh
                     
-                    result.push_back(Pair("message", objM));
+                    messageList.push_back(Pair("message", objM));
                 } else
                 {
-                    result.push_back(Pair("message", "Could not decrypt."));
+                    messageList.push_back(Pair("message", "Could not decrypt."));
                 };
                 nMessages++;
             };
             delete it;
             
+            result.push_back(Pair("list" ,messageList));
             result.push_back(Pair("result", strprintf("%u sent messages shown.", nMessages)));
         } else
         {

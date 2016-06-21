@@ -3,6 +3,8 @@
 #include "shadowgui.h"
 #include "guiutil.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include "editaddressdialog.h"
 
 #include "transactiontablemodel.h"
@@ -337,6 +339,7 @@ void ShadowBridge::setWalletModel()
 
     connect(window->clientModel->getOptionsModel(), SIGNAL(visibleTransactionsChanged(QStringList)), SLOT(populateTransactionTable()));
 }
+
 
 // This is just a hook, we won't really be setting the model...
 void ShadowBridge::setMessageModel()
@@ -959,6 +962,49 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
         break;
     }
 
+    return true;
+}
+
+bool ShadowBridge::joinGroupChat(QString privkey, QString label){
+    /*
+    EXPERIMENTAL CODE, UNTESTED. 
+    */
+    std::string strSecret = privkey.toStdString();
+    std::string strLabel = label.toStdString();
+    
+
+    int64_t nCreateTime = 1;
+    CBitcoinSecret vchSecret;
+    bool fGood = vchSecret.SetString(strSecret);
+
+    if (!fGood) return false; //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    if (fWalletUnlockStakingOnly) return false; //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
+
+    CKey key = vchSecret.GetKey();
+    CPubKey pubkey = key.GetPubKey();
+    CKeyID vchAddress = pubkey.GetID();
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+
+        pwalletMain->MarkDirty();
+        pwalletMain->SetAddressBookName(vchAddress, strLabel);
+
+        // Don't throw error in case a key is already there
+        if (pwalletMain->HaveKey(vchAddress))
+            return false;
+
+        pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = nCreateTime;
+
+        if (!pwalletMain->AddKeyPubKey(key, pubkey))
+            return false;
+            //throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
+
+        // whenever a key is imported, we need to scan the whole chain
+        pwalletMain->nTimeFirstKey = nCreateTime; // 0 would be considered 'no value'
+
+    }
+    
+    SecureMsgAddWalletAddresses();
     return true;
 }
 

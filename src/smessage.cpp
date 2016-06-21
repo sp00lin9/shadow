@@ -923,7 +923,7 @@ int SecureMsgAddWalletAddresses()
 
     uint32_t nAdded = 0;
     
-    //When using importprivkey, is our privkey enumerated in here? mapAddressBook?
+    
     BOOST_FOREACH(const PAIRTYPE(CTxDestination, std::string)& entry, pwalletMain->mapAddressBook) 
     {
         if (!IsDestMine(*pwalletMain, entry.first))

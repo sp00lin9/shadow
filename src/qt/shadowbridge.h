@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE bool sendCoins(bool fUseCoinControl, QString sChangeAddr);
     Q_INVOKABLE bool setPubKey(QString address, QString pubkey);
     Q_INVOKABLE bool sendMessage(const QString &address, const QString &message, const QString &from);
+    Q_INVOKABLE bool joinGroupChat(QString privkey, QString label);
 
     Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
     Q_INVOKABLE void updateCoinControlLabels(unsigned int &quantity, int64_t &amount, int64_t &fee, int64_t &afterfee, unsigned int &bytes, QString &priority, QString low, int64_t &change);
