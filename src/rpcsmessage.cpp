@@ -185,6 +185,8 @@ Value smsglocalkeys(const Array& params, bool fHelp)
     {
         uint32_t nKeys = 0;
         int all = mode == "all" ? 1 : 0;
+        Array keys;
+        
         for (std::vector<SecMsgAddress>::iterator it = smsgAddresses.begin(); it != smsgAddresses.end(); ++it)
         {
             if (!all 
@@ -212,16 +214,24 @@ Value smsglocalkeys(const Array& params, bool fHelp)
             
             sPublicKey = EncodeBase58(pubKey.begin(), pubKey.end());
             
+            Object objM;
+            
             std::string sLabel = pwalletMain->mapAddressBook[keyID];
             std::string sInfo;
             if (all)
                 sInfo = std::string("Receive ") + (it->fReceiveEnabled ? "on,  " : "off, ");
             sInfo += std::string("Anon ") + (it->fReceiveAnon ? "on" : "off");
-            result.push_back(Pair("key", it->sAddress + " - " + sPublicKey + " " + sInfo + " - " + sLabel));
+            //result.push_back(Pair("key", it->sAddress + " - " + sPublicKey + " " + sInfo + " - " + sLabel));
+            objM.push_back(Pair("key", it->sAddress));
+            objM.push_back(Pair("publickey",sPublicKey));
+            objM.push_back(Pair("receive",(it->fReceiveEnabled ? "1" : "0")));
+            objM.push_back(Pair("anon",(it->fReceiveAnon ? "1" : "0")));
+            objM.push_back(Pair("label",sLabel));
+            keys.push_back(objM);
             
             nKeys++;
         };
-        
+        result.push_back(Pair("keys", keys));
         result.push_back(Pair("result", strprintf("%u keys listed.", nKeys)));
     } else
     if (mode == "recv")
@@ -321,6 +331,8 @@ Value smsglocalkeys(const Array& params, bool fHelp)
     if (mode == "wallet")
     {
         uint32_t nKeys = 0;
+        Array keys;
+        
         BOOST_FOREACH(const PAIRTYPE(CTxDestination, std::string)& entry, pwalletMain->mapAddressBook)
         {
             if (!IsDestMine(*pwalletMain, entry.first))
@@ -349,10 +361,16 @@ Value smsglocalkeys(const Array& params, bool fHelp)
             
             sPublicKey = EncodeBase58(pubKey.begin(), pubKey.end());
             
-            result.push_back(Pair("key", address + " - " + sPublicKey + " - " + entry.second));
+            Object objM;
+            
+            objM.push_back(Pair("key", address));
+            objM.push_back(Pair("publickey", sPublicKey));
+            objM.push_back(Pair("label", entry.second));
+            
+            keys.push_back(objM);
             nKeys++;
         };
-        
+        result.push_back(Pair("keys", keys));
         result.push_back(Pair("result", strprintf("%u keys listed from wallet.", nKeys)));
     } else
     {
@@ -777,7 +795,9 @@ Value smsgoutbox(const Array& params, bool fHelp)
                     messageList.push_back(objM);
                 } else
                 {
-                    //messageList.push_back(Pair("success", "0"));
+                    Object objM;
+                    objM.push_back(Pair("success", "0"));
+                    messageList.push_back(objM);
                 };
                 nMessages++;
             };
