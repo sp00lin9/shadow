@@ -232,7 +232,7 @@ Value smsglocalkeys(const Array& params, bool fHelp)
             nKeys++;
         };
         result.push_back(Pair("keys", keys));
-        result.push_back(Pair("result", strprintf("%u keys listed.", nKeys)));
+        result.push_back(Pair("result", strprintf("%u", nKeys)));
     } else
     if (mode == "recv")
     {
@@ -371,7 +371,7 @@ Value smsglocalkeys(const Array& params, bool fHelp)
             nKeys++;
         };
         result.push_back(Pair("keys", keys));
-        result.push_back(Pair("result", strprintf("%u keys listed from wallet.", nKeys)));
+        result.push_back(Pair("result", strprintf("%u", nKeys)));
     } else
     {
         result.push_back(Pair("result", "Unknown Mode."));
@@ -705,7 +705,7 @@ Value smsginbox(const Array& params, bool fHelp)
             
             
             result.push_back(Pair("messages", messageList));
-            result.push_back(Pair("result", strprintf("%u messages shown.", nMessages)));
+            result.push_back(Pair("result", strprintf("%u", nMessages)));
             
         } else
         {
@@ -804,7 +804,7 @@ Value smsgoutbox(const Array& params, bool fHelp)
             delete it;
             
             result.push_back(Pair("messages" ,messageList));
-            result.push_back(Pair("result", strprintf("%u sent messages shown.", nMessages)));
+            result.push_back(Pair("result", strprintf("%u", nMessages)));
         } else
         {
             result.push_back(Pair("result", "Unknown Mode."));
