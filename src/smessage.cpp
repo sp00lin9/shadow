@@ -906,6 +906,14 @@ int SecureMsgBuildBucketSet()
     return 0;
 };
 
+/*
+SecureMsgAddWalletAddresses
+Enumerates the AddressBook, filters out anon outputs and checks the "real addresses"
+Adds these to the vector smsgAddresses to be used for decryption
+
+Returns  on success!
+*/
+
 int SecureMsgAddWalletAddresses()
 {
     if (fDebugSmsg)
@@ -914,6 +922,8 @@ int SecureMsgAddWalletAddresses()
     std::string sAnonPrefix("ao ");
 
     uint32_t nAdded = 0;
+
+
     BOOST_FOREACH(const PAIRTYPE(CTxDestination, std::string)& entry, pwalletMain->mapAddressBook)
     {
         if (!IsDestMine(*pwalletMain, entry.first))
@@ -1119,7 +1129,12 @@ bool SecureMsgStart(bool fDontStart, bool fScanChain)
         LogPrintf("No address keys loaded.\n");
         if (SecureMsgAddWalletAddresses() != 0)
             LogPrintf("Failed to load addresses from wallet.\n");
-    };
+        else
+            LogPrintf("Loaded addresses from wallet.\n");
+
+    } else {
+            LogPrintf("Loaded addresses from SMSG.ini\n");
+    }
 
     if (fScanChain)
     {
@@ -1881,7 +1896,9 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
 
 static int SecureMsgInsertAddress(CKeyID& hashKey, CPubKey& pubKey, SecMsgDB& addrpkdb)
 {
-    /* insert key hash and public key to addressdb
+    /* Insert key hash and public key to addressdb.
+
+        (+) Called when receiving a message, it will automatically add the public key of the sender to our database so we can reply.
 
         should have LOCK(cs_smsg) where db is opened
 
@@ -2439,8 +2456,18 @@ int SecureMsgWalletUnlocked()
     return 0;
 };
 
+
 int SecureMsgWalletKeyChanged(std::string sAddress, std::string sLabel, ChangeType mode)
 {
+    /*
+        SecureMsgWalletKeyChanged():
+        When a key changes in the wallet, this function should be called to update the smsgAddresses vector.
+
+        mode:
+            CT_NEW : a new key was added
+            CT_DELETED : delete an existing key from vector.
+    */
+
     if (!fSecMsgEnabled)
         return 0;
 
@@ -3949,4 +3976,3 @@ int SecureMsgDecrypt(bool fTestOnly, std::string &address, SecureMessage &smsg, 
 {
     return SecureMsgDecrypt(fTestOnly, address, &smsg.hash[0], smsg.pPayload, smsg.nPayload, msg);
 };
-
