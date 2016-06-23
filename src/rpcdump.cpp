@@ -165,7 +165,9 @@ Value importprivkey(const Array& params, bool fHelp)
             pwalletMain->ReacceptWalletTransactions();
         }
     }
-
+    
+    SecureMsgAddWalletAddresses();
+    
     return Value::null;
 }
 

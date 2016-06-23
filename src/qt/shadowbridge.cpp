@@ -3,6 +3,8 @@
 #include "shadowgui.h"
 #include "guiutil.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include "editaddressdialog.h"
 
 #include "transactiontablemodel.h"
@@ -268,7 +270,7 @@ public:
 
     QString addMessage(int row)
     {
-        return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
+        return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
                 .arg(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())
                 .arg(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())
@@ -278,7 +280,8 @@ public:
                 .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
                 .arg(mtm->index(row, MessageModel::Message)         .data().toString().toHtmlEscaped().replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
                 .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
-                .arg(mtm->index(row, MessageModel::Key)             .data().toString());
+                .arg(mtm->index(row, MessageModel::Key)             .data().toString())
+                .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
     }
 
 protected:
@@ -336,6 +339,7 @@ void ShadowBridge::setWalletModel()
 
     connect(window->clientModel->getOptionsModel(), SIGNAL(visibleTransactionsChanged(QStringList)), SLOT(populateTransactionTable()));
 }
+
 
 // This is just a hook, we won't really be setting the model...
 void ShadowBridge::setMessageModel()
@@ -863,6 +867,7 @@ void ShadowBridge::appendMessage(int row)
                 window->messageModel->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t(),
                 window->messageModel->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString(),
                 window->messageModel->index(row, MessageModel::Label)           .data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/"),
+                window->messageModel->index(row, MessageModel::LabelTo)           .data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/"),
                 window->messageModel->index(row, MessageModel::ToAddress)       .data().toString(),
                 window->messageModel->index(row, MessageModel::FromAddress)     .data().toString(),
                 window->messageModel->index(row, MessageModel::Read)            .data().toBool(),
@@ -957,6 +962,49 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
         break;
     }
 
+    return true;
+}
+
+bool ShadowBridge::joinGroupChat(QString privkey, QString label){
+    /*
+    EXPERIMENTAL CODE, UNTESTED. 
+    */
+    std::string strSecret = privkey.toStdString();
+    std::string strLabel = label.toStdString();
+    
+
+    int64_t nCreateTime = 1;
+    CBitcoinSecret vchSecret;
+    bool fGood = vchSecret.SetString(strSecret);
+
+    if (!fGood) return false; //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    if (fWalletUnlockStakingOnly) return false; //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
+
+    CKey key = vchSecret.GetKey();
+    CPubKey pubkey = key.GetPubKey();
+    CKeyID vchAddress = pubkey.GetID();
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+
+        pwalletMain->MarkDirty();
+        pwalletMain->SetAddressBookName(vchAddress, strLabel);
+
+        // Don't throw error in case a key is already there
+        if (pwalletMain->HaveKey(vchAddress))
+            return false;
+
+        pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = nCreateTime;
+
+        if (!pwalletMain->AddKeyPubKey(key, pubkey))
+            return false;
+            //throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
+
+        // whenever a key is imported, we need to scan the whole chain
+        pwalletMain->nTimeFirstKey = nCreateTime; // 0 would be considered 'no value'
+
+    }
+    
+    SecureMsgAddWalletAddresses();
     return true;
 }
 
