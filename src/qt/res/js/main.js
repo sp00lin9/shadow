@@ -1938,6 +1938,7 @@ function appendMessage(id, type, sent_date, received_date, label_value, label, l
     Basically I seperated the sender of the message (label_msg) from the contact[key].
     So we can still group by the key, but the messages in the chat have the right sender label.
     */
+    
     var contact = contacts[key];
 
     if(contacts[key] == undefined)
