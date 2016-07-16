@@ -274,8 +274,8 @@ public:
         
         return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
-                .arg(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())
-                .arg(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())
+                .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
+                .arg(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t()).toHtmlEscaped())
                 .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
                 .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
                 .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
