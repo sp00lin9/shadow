@@ -516,8 +516,8 @@ Value smsggetpubkey(const Array& params, bool fHelp)
                 publicKey = EncodeBase58(cpkFromDB.begin(), cpkFromDB.end());
 
                 result.push_back(Pair("result", "Success."));
-                result.push_back(Pair("peer address in DB", address));
-                result.push_back(Pair("compressed public key", publicKey));
+                result.push_back(Pair("address", address));
+                result.push_back(Pair("publickey", publicKey));
             };
             break;
         case 2:
