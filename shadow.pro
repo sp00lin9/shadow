@@ -53,10 +53,22 @@ android {
 
 build_macosx64 {
     QMAKE_TARGET_BUNDLE_PREFIX = co.shadowcoin
+    BOOST_LIB_SUFFIX=-mt
+    BOOST_INCLUDE_PATH=/usr/local/Cellar/boost/1.60.0_2/include
+    BOOST_LIB_PATH=/usr/local/Cellar/boost/1.60.0_2/lib
 
-    QMAKE_CXXFLAGS += -arch x86_64
+    BDB_INCLUDE_PATH=/usr/local/opt/berkeley-db4/include
+    BDB_LIB_PATH=/usr/local/Cellar/berkeley-db4/4.8.30/lib
+
+    OPENSSL_INCLUDE_PATH=/usr/local/opt/openssl/include
+    OPENSSL_LIB_PATH=/usr/local/opt/openssl/lib
+
+    MINIUPNPC_INCLUDE_PATH=/usr/local/opt/miniupnpc/include
+    MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/1.8.20131007/lib
+
+    QMAKE_CXXFLAGS += -arch x86_64 -stdlib=libc++
     QMAKE_CFLAGS += -arch x86_64
-    QMAKE_LFLAGS += -arch x86_64
+    QMAKE_LFLAGS += -arch x86_64 -stdlib=libc++
 }
 build_win32 {
     BOOST_LIB_SUFFIX=-mgw48-mt-s-1_55
