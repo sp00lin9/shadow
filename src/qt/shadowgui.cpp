@@ -157,35 +157,6 @@ void ShadowGUI::pageLoaded(bool ok)
         updateStakingIcon();
     }
 
-    // If they reload the page...
-    //if(clientModel)
-        //bridge->setClientModel();
-
-    if(walletModel) {
-
-        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
-        documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
-
-        documentFrame->evaluateJavaScript("connectSignals();");
-
-        walletModel->getOptionsModel()->displayUnitChanged   (walletModel->getOptionsModel()->getDisplayUnit());
-        walletModel->getOptionsModel()->reserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-        walletModel->getOptionsModel()->rowsPerPageChanged   (walletModel->getOptionsModel()->getRowsPerPage());
-
-        // Keep up to date with client
-        setNumConnections(clientModel->getNumConnections());
-        setNumBlocks     (clientModel->getNumBlocks(),
-                          clientModel->getNumBlocksOfPeers());
-        setEncryptionStatus(walletModel->getEncryptionStatus());
-        walletModel->encryptionStatusChanged(walletModel->getEncryptionStatus());
-
-        walletModel->balanceChanged(walletModel->getBalance(), walletModel->getShadowBalance(), walletModel->getStake(), walletModel->getUnconfirmedBalance(), walletModel->getImmatureBalance());
-
-        //bridge->setWalletModel();
-    }
-
-    //if(messageModel)
-    // bridge->setMessageModel();
 }
 
 void ShadowGUI::addJavascriptObjects()
