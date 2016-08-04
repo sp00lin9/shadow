@@ -402,15 +402,15 @@ void ShadowGUI::setNumConnections(int count)
     QString icon;
     switch(count)
     {
-    case 0:          icon = "qrc:///icons/connect_0"; break;
-    case 1: case 2:  icon = "qrc:///icons/connect_1"; break;
-    case 3: case 4:  icon = "qrc:///icons/connect_2"; break;
-    case 5: case 6:  icon = "qrc:///icons/connect_3"; break;
-    case 7: case 8:  icon = "qrc:///icons/connect_4"; break;
-    case 9: case 10: icon = "qrc:///icons/connect_5"; break;
-    default:         icon = "qrc:///icons/connect_6"; break;
+    case 0:          icon = "no-connections"; break;
+    case 1: case 2:  icon = "connection-1"; break;
+    case 3: case 4:  icon = "connection-2"; break;
+    case 5: case 6:  icon = "connection-3"; break;
+    case 7: case 8:  icon = "connection-4"; break;
+    case 9: case 10: icon = "connection-5"; break;
+    default:         icon = "connection-6"; break;
     }
-    connectionsIcon.setAttribute("src", icon);
+    connectionsIcon.setAttribute("class", icon);
     connectionsIcon.setAttribute("data-title", tr("%n active connection(s) to ShadowCoin network", "", count));
 }
 

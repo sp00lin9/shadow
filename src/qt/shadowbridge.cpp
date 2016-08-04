@@ -271,7 +271,7 @@ public:
     QString addMessage(int row)
     {
         //QString message = "{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},";
-        
+        LogPrintf("[addMessage] -- \n");
         return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
                 .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
@@ -863,6 +863,7 @@ void ShadowBridge::appendMessages(QString messages, bool reset)
 
 void ShadowBridge::appendMessage(int row)
 {
+    LogPrintf("appendMessage");
     emitMessage(window->messageModel->index(row, MessageModel::Key)             .data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::Type)            .data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t(),
@@ -967,7 +968,7 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
     return true;
 }
 
-bool ShadowBridge::joinGroupChat(QString privkey, QString label){
+QString ShadowBridge::joinGroupChat(QString privkey, QString label){
     /*
     EXPERIMENTAL CODE, UNTESTED. 
     */
@@ -993,12 +994,12 @@ bool ShadowBridge::joinGroupChat(QString privkey, QString label){
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress))
-            return false;
+            return "false";
 
         pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = nCreateTime;
 
         if (!pwalletMain->AddKeyPubKey(key, pubkey))
-            return false;
+            return "false";
             //throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
         // whenever a key is imported, we need to scan the whole chain
@@ -1007,7 +1008,9 @@ bool ShadowBridge::joinGroupChat(QString privkey, QString label){
     }
     
     SecureMsgAddWalletAddresses();
-    return true;
+    //TODO: return address and appendAddress with javascript
+    CBitcoinAddress addr(vchAddress);
+    return QString::fromStdString(addr.ToString());
 }
 
 
