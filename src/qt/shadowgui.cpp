@@ -156,11 +156,42 @@ void ShadowGUI::pageLoaded(bool ok)
         timerStakingIcon->start(15 * 1000);
         updateStakingIcon();
     }
+
+    // If they reload the page...
+    //if(clientModel)
+        //bridge->setClientModel();
+
+    if(walletModel) {
+
+        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
+        documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
+
+        documentFrame->evaluateJavaScript("connectSignals();");
+
+        walletModel->getOptionsModel()->displayUnitChanged   (walletModel->getOptionsModel()->getDisplayUnit());
+        walletModel->getOptionsModel()->reserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+        walletModel->getOptionsModel()->rowsPerPageChanged   (walletModel->getOptionsModel()->getRowsPerPage());
+
+        // Keep up to date with client
+        setNumConnections(clientModel->getNumConnections());
+        setNumBlocks     (clientModel->getNumBlocks(),
+                          clientModel->getNumBlocksOfPeers());
+        setEncryptionStatus(walletModel->getEncryptionStatus());
+        walletModel->encryptionStatusChanged(walletModel->getEncryptionStatus());
+
+        walletModel->balanceChanged(walletModel->getBalance(), walletModel->getShadowBalance(), walletModel->getStake(), walletModel->getUnconfirmedBalance(), walletModel->getImmatureBalance());
+
+        //bridge->setWalletModel();
+    }
+
+    //if(messageModel)
+    // bridge->setMessageModel();
 }
 
 void ShadowGUI::addJavascriptObjects()
 {
     documentFrame->addToJavaScriptWindowObject("bridge", bridge);
+
 }
 
 void ShadowGUI::urlClicked(const QUrl & link)
@@ -178,7 +209,7 @@ void ShadowGUI::createActions()
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About ShadowCoin"), this);
+    aboutAction = new QAction(QIcon(":/icons/shadow"), tr("&About ShadowCoin"), this);
     aboutAction->setToolTip(tr("Show information about ShadowCoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
@@ -187,7 +218,7 @@ void ShadowGUI::createActions()
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
     optionsAction->setToolTip(tr("Modify configuration options for ShadowCoin"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
-    toggleHideAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Show / Hide"), this);
+    toggleHideAction = new QAction(QIcon(":/icons/shadow"), tr("&Show / Hide"), this);
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
     encryptWalletAction->setToolTip(tr("Encrypt or decrypt wallet"));
     encryptWalletAction->setCheckable(true);
@@ -621,7 +652,7 @@ void ShadowGUI::askFee(qint64 nFeeRequired, bool *payFee)
 
 void ShadowGUI::incomingTransaction(const QModelIndex & parent, int start, int end)
 {
-    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || !nNodeState == NS_READY)
+    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || nNodeState != NS_READY)
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
