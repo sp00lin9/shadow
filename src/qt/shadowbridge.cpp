@@ -915,7 +915,8 @@ bool ShadowBridge::setPubKey(QString address, QString pubkey)
     std::string sendTo = address.toStdString();
     std::string pbkey  = pubkey.toStdString();
 
-    return SecureMsgAddAddress(sendTo, pbkey) == 0;
+    int res = SecureMsgAddAddress(sendTo, pbkey);
+    return res == 0||res == 4;
 }
 
 bool ShadowBridge::sendMessage(const QString &address, const QString &message, const QString &from)
