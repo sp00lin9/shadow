@@ -63,12 +63,16 @@ build_macosx64 {
     OPENSSL_INCLUDE_PATH=/usr/local/opt/openssl/include
     OPENSSL_LIB_PATH=/usr/local/opt/openssl/lib
 
-    MINIUPNPC_INCLUDE_PATH=/usr/local/opt/miniupnpc/include
-    MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/1.8.20131007/lib
+    #MINIUPNPC_INCLUDE_PATH=/usr/local/opt/miniupnpc/include
+    #MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/1.8.20131007/lib
+    MINIUPNPC_INCLUDE_PATH=/usr/local/Cellar/miniupnpc/2.0/include/miniupnpc/
+    MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/2.0/lib
 
     QMAKE_CXXFLAGS += -arch x86_64 -stdlib=libc++
     QMAKE_CFLAGS += -arch x86_64
     QMAKE_LFLAGS += -arch x86_64 -stdlib=libc++
+    USE_UPNP=1
+
 }
 build_win32 {
     BOOST_LIB_SUFFIX=-mgw48-mt-s-1_55
