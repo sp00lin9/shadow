@@ -399,18 +399,21 @@ void ShadowGUI::setNumConnections(int count)
 {
     QWebElement connectionsIcon = documentFrame->findFirstElement("#connectionsIcon");
 
-    QString icon;
+    QString className;
+
     switch(count)
     {
-    case 0:          icon = "no-connections"; break;
-    case 1: case 2:  icon = "connection-1"; break;
-    case 3: case 4:  icon = "connection-2"; break;
-    case 5: case 6:  icon = "connection-3"; break;
-    case 7: case 8:  icon = "connection-4"; break;
-    case 9: case 10: icon = "connection-5"; break;
-    default:         icon = "connection-6"; break;
+    case 0:          className = "connect-0"; break;
+    case 1: case 2:  className = "connect-1"; break;
+    case 3: case 4:  className = "connect-2"; break;
+    case 5: case 6:  className = "connect-3"; break;
+    case 7: case 8:  className = "connect-4"; break;
+    case 9: case 10: className = "connect-5"; break;
+    default:         className = "connect-6"; break;
     }
-    connectionsIcon.setAttribute("class", icon);
+
+    connectionsIcon.setAttribute("class", className);
+    connectionsIcon.setAttribute("src", "qrc:///icons/" + className.replace("-", "_"));
     connectionsIcon.setAttribute("data-title", tr("%n active connection(s) to ShadowCoin network", "", count));
 }
 
