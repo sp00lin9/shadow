@@ -106,7 +106,6 @@ public:
 
     void populateRows(int start, int end)
     {
-
         if(start > ROWS_TO_REFRESH)
             return;
 
@@ -118,6 +117,7 @@ public:
 
         QVariantList transactions;
 
+
         while(start <= end)
         {
             if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
@@ -125,7 +125,6 @@ public:
 
             start++;
         }
-
         if(!transactions.isEmpty())
             emitTransactions(transactions);
 
