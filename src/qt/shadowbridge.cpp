@@ -967,6 +967,12 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
     return true;
 }
 
+QString ShadowBridge::createGroupChat(QString label){
+    //return address to invite to people to.
+    return "";
+
+}
+
 QString ShadowBridge::joinGroupChat(QString privkey, QString label){
     /*
     EXPERIMENTAL CODE, UNTESTED.
