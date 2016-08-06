@@ -156,11 +156,13 @@ void ShadowGUI::pageLoaded(bool ok)
         timerStakingIcon->start(15 * 1000);
         updateStakingIcon();
     }
+
 }
 
 void ShadowGUI::addJavascriptObjects()
 {
     documentFrame->addToJavaScriptWindowObject("bridge", bridge);
+
 }
 
 void ShadowGUI::urlClicked(const QUrl & link)
@@ -178,7 +180,7 @@ void ShadowGUI::createActions()
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About ShadowCoin"), this);
+    aboutAction = new QAction(QIcon(":/icons/shadow"), tr("&About ShadowCoin"), this);
     aboutAction->setToolTip(tr("Show information about ShadowCoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
@@ -187,7 +189,7 @@ void ShadowGUI::createActions()
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
     optionsAction->setToolTip(tr("Modify configuration options for ShadowCoin"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
-    toggleHideAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Show / Hide"), this);
+    toggleHideAction = new QAction(QIcon(":/icons/shadow"), tr("&Show / Hide"), this);
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
     encryptWalletAction->setToolTip(tr("Encrypt or decrypt wallet"));
     encryptWalletAction->setCheckable(true);
@@ -624,7 +626,7 @@ void ShadowGUI::askFee(qint64 nFeeRequired, bool *payFee)
 
 void ShadowGUI::incomingTransaction(const QModelIndex & parent, int start, int end)
 {
-    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || !nNodeState == NS_READY)
+    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || nNodeState != NS_READY)
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
@@ -754,6 +756,7 @@ void ShadowGUI::setEncryptionStatus(int status)
 {
     QWebElement encryptionIcon    = documentFrame->findFirstElement("#encryptionIcon");
     QWebElement encryptButton     = documentFrame->findFirstElement("#encryptWallet");
+    QWebElement encryptMenuItem   = documentFrame->findFirstElement(".encryptWallet");
     QWebElement changePassphrase  = documentFrame->findFirstElement("#changePassphrase");
     QWebElement toggleLock        = documentFrame->findFirstElement("#toggleLock");
     QWebElement toggleLockIcon    = documentFrame->findFirstElement("#toggleLock i");
@@ -763,6 +766,7 @@ void ShadowGUI::setEncryptionStatus(int status)
         encryptionIcon.setAttribute("style", "display:none;");
         changePassphrase.addClass("none");
         toggleLock.addClass("none");
+        encryptMenuItem.removeClass("none");
         encryptWalletAction->setChecked(false);
         changePassphraseAction->setEnabled(false);
         unlockWalletAction->setVisible(false);
@@ -770,10 +774,15 @@ void ShadowGUI::setEncryptionStatus(int status)
         encryptWalletAction->setEnabled(true);
         break;
     case WalletModel::Unlocked:
+        encryptMenuItem  .addClass("none");
         encryptionIcon.removeAttribute("style");
         encryptionIcon.removeClass("fa-lock");
+        encryptionIcon.removeClass("encryption");
         encryptionIcon.   addClass("fa-unlock");
+        encryptionIcon.   addClass("no-encryption");
+        encryptMenuItem  .addClass("none");
         toggleLockIcon.removeClass("fa-unlock");
+        toggleLockIcon.removeClass("fa-unlock-alt");
         toggleLockIcon.   addClass("fa-lock");
         encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
 
@@ -782,11 +791,19 @@ void ShadowGUI::setEncryptionStatus(int status)
             encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
             encryptionIcon.removeClass("red");
             encryptionIcon.addClass("orange");
+            encryptionIcon.addClass("encryption-stake");
+
+            toggleLockIcon  .removeClass("red");
+            toggleLockIcon     .addClass("orange");
         } else
         {
             encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
             encryptionIcon.addClass("red");
             encryptionIcon.removeClass("orange");
+            encryptionIcon.removeClass("encryption-stake");
+
+            toggleLockIcon  .removeClass("orange");
+            toggleLockIcon     .addClass("red");
         };
 
         encryptButton.addClass("none");
@@ -801,16 +818,20 @@ void ShadowGUI::setEncryptionStatus(int status)
     case WalletModel::Locked:
         encryptionIcon.removeAttribute("style");
         encryptionIcon.removeClass("fa-unlock");
+        encryptionIcon.removeClass("no-encryption");
         encryptionIcon.   addClass("fa-lock");
+        encryptionIcon.   addClass("encryption");
         toggleLockIcon.removeClass("fa-lock");
-        toggleLockIcon.   addClass("fa-unlock");
+        toggleLockIcon.   addClass("fa-unlock-alt");
         encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
 
-        encryptionIcon.addClass("red");
-        encryptionIcon.removeClass("orange");
-        encryptButton.addClass("none");
+        encryptionIcon     .addClass("red");
+        encryptionIcon  .removeClass("orange");
+        encryptButton      .addClass("none");
+        encryptMenuItem    .addClass("none");
         changePassphrase.removeClass("none");
-        toggleLock.removeClass("none");
+        toggleLockIcon  .removeClass("orange");
+        toggleLockIcon     .addClass("red");
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         unlockWalletAction->setVisible(true);

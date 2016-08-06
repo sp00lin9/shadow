@@ -106,7 +106,6 @@ public:
 
     void populateRows(int start, int end)
     {
-
         if(start > ROWS_TO_REFRESH)
             return;
 
@@ -118,6 +117,7 @@ public:
 
         QVariantList transactions;
 
+
         while(start <= end)
         {
             if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
@@ -125,7 +125,6 @@ public:
 
             start++;
         }
-
         if(!transactions.isEmpty())
             emitTransactions(transactions);
 
@@ -271,7 +270,6 @@ public:
     QString addMessage(int row)
     {
         //QString message = "{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},";
-        LogPrintf("[addMessage] -- \n");
         return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
                 .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
@@ -917,7 +915,8 @@ bool ShadowBridge::setPubKey(QString address, QString pubkey)
     std::string sendTo = address.toStdString();
     std::string pbkey  = pubkey.toStdString();
 
-    return SecureMsgAddAddress(sendTo, pbkey) == 0;
+    int res = SecureMsgAddAddress(sendTo, pbkey);
+    return res == 0||res == 4;
 }
 
 bool ShadowBridge::sendMessage(const QString &address, const QString &message, const QString &from)
@@ -970,11 +969,10 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
 
 QString ShadowBridge::joinGroupChat(QString privkey, QString label){
     /*
-    EXPERIMENTAL CODE, UNTESTED. 
+    EXPERIMENTAL CODE, UNTESTED.
     */
     std::string strSecret = privkey.toStdString();
     std::string strLabel = label.toStdString();
-    
 
     int64_t nCreateTime = 1;
     CBitcoinSecret vchSecret;
@@ -1006,7 +1004,7 @@ QString ShadowBridge::joinGroupChat(QString privkey, QString label){
         pwalletMain->nTimeFirstKey = nCreateTime; // 0 would be considered 'no value'
 
     }
-    
+
     SecureMsgAddWalletAddresses();
     //TODO: return address and appendAddress with javascript
     CBitcoinAddress addr(vchAddress);

@@ -411,7 +411,7 @@ void AddressTableModel::updateEntry(const QString &address, const QString &label
 }
 
 /*
-TODO: 
+TODO:
 (+) Handle groupchat more properly, maybe based on &type? instead of addressType?
 */
 QString AddressTableModel::addRow(const QString &type, const QString &label, const QString &address, int addressType)
