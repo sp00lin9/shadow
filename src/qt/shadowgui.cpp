@@ -413,8 +413,9 @@ void ShadowGUI::setNumConnections(int count)
     case 9: case 10: className = "connect-5"; break;
     default:         className = "connect-6"; break;
     }
-    connectionsIcon.setAttribute("src", className.replace("-", "_"));
+
     connectionsIcon.setAttribute("class", className);
+    connectionsIcon.setAttribute("src", "qrc:///icons/" + className.replace("-", "_"));
     connectionsIcon.setAttribute("data-title", tr("%n active connection(s) to ShadowCoin network", "", count));
 }
 
