@@ -272,8 +272,8 @@ public:
         //QString message = "{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},";
         return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
-                .arg(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())
-                .arg(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())
+                .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
+                .arg(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t()).toHtmlEscaped())
                 .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
                 .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
                 .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
@@ -861,6 +861,7 @@ void ShadowBridge::appendMessages(QString messages, bool reset)
 
 void ShadowBridge::appendMessage(int row)
 {
+    LogPrintf("appendMessage");
     emitMessage(window->messageModel->index(row, MessageModel::Key)             .data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::Type)            .data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t(),
@@ -966,7 +967,35 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
     return true;
 }
 
-bool ShadowBridge::joinGroupChat(QString privkey, QString label){
+QString ShadowBridge::createGroupChat(QString label){
+    //return address to invite to people to.
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    std::string strLabel = label.toStdString();
+
+    RandAddSeedPerfmon(); // util.cpp
+    CKey secret; // hey.h
+    secret.MakeNewKey(true);
+    CPubKey pubkey = secret.GetPubKey();
+    CKeyID vchAddress = pubkey.GetID();
+
+    pwalletMain->MarkDirty();
+    CBitcoinAddress addr(vchAddress);
+
+    std::string strAddress = addr.ToString();
+
+    pwalletMain->SetAddressBookName(addr.Get(), strLabel, NULL, true, true);
+
+    if (!pwalletMain->AddKeyPubKey(secret, pubkey))
+            return "false";
+
+    SecureMsgAddWalletAddresses();
+
+    return QString::fromStdString(strAddress);
+}
+
+
+QString ShadowBridge::joinGroupChat(QString privkey, QString label){
     /*
     EXPERIMENTAL CODE, UNTESTED.
     */
@@ -977,8 +1006,8 @@ bool ShadowBridge::joinGroupChat(QString privkey, QString label){
     CBitcoinSecret vchSecret;
     bool fGood = vchSecret.SetString(strSecret);
 
-    if (!fGood) return false; //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
-    if (fWalletUnlockStakingOnly) return false; //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
+    if (!fGood) return "false"; //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    if (fWalletUnlockStakingOnly) return "false"; //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
 
     CKey key = vchSecret.GetKey();
     CPubKey pubkey = key.GetPubKey();
@@ -991,12 +1020,12 @@ bool ShadowBridge::joinGroupChat(QString privkey, QString label){
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress))
-            return false;
+            return "false";
 
         pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = nCreateTime;
 
         if (!pwalletMain->AddKeyPubKey(key, pubkey))
-            return false;
+            return "false";
             //throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
         // whenever a key is imported, we need to scan the whole chain
@@ -1005,9 +1034,54 @@ bool ShadowBridge::joinGroupChat(QString privkey, QString label){
     }
 
     SecureMsgAddWalletAddresses();
-    return true;
+    //TODO: return address and appendAddress with javascript
+    CBitcoinAddress addr(vchAddress);
+    return QString::fromStdString(addr.ToString());
 }
 
+
+QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invites, QString label, QString from){
+    //grab priv key
+    //check if it starts with group_ (just a cheap sanity check)
+    //send invites
+    LogPrintf("[inviteGroupChat] -- start\n");
+    CBitcoinAddress address;
+    QVariantList r;
+
+    if (!address.SetString(qsaddress.toStdString())){
+        LogPrintf("[inviteGroupChat] -- SetString address failed.\n");
+        r.append("error");
+        return r;
+    }
+
+    CKeyID keyID;
+    if (!address.GetKeyID(keyID)){
+        LogPrintf("[inviteGroupChat] -- GetKeyID failed.\n");
+        r.append("error");
+        return r;
+    }
+
+    CKey vchSecret;
+    if (!pwalletMain->GetKey(keyID, vchSecret)){
+        LogPrintf("[inviteGroupChat] -- GetKey failed.\n");
+        r.append("error");
+        return r;
+    }
+
+    std::string privatekey = CBitcoinSecret(vchSecret).ToString();
+    QString message = "/invite " + QString::fromStdString(privatekey) + " " + label;
+
+    //SecureString privkey(); //.reserve then .assign(CBitcoinSecret(vchSecret).ToString()))
+
+    for(int i = 0; i < invites.size(); i++){
+        QVariant inviteAddress = invites.at(i);
+        QString ted = inviteAddress.toString();
+        LogPrintf("[inviteGroupChat] sending invite!");
+        MessageModel::StatusCode sendstatus = thMessage->mtm->sendMessage(ted, message, from);
+    }
+
+    return invites;
+}
 
 void ShadowBridge::connectSignals()
 {
