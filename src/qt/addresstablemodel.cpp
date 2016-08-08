@@ -505,26 +505,7 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
             wallet->SetAddressBookName(sek->kp, strLabel, NULL, true, true);
             // - CBitcoinAddress displays public key only
             strAddress = CBitcoinAddress(sek->kp).ToString();
-        } else 
-        if(addressType == AT_Normal)
-        { //NORMAL OR GROUP
-            //TODO: decouple keygeneration from HD wallet
-            CPubKey newKey;
-            if (0 != wallet->NewKeyFromAccount(newKey))
-            {
-                editStatus = KEY_GENERATION_FAILURE;
-                return QString();
-            };
-
-            strAddress = CBitcoinAddress(newKey.GetID()).ToString();
-
-            {
-                LOCK(wallet->cs_wallet);
-
-                wallet->SetAddressBookName(CBitcoinAddress(strAddress).Get(), strLabel, NULL, true, true);
-            } // cs_wallet
-        }else 
-        if(addressType == AT_Group)
+        } else
         { //NORMAL OR GROUP
             //TODO: decouple keygeneration from HD wallet
             CPubKey newKey;
