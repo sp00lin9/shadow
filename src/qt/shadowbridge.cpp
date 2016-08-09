@@ -971,7 +971,7 @@ QString ShadowBridge::createGroupChat(QString label){
     //return address to invite to people to.
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    std::string strLabel = label.toStdString();
+    std::string strLabel = "group_" + label.toStdString();
 
     RandAddSeedPerfmon(); // util.cpp
     CKey secret; // hey.h
@@ -1000,7 +1000,7 @@ QString ShadowBridge::joinGroupChat(QString privkey, QString label){
     EXPERIMENTAL CODE, UNTESTED.
     */
     std::string strSecret = privkey.toStdString();
-    std::string strLabel = label.toStdString();
+    std::string strLabel = "group_" + label.toStdString();
 
     int64_t nCreateTime = 1;
     CBitcoinSecret vchSecret;
