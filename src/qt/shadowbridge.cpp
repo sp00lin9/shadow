@@ -861,7 +861,6 @@ void ShadowBridge::appendMessages(QString messages, bool reset)
 
 void ShadowBridge::appendMessage(int row)
 {
-    LogPrintf("appendMessage");
     emitMessage(window->messageModel->index(row, MessageModel::Key)             .data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::Type)            .data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t(),
@@ -967,7 +966,8 @@ bool ShadowBridge::sendMessage(const QString &address, const QString &message, c
     return true;
 }
 
-QString ShadowBridge::createGroupChat(QString label){
+QString ShadowBridge::createGroupChat(QString label)
+{
     //return address to invite to people to.
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -987,7 +987,7 @@ QString ShadowBridge::createGroupChat(QString label){
     pwalletMain->SetAddressBookName(addr.Get(), strLabel, NULL, true, true);
 
     if (!pwalletMain->AddKeyPubKey(secret, pubkey))
-            return "false";
+        return "false";
 
     SecureMsgAddWalletAddresses();
 
@@ -995,7 +995,8 @@ QString ShadowBridge::createGroupChat(QString label){
 }
 
 
-QString ShadowBridge::joinGroupChat(QString privkey, QString label){
+QString ShadowBridge::joinGroupChat(QString privkey, QString label)
+{
     /*
     EXPERIMENTAL CODE, UNTESTED.
     */
@@ -1040,7 +1041,8 @@ QString ShadowBridge::joinGroupChat(QString privkey, QString label){
 }
 
 
-QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invites, QString label, QString from){
+QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invites, QString label, QString from)
+{
     //grab priv key
     //check if it starts with group_ (just a cheap sanity check)
     //send invites
@@ -1048,21 +1050,23 @@ QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invit
     CBitcoinAddress address;
     QVariantList r;
 
-    if (!address.SetString(qsaddress.toStdString())){
+    if (!address.SetString(qsaddress.toStdString()))
+    {
         LogPrintf("[inviteGroupChat] -- SetString address failed.\n");
         r.append("error");
         return r;
     }
 
     CKeyID keyID;
-    if (!address.GetKeyID(keyID)){
+    if (!address.GetKeyID(keyID))
+    {
         LogPrintf("[inviteGroupChat] -- GetKeyID failed.\n");
         r.append("error");
         return r;
     }
 
     CKey vchSecret;
-    if (!pwalletMain->GetKey(keyID, vchSecret)){
+    if (!pwalletMain->GetKey(keyID, vchSecret)) {
         LogPrintf("[inviteGroupChat] -- GetKey failed.\n");
         r.append("error");
         return r;
@@ -1073,11 +1077,11 @@ QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invit
 
     //SecureString privkey(); //.reserve then .assign(CBitcoinSecret(vchSecret).ToString()))
 
-    for(int i = 0; i < invites.size(); i++){
+    for(int i = 0; i < invites.size(); i++) {
         QVariant inviteAddress = invites.at(i);
         QString ted = inviteAddress.toString();
         LogPrintf("[inviteGroupChat] sending invite!");
-        MessageModel::StatusCode sendstatus = thMessage->mtm->sendMessage(ted, message, from);
+        thMessage->mtm->sendMessage(ted, message, from); // Should we return the status?
     }
 
     return invites;
