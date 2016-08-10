@@ -971,7 +971,7 @@ QString ShadowBridge::createGroupChat(QString label)
     //return address to invite to people to.
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    std::string strLabel = label.toStdString();
+    std::string strLabel = "group_" + label.toStdString();
 
     RandAddSeedPerfmon(); // util.cpp
     CKey secret; // hey.h
@@ -1001,7 +1001,7 @@ QString ShadowBridge::joinGroupChat(QString privkey, QString label)
     EXPERIMENTAL CODE, UNTESTED.
     */
     std::string strSecret = privkey.toStdString();
-    std::string strLabel = label.toStdString();
+    std::string strLabel = "group_" + label.toStdString();
 
     int64_t nCreateTime = 1;
     CBitcoinSecret vchSecret;
@@ -1041,14 +1041,47 @@ QString ShadowBridge::joinGroupChat(QString privkey, QString label)
 }
 
 
-QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invites, QString label, QString from)
+QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invites, QString from)
 {
-    //grab priv key
-    //check if it starts with group_ (just a cheap sanity check)
-    //send invites
+    //TODO: check if part of HD wallet, if it is refuse to send invites.
+    QVariantList r; //Return 
+
+    QString actualLabel = getAddressLabel(qsaddress);
+
+    if(!actualLabel.startsWith("group_")){
+        LogPrintf("[inviteGroupChat] -- This should never happen, if it does please notify devteam.\n");
+        QMessageBox::warning(window, tr("Sanity Error!"),
+            tr("Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible."),
+            QMessageBox::Ok, QMessageBox::Ok);
+    } else {
+        actualLabel.replace("group_","");
+    }
+
+    QString informText = "Are you sure you want to invite the following addresses to this group?\n";
+
+    for(int i = 0; i < invites.size(); i++)
+    {
+        QString inviteAddress = invites.at(i).toString();
+        QString inviteLabel = getAddressLabel(inviteAddress);
+        informText.append(inviteLabel + " -- " + inviteAddress + "\n");
+    }
+
+    QMessageBox msgBox;
+    msgBox.setStyleSheet("QLabel{min-width: 600px;}");
+    msgBox.setText("Inviting to group " + actualLabel);
+    msgBox.setInformativeText(informText);
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+
+    if(msgBox.exec() == QMessageBox::Cancel)
+    {
+        LogPrintf("[inviteGroupChat] -- inviteGroupChat aborted.\n");
+        r.append("error");
+        return r;
+    }
+
     LogPrintf("[inviteGroupChat] -- start\n");
     CBitcoinAddress address;
-    QVariantList r;
 
     if (!address.SetString(qsaddress.toStdString()))
     {
@@ -1072,16 +1105,17 @@ QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invit
         return r;
     }
 
-    std::string privatekey = CBitcoinSecret(vchSecret).ToString();
-    QString message = "/invite " + QString::fromStdString(privatekey) + " " + label;
+    QString message = "/invite " + QString::fromStdString(CBitcoinSecret(vchSecret).ToString()) + " " + actualLabel;
 
     //SecureString privkey(); //.reserve then .assign(CBitcoinSecret(vchSecret).ToString()))
 
-    for(int i = 0; i < invites.size(); i++) {
-        QVariant inviteAddress = invites.at(i);
-        QString ted = inviteAddress.toString();
+    for(int i = 0; i < invites.size(); i++)
+    {
+        QString inviteAddress = invites.at(i).toString();
         LogPrintf("[inviteGroupChat] sending invite!");
-        thMessage->mtm->sendMessage(ted, message, from); // Should we return the status?
+
+        if(thMessage->mtm->sendMessage(inviteAddress, message, from) == MessageModel::OK)
+            r.append(inviteAddress);
     }
 
     return invites;
