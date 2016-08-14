@@ -650,7 +650,6 @@ void ThreadSecureMsg()
         for (std::vector<std::pair<int64_t, NodeId> >::iterator it(vTimedOutLocks.begin()); it != vTimedOutLocks.end(); it++)
         {
             NodeId nPeerId = it->second;
-            int64_t ignoreUntil = GetTime() + SMSG_TIME_IGNORE;
 
             if (fDebugSmsg)
                 LogPrintf("Lock on bucket %d for peer %d timed out.\n", it->first, nPeerId);
@@ -663,7 +662,8 @@ void ThreadSecureMsg()
                 {
                     if (pnode->id != nPeerId)
                         continue;
-                    LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
+                    LOCK(pnode->smsgData.cs_smsg_net);
+                    int64_t ignoreUntil = GetTime() + SMSG_TIME_IGNORE;
                     pnode->smsgData.ignoreUntil = ignoreUntil;
 
                     // -- alert peer that they are being ignored
