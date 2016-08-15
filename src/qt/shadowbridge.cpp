@@ -840,6 +840,13 @@ QString ShadowBridge::getAddressLabel(QString address)
 
 void ShadowBridge::updateAddressLabel(QString address, QString label)
 {
+    QString actualLabel = getAddressLabel(address);
+
+    if(actualLabel.startsWith("group_"))
+        label = "group_" + label;
+    else if(!actualLabel.startsWith("group_") && label.startsWith("group_"))
+        return;
+
     addressModel->atm->setData(addressModel->atm->index(addressModel->atm->lookupAddress(address), addressModel->atm->Label), QVariant(label), Qt::EditRole);
 }
 
