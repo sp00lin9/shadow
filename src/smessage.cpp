@@ -1275,7 +1275,7 @@ bool SecureMsgDisable()
         {
             if (!pnode->smsgData.fEnabled)
                 continue;
-            LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
+            LOCK(pnode->smsgData.cs_smsg_net);
             pnode->PushMessage("smsgDisabled");
             pnode->smsgData.fEnabled = false;
         };
