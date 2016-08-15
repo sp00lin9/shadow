@@ -117,7 +117,6 @@ public:
 
         QVariantList transactions;
 
-
         while(start <= end)
         {
             if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
@@ -174,6 +173,7 @@ private:
 
     bool prepare(bool running=true)
     {
+
         if (this->running || (running && clientModel->inInitialBlockDownload()))
             return false;
 
@@ -483,12 +483,12 @@ bool ShadowBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to SHADOW %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> SHADOW, ring size %2 to SHADOW %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SDC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to SDC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> SHADOW, ring size %2 to SDC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
                 inputType = 1;
                 break;
             default:
@@ -2172,11 +2172,11 @@ QVariantMap ShadowBridge::extKeySetDefault(QString extKeyID)
         else
             delete sea;
 
-        result.insert("result"      , "Success.");
+        result.insert("result", "Success.");
     } // cs_wallet
 
     // If we get here all went well
-    result.insert("error_msg"   , "");
+    result.insert("error_msg", "");
     return result;
 }
 
@@ -2186,7 +2186,7 @@ QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
     std::string sInKey = extKeyID.toStdString();
     if (extKeyID.length() == 0)
     {
-        result.insert("error_msg"       , "Must specify ext key or id.");
+        result.insert("error_msg" , "Must specify ext key or id.");
         return result;
     };
 
@@ -2207,7 +2207,7 @@ QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
         idNewMaster = ekp.GetID();
     } else
     {
-        result.insert("error_msg"       , "Invalid key: " + extKeyID);
+        result.insert("error_msg", "Invalid key: " + extKeyID);
         return result;
     };
 
@@ -2216,7 +2216,7 @@ QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
         CWalletDB wdb(pwalletMain->strWalletFile, "r+");
         if (!wdb.TxnBegin())
         {
-            result.insert("error_msg"       , "TxnBegin failed.");
+            result.insert("error_msg", "TxnBegin failed.");
             return result;
         }
 
@@ -2224,19 +2224,20 @@ QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
         if (0 != (rv = pwalletMain->ExtKeySetMaster(&wdb, idNewMaster)))
         {
             wdb.TxnAbort();
-            result.insert("error_msg"       , QString::fromStdString(strprintf("ExtKeySetMaster failed, %s.", ExtKeyGetString(rv))));
+            result.insert("error_msg", QString::fromStdString(strprintf("ExtKeySetMaster failed, %s.", ExtKeyGetString(rv))));
             return result;
         };
         if (!wdb.TxnCommit())
         {
-            result.insert("error_msg"       , "TxnCommit failed.");
+            result.insert("error_msg", "TxnCommit failed.");
             return result;
         }
     } // cs_wallet
 
     // If we get here all went well
-    result.insert("error_msg"   , "");
-    result.insert("result"      , "Success.");
+    result.insert("error_msg", "");
+    result.insert("result", "Success.");
+
     return result;
 }
 
@@ -2247,7 +2248,7 @@ QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
 
     if (extKeyID.length() == 0)
     {
-        result.insert("error_msg"       , "Must specify ext key or id.");
+        result.insert("error_msg", "Must specify ext key or id.");
         return result;
     };
 
@@ -2257,7 +2258,7 @@ QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
     CKeyID id;
     if (!addr.SetString(sInKey))
     {
-        result.insert("error_msg"       , "Invalid key or account id.");
+        result.insert("error_msg", "Invalid key or account id.");
         return result;
     }
 
@@ -2276,7 +2277,7 @@ QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
         fAccount = true;
     } else
     {
-        result.insert("error_msg"       , "Invalid key or account id.");
+        result.insert("error_msg", "Invalid key or account id.");
         return result;
     }
 
@@ -2287,7 +2288,7 @@ QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
         CWalletDB wdb(pwalletMain->strWalletFile, "r+");
         if (!wdb.TxnBegin())
         {
-            result.insert("error_msg"       , "TxnBegin failed.");
+            result.insert("error_msg", "TxnBegin failed.");
             return result;
         }
 
@@ -2306,13 +2307,13 @@ QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
                     && !wdb.WriteExtKey(id, sek))
                 {
                     wdb.TxnAbort();
-                    result.insert("error_msg"       , "Write failed.");
+                    result.insert("error_msg", "Write failed.");
                     return result;
                 };
             } else
             {
                 wdb.TxnAbort();
-                result.insert("error_msg"       , "Account not in wallet.");
+                result.insert("error_msg", "Account not in wallet.");
                 return result;
             };
         };
@@ -2331,27 +2332,27 @@ QVariantMap ShadowBridge::extKeySetActive(QString extKeyID, QString isActive)
                     && !wdb.WriteExtAccount(id, sea))
                 {
                     wdb.TxnAbort();
-                    result.insert("error_msg"       , "Write failed.");
+                    result.insert("error_msg", "Write failed.");
                     return result;
                 };
             } else
             {
                 wdb.TxnAbort();
-                result.insert("error_msg"       , "Account not in wallet.");
+                result.insert("error_msg", "Account not in wallet.");
                 return result;
             };
         };
 
         if (!wdb.TxnCommit())
         {
-            result.insert("error_msg"       , "TxnCommit failed.");
+            result.insert("error_msg", "TxnCommit failed.");
             return result;
         }
 
     } // cs_wallet
 
     // If we get here all went well
-    result.insert("error_msg"   , "");
-    result.insert("result"      , "Success.");
+    result.insert("error_msg", "");
+    result.insert("result", "Success.");
     return result;
 }
