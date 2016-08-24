@@ -911,7 +911,8 @@ bool ShadowBridge::markMessageAsRead(QString key)
 
 QString ShadowBridge::getPubKey(QString address, QString label)
 {
-    if(!label.isEmpty())
+
+    if(!label.isEmpty() && compare(getAddressLabel(address), "") != 0)
         updateAddressLabel(address, label);
 
     return addressModel->atm->pubkeyForAddress(address);;
