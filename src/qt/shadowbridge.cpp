@@ -132,6 +132,7 @@ public:
 
     void populatePage()
     {
+
         if(!prepare())
             return;
 
@@ -480,12 +481,12 @@ bool ShadowBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to SHADOW %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> SHADOW, ring size %2 to SHADOW %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SDC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to SDC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> SHADOW, ring size %2 to SDC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::SDC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
                 inputType = 1;
                 break;
             default:
@@ -1100,6 +1101,7 @@ QVariantList ShadowBridge::inviteGroupChat(QString qsaddress, QVariantList invit
     }
 
     CKey vchSecret;
+
     if (!pwalletMain->GetKey(keyID, vchSecret))
     {
         LogPrintf("[inviteGroupChat] -- GetKey failed.\n");
@@ -1386,7 +1388,6 @@ QVariantMap ShadowBridge::listTransactionsForBlock(QString blkHash)
         blockTxn.insert("transaction_hash"       , QString::fromStdString(txn.GetHash().ToString()));
         blockTxn.insert("transaction_value"      , QString::number(txn.GetValueOut() / (double)COIN));
         blkTransactions.insert(QString::number(x), blockTxn);
-
     }
 
     return blkTransactions;
@@ -1587,6 +1588,7 @@ QVariantMap ShadowBridge::signMessage(QString address, QString message)
     }
     result.insert("signed_signature", QString::fromStdString(EncodeBase64(&vchSig[0], vchSig.size())));
     result.insert("error_msg", "");
+
     return result;
 }
 
@@ -1635,6 +1637,7 @@ QVariantMap ShadowBridge::verifyMessage(QString address, QString message, QStrin
 
     // If we get here all went well and the message is valid
     result.insert("error_msg", "");
+
     return result;
 }
 
@@ -1694,6 +1697,7 @@ QVariantMap ShadowBridge::getNewMnemonic(QString password, QString language)
     result.insert("error_msg", "");
     result.insert("mnemonic", QString::fromStdString(sMnemonic));
     //result.insert("master", QString::fromStdString(sKey));
+
     return result;
 }
 
@@ -2115,6 +2119,7 @@ QVariantMap ShadowBridge::extKeyImport(QString inKey, QString inLabel, bool fBip
 
     // If we get here all went well and the message is valid
     result.insert("error_msg", "");
+
     return result;
 }
 
@@ -2189,6 +2194,7 @@ QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
     if (extKeyID.length() == 0)
     {
         result.insert("error_msg", "Must specify ext key or id.");
+
         return result;
     };
 
@@ -2239,6 +2245,7 @@ QVariantMap ShadowBridge::extKeySetMaster(QString extKeyID)
     // If we get here all went well
     result.insert("error_msg", "");
     result.insert("result", "Success.");
+
     return result;
 }
 
