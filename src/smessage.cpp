@@ -587,7 +587,8 @@ bool SecMsgDB::EraseSmesg(uint8_t* chKey)
 void ThreadSecureMsg()
 {
     // -- bucket management thread
-
+    SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
+    
     uint32_t nLoop = 0;
     std::vector<std::pair<int64_t, NodeId> > vTimedOutLocks;
     while (fSecMsgEnabled)
