@@ -108,17 +108,21 @@ public:
                 }
                 if(showTransaction)
                 {
-                    LOCK2(cs_main, wallet->cs_wallet);
-                    // Find transaction in wallet
-                    std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(hash);
-                    if(mi == wallet->mapWallet.end())
+                    QList<TransactionRecord> toInsert;
+
                     {
-                        LogPrintf("Warning: updateWallet: Got CT_NEW, but transaction is not in wallet\n");
-                        break;
+                        LOCK2(cs_main, wallet->cs_wallet);
+                        // Find transaction in wallet
+                        std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(hash);
+                        if(mi == wallet->mapWallet.end())
+                        {
+                            LogPrintf("Warning: updateWallet: Got CT_NEW, but transaction is not in wallet\n");
+                            break;
+                        }
+                        // Added -- insert at the right position
+                        toInsert = TransactionRecord::decomposeTransaction(wallet, mi->second);
                     }
-                    // Added -- insert at the right position
-                    QList<TransactionRecord> toInsert =
-                            TransactionRecord::decomposeTransaction(wallet, mi->second);
+
                     if(!toInsert.isEmpty()) /* only if something to insert */
                     {
                         parent->beginInsertRows(QModelIndex(), lowerIndex, lowerIndex+toInsert.size()-1);

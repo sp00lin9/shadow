@@ -41,7 +41,7 @@ public:
     /** Get the full transaction details */
     Q_INVOKABLE QString transactionDetails(QString txid);
     /** Get the pubkey for an address */
-    Q_INVOKABLE QString getPubKey(QString address, QString label);
+    Q_INVOKABLE QString getPubKey(QString address);
 
     /** Show debug dialog */
     Q_INVOKABLE QVariantMap userAction(QVariantMap action);

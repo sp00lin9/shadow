@@ -213,7 +213,7 @@ Value smsglocalkeys(const Array& params, bool fHelp)
                 sInfo = std::string("Receive ") + (it->fReceiveEnabled ? "on,  " : "off, ");
             sInfo += std::string("Anon ") + (it->fReceiveAnon ? "on" : "off");
             //result.push_back(Pair("key", it->sAddress + " - " + sPublicKey + " " + sInfo + " - " + sLabel));
-            objM.push_back(Pair("key", it->sAddress));
+            objM.push_back(Pair("address", it->sAddress));
             objM.push_back(Pair("publickey",sPublicKey));
             objM.push_back(Pair("receive",(it->fReceiveEnabled ? "1" : "0")));
             objM.push_back(Pair("anon",(it->fReceiveAnon ? "1" : "0")));
@@ -471,8 +471,8 @@ Value smsggetpubkey(const Array& params, bool fHelp)
     {
         case 0:
             result.push_back(Pair("result", "Success."));
-            result.push_back(Pair("address in wallet", address));
-            result.push_back(Pair("compressed public key", publicKey));
+            result.push_back(Pair("address", address));
+            result.push_back(Pair("publickey", publicKey));
             return result; // success, don't check db
         case 2:
         case 3:
@@ -516,8 +516,8 @@ Value smsggetpubkey(const Array& params, bool fHelp)
                 publicKey = EncodeBase58(cpkFromDB.begin(), cpkFromDB.end());
 
                 result.push_back(Pair("result", "Success."));
-                result.push_back(Pair("peer address in DB", address));
-                result.push_back(Pair("compressed public key", publicKey));
+                result.push_back(Pair("address", address));
+                result.push_back(Pair("publickey", publicKey));
             };
             break;
         case 2:

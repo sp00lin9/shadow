@@ -178,12 +178,13 @@ void SecMsgBucket::hashBucket()
 
     uint32_t hash_new = XXH32_digest(state);
 
-    if(hash != hash_new){
+    if(hash != hash_new)
+    {
 
         if(fDebugSmsg)
             LogPrintf("Bucket hash updated from %u to %u.\n", hash, hash_new);
 
-        hash = hash_new; //use memcpy here? 
+        hash = hash_new; //use memcpy here?
 
         timeChanged = GetTime();
     }
@@ -1328,8 +1329,8 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
     /*
         Commands
-        + smsgInv = 
-            (1) received inventory of other node. 
+        + smsgInv =
+            (1) received inventory of other node.
                 (1.1) sanity checks
             (2) loop through buckets
                 (2.1) sanity checks
@@ -1489,8 +1490,9 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             pfrom->PushMessage("smsgMatch", vchDataOut);
             if (fDebugSmsg)
                 LogPrintf("Sending smsgMatch, no locked buckets, time= %d.\n", now);
-        } else 
-        if (nLocked >= 1){
+        } else
+        if (nLocked >= 1)
+        {
             if (fDebugSmsg)
                 LogPrintf("%u buckets were locked, time= %d.\n", nLocked, now);
         };
@@ -1743,7 +1745,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
     if (strCommand == "smsgMatch")
     {
         /*
-        Basically all this code has to go.. 
+        Basically all this code has to go..
         For now we can use it to punish nodes running the older version, not that it's really need because the overhead is small.
         TODO: remove this code.
         */
@@ -1911,21 +1913,21 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
         /*
                 Get time before loop and after looping through messages set nLastMatched to time before loop.
                 This prevents scenario where:
-                    Loop()  
+                    Loop()
                         message = locked and  thus skipped
                        message become free and nTimeChanged is updated
                     End loop
-            
+
                     nLastMatched = GetTime()
                     => bucket that became free in loop is now skipped :/
 
                 Scenario 2:
                     Same as one but time is updated before
-                    
+
                         bucket nTimeChanged is updated but not unlocked yet
                         now = GetTime()
                         Loop of buckets skips message
-    
+
                     But this is nanoseconds, very unlikely.
 
              */
@@ -2372,7 +2374,7 @@ bool SecureMsgScanBuckets()
                     // SecureMsgScanMessage failed
                 };
 
-                nMessages ++;
+                nMessages++;
             };
 
             fclose(fp);
@@ -2517,7 +2519,7 @@ int SecureMsgWalletUnlocked()
                     // SecureMsgScanMessage failed
                 };
 
-                nMessages ++;
+                nMessages++;
             };
 
             fclose(fp);
