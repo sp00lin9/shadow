@@ -819,6 +819,7 @@ void ShadowGUI::setEncryptionStatus(int status)
         encryptionIcon.removeAttribute("style");
         encryptionIcon.removeClass("fa-unlock");
         encryptionIcon.removeClass("no-encryption");
+        encryptionIcon.removeClass("encryption-stake");
         encryptionIcon.   addClass("fa-lock");
         encryptionIcon.   addClass("encryption");
         toggleLockIcon.removeClass("fa-lock");
