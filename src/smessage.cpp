@@ -588,7 +588,8 @@ bool SecMsgDB::EraseSmesg(uint8_t* chKey)
 void ThreadSecureMsg()
 {
     // -- bucket management thread
-
+    SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
+    
     uint32_t nLoop = 0;
     std::vector<std::pair<int64_t, NodeId> > vTimedOutLocks;
     while (fSecMsgEnabled)
@@ -660,7 +661,8 @@ void ThreadSecureMsg()
         for (std::vector<std::pair<int64_t, NodeId> >::iterator it(vTimedOutLocks.begin()); it != vTimedOutLocks.end(); it++)
         {
             NodeId nPeerId = it->second;
-
+            uint32_t fExists = 0;
+            
             if (fDebugSmsg)
                 LogPrintf("Lock on bucket %d for peer %d timed out.\n", it->first, nPeerId);
 
@@ -672,6 +674,9 @@ void ThreadSecureMsg()
                 {
                     if (pnode->id != nPeerId)
                         continue;
+                    
+                    fExists = 1; //found in vNodes
+                    
                     LOCK(pnode->smsgData.cs_smsg_net);
                     int64_t ignoreUntil = GetTime() + SMSG_TIME_IGNORE;
                     pnode->smsgData.ignoreUntil = ignoreUntil;
@@ -687,6 +692,9 @@ void ThreadSecureMsg()
                     break;
                 };
             } // cs_vNodes
+            
+            if(fDebugSmsg)
+                LogPrintf("shadow-smsg thread: ignoring - looked peer %d, status on search %u\n", nPeerId, fExists);
         };
 
         MilliSleep(SMSG_THREAD_DELAY * 1000); //  // check every SMSG_THREAD_DELAY seconds
