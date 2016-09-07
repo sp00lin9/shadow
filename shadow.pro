@@ -54,8 +54,8 @@ android {
 build_macosx64 {
     QMAKE_TARGET_BUNDLE_PREFIX = co.shadowcoin
     BOOST_LIB_SUFFIX=-mt
-    BOOST_INCLUDE_PATH=/usr/local/Cellar/boost/1.60.0_2/include
-    BOOST_LIB_PATH=/usr/local/Cellar/boost/1.60.0_2/lib
+    BOOST_INCLUDE_PATH=/usr/local/Cellar/boost/1.61.0_1/include
+    BOOST_LIB_PATH=/usr/local/Cellar/boost/1.61.0_1/lib
 
     BDB_INCLUDE_PATH=/usr/local/opt/berkeley-db4/include
     BDB_LIB_PATH=/usr/local/Cellar/berkeley-db4/4.8.30/lib
@@ -65,7 +65,7 @@ build_macosx64 {
 
     #MINIUPNPC_INCLUDE_PATH=/usr/local/opt/miniupnpc/include
     #MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/1.8.20131007/lib
-    MINIUPNPC_INCLUDE_PATH=/usr/local/Cellar/miniupnpc/2.0/include/miniupnpc/
+    MINIUPNPC_INCLUDE_PATH=/usr/local/Cellar/miniupnpc/2.0/include
     MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/2.0/lib
 
     QMAKE_CXXFLAGS += -arch x86_64 -stdlib=libc++
