@@ -35,7 +35,7 @@ script:
 after_script:
     - cd $BINDIR
     - zip umbra.linux.zip umbra shadowcoind
-    - curl --upload umbra.linux.zip https://transfer.sh/umbra.linux.zip
+    - travis_retry curl --max-time 60 --upload umbra.linux.zip https://transfer.sh/umbra.linux.zip
 #deploy:
 #  provider: releases
 #  api_key: "GITHUB OAUTH TOKEN"
