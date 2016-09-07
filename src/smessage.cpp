@@ -641,7 +641,7 @@ void ThreadSecureMsg()
                         };
                     };
 
-                    smsgBuckets.erase(it);
+                    smsgBuckets.erase(it++);
                 } else
                 {
                     if (it->second.nLockCount > 0) // -- tick down nLockCount, so will eventually expire if peer never sends data
