@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = shadow
+TARGET = umbra
 VERSION = 1.5.0.1
 INCLUDEPATH += src src/json src/qt
 DEFINES += BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
@@ -29,6 +29,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
+RESOURCES = shadow.qrc
 
 android {
     INCLUDEPATH += src/qt/android
@@ -49,7 +50,6 @@ android {
 
     QT += widgets webkitwidgets
 }
-    RESOURCES = shadow.qrc
 
 build_macosx64 {
     QMAKE_TARGET_BUNDLE_PREFIX = co.shadowcoin
@@ -400,7 +400,7 @@ QMAKE_EXTRA_COMPILERS += TSQM
 
 # "Other files" to show in Qt Creator
 OTHER_FILES += \
-    .travis.yml doc/*.rst doc/*.txt doc/README README.md res/bitcoin-qt.rc
+    .travis.yml doc/*.rst doc/*.txt doc/README README.md res/bitcoin-qt.rc contrib/macdeploy/createdmg
 
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
@@ -453,7 +453,7 @@ macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm \
 macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
 macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/shadow.icns
-macx:TARGET = "Shadow"
+macx:TARGET = "Umbra"
 macx:QMAKE_CFLAGS_THREAD += -pthread
 macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread
