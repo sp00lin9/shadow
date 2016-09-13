@@ -33,7 +33,7 @@
         <file alias="assets/fonts/OpenSans/OpenSans-Light.ttf">src/qt/res/assets/fonts/OpenSans/OpenSans-Light.ttf</file>
         <file alias="assets/fonts/OpenSans/OpenSans-LightItalic.ttf">src/qt/res/assets/fonts/OpenSans/OpenSans-LightItalic.ttf</file>
         <file alias="assets/fonts/OpenSans/OpenSans-Regular.ttf">src/qt/res/assets/fonts/OpenSans/OpenSans-Regular.ttf</file>
-        <file alias="assets//icons/chat_bubble.png">../Shadow-UI/build/assets//icons/chat_bubble.png</file>
+        <file alias="assets//icons/chat_bubble.png">src/qt/res/assets//icons/chat_bubble.png</file>
         <file alias="assets/icons/chevron.png">src/qt/res/assets/icons/chevron.png</file>
         <file alias="assets/icons/connect_0.png">src/qt/res/assets/icons/connect_0.png</file>
         <file alias="assets/icons/connect_1.png">src/qt/res/assets/icons/connect_1.png</file>
@@ -1991,7 +1991,7 @@
         <file alias="assets/plugins/pace/pace.min.js">src/qt/res/assets/plugins/pace/pace.min.js</file>
         <file alias="assets/plugins/pnglib/pnglib.js">src/qt/res/assets/plugins/pnglib/pnglib.js</file>
         <file alias="assets/plugins/qrcode/qrcode.min.js">src/qt/res/assets/plugins/qrcode/qrcode.min.js</file>
-        <file alias="src/qt/res/index.html">../Shadow-UI/build/index.html</file>
+        <file alias="src/qt/res/index.html">src/qt/res/index.html</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="shadow">src/qt/res/icons/shadowcoin-80.png</file>
