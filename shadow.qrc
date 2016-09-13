@@ -115,7 +115,6 @@
         <file alias="assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.ttf">src/qt/res/assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.ttf</file>
         <file alias="assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.woff">src/qt/res/assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.woff</file>
         <file alias="assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.woff2">src/qt/res/assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.woff2</file>
-        <file alias="assets/plugins/boostrapv3/js/bootstrap.js">src/qt/res/assets/plugins/boostrapv3/js/bootstrap.js</file>
         <file alias="assets/plugins/boostrapv3/js/bootstrap.min.js">src/qt/res/assets/plugins/boostrapv3/js/bootstrap.min.js</file>
         <file alias="assets/plugins/classie/classie.js">src/qt/res/assets/plugins/classie/classie.js</file>
         <file alias="assets/plugins/contextMenu/contextMenu.css">src/qt/res/assets/plugins/contextMenu/contextMenu.css</file>
@@ -1961,11 +1960,9 @@
         <file alias="assets/plugins/framework/framework.min.js">src/qt/res/assets/plugins/framework/framework.min.js</file>
         <file alias="assets/plugins/identicon/identicon.js">src/qt/res/assets/plugins/identicon/identicon.js</file>
         <file alias="assets/plugins/iscroll/iscroll.js">src/qt/res/assets/plugins/iscroll/iscroll.js</file>
-        <file alias="assets/plugins/jdenticon/jdenticon-1.3.2.js">src/qt/res/assets/plugins/jdenticon/jdenticon-1.3.2.js</file>
         <file alias="assets/plugins/jdenticon/jdenticon-1.3.2.min.js">src/qt/res/assets/plugins/jdenticon/jdenticon-1.3.2.min.js</file>
         <file alias="assets/plugins/jquery/jquery-1.11.1.min.js">src/qt/res/assets/plugins/jquery/jquery-1.11.1.min.js</file>
         <file alias="assets/plugins/jquery-scrollbar/jquery.scrollbar.css">src/qt/res/assets/plugins/jquery-scrollbar/jquery.scrollbar.css</file>
-        <file alias="assets/plugins/jquery-scrollbar/jquery.scrollbar.js">src/qt/res/assets/plugins/jquery-scrollbar/jquery.scrollbar.js</file>
         <file alias="assets/plugins/jquery-scrollbar/jquery.scrollbar.min.js">src/qt/res/assets/plugins/jquery-scrollbar/jquery.scrollbar.min.js</file>
         <file alias="assets/plugins/jquery-transit/jquery.transit.min.js">src/qt/res/assets/plugins/jquery-transit/jquery.transit.min.js</file>
         <file alias="assets/plugins/jquery-ui/images/animated-overlay.gif">src/qt/res/assets/plugins/jquery-ui/images/animated-overlay.gif</file>
