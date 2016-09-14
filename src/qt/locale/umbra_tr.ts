@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="tr" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="tr">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -17,131 +19,23 @@
 Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The BlackCoin developers
 Copyright © 2014-2015 The ShadowCoin developers</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>
 This is experimental software.
 
-Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
+Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
-This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/) and cryptographic software written by Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.</source>
-        <translation>
- Bu, deneysel bir yazılımdır.
-
- MIT/X11 yazılım lisansı kapsamında yayınlanmıştır, beraberindeki COPYING dosyasına ya da http://www.opensource.org/licenses/mit-license.php sayfasına bakınız.
-
- Bu ürün, OpenSSL Araç Takımı&apos;nda (http://www.openssl.org/) kullanılmak üzere OpenSSL projesi tarafından geliştirilen yazılımı, Eric Young (eay@cryptsoft.com) tarafından hazırlanmış kriptografik yazılımı ve Thomas Bernard tarafından yazılmış UPnP yazılımı içerir.</translation>
-    </message>
-</context>
-<context>
-    <name>AddressBookPage</name>
-    <message>
-        <location filename="../forms/addressbookpage.ui" line="+14"/>
-        <source>Address Book</source>
-        <translation>Adres Defteri</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Double-click to edit address or label</source>
-        <translation>Adresi ya da etiketi düzenlemek için çift tıklayınız</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Create a new address</source>
-        <translation>Yeni bir adres oluştur</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Copy the currently selected address to the system clipboard</source>
-        <translation>Seçili adresi sistem panosuna kopyala</translation>
-    </message>
-    <message>
-        <location line="-11"/>
-        <source>&amp;New Address</source>
-        <translation>&amp;Yeni Adres</translation>
-    </message>
-    <message>
-        <location line="-46"/>
-        <source>These are your ShadowCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>Bunlar, ödeme almak için ShadowCoin adreslerinizdir. Her bir göndericiye farklı birini verebilir, böylece size kimin ödeme yaptığını takip edebilirsiniz.</translation>
-    </message>
-    <message>
-        <location line="+60"/>
-        <source>&amp;Copy Address</source>
-        <translation>Adresi &amp;Kopyala</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Show &amp;QR Code</source>
-        <translation>&amp;QR Kodunu Göster</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Sign a message to prove you own a ShadowCoin address</source>
-        <translation>Bir ShadowCoin adresine sahip olduğunu ispatlamak için bir mesaj imzala</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Sign &amp;Message</source>
-        <translation>&amp;Mesaj İmzala</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Delete the currently selected address from the list</source>
-        <translation>Seçili adresi listeden sil</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Verify a message to ensure it was signed with a specified ShadowCoin address</source>
-        <translation>Mesajın, belirli bir ShadowCoin adresiyle imzalandığından emin olmak için onu doğrula</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Verify Message</source>
-        <translation>Mesajı &amp;Doğrula</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>&amp;Delete</source>
-        <translation>&amp;Sil</translation>
-    </message>
-    <message>
-        <location filename="../addressbookpage.cpp" line="+65"/>
-        <source>Copy &amp;Label</source>
-        <translation>&amp;Etiketi Kopyala</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Edit</source>
-        <translation>&amp;Düzenle</translation>
-    </message>
-    <message>
-        <location line="+250"/>
-        <source>Export Address Book Data</source>
-        <translation>Adres Defteri Verisini Dışarı Aktar</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Comma separated file (*.csv)</source>
-        <translation>Virgülle ayrılmış değerler dosyası (*.csv)</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Error exporting</source>
-        <translation>Dışarı aktarım hatası</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Could not write to file %1.</source>
-        <translation>%1 dosyasına yazılamadı.</translation>
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>AddressTableModel</name>
     <message>
-        <location filename="../addresstablemodel.cpp" line="+144"/>
+        <location filename="../addresstablemodel.cpp" line="+218"/>
         <source>Label</source>
         <translation>Etiket</translation>
     </message>
@@ -151,9 +45,29 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Adres</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+0"/>
+        <source>pubkey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>stealth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
         <source>(no label)</source>
         <translation>(boş etiket)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stealth Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>n/a</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -189,7 +103,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Sadece pay almak için</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="+35"/>
+        <location filename="../askpassphrasedialog.cpp" line="+37"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <translation>Cüzdanınız için yeni parolayı giriniz.&lt;br/&gt;Lütfen &lt;b&gt;10 ya da daha fazla rastgele karakter&lt;/b&gt; veya &lt;b&gt;sekiz ya da daha fazla kelime&lt;/b&gt; içeren bir parola seçiniz.</translation>
     </message>
@@ -229,7 +143,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Cüzdan için eski ve yeni parolaları giriniz.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+45"/>
         <source>Confirm wallet encryption</source>
         <translation>Cüzdan şifrelenmesini teyit eder</translation>
     </message>
@@ -308,424 +222,9 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
-    <message>
-        <location filename="../bitcoingui.cpp" line="+280"/>
-        <source>Sign &amp;message...</source>
-        <translation>&amp;Mesaj imzala...</translation>
-    </message>
-    <message>
-        <location line="+242"/>
-        <source>Synchronizing with network...</source>
-        <translation>Ağ ile senkronizasyon...</translation>
-    </message>
-    <message>
-        <location line="-308"/>
-        <source>&amp;Overview</source>
-        <translation>&amp;Genel bakış</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show general overview of wallet</source>
-        <translation>Cüzdana genel bakışı göster</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>&amp;Transactions</source>
-        <translation>&amp;İşlemler</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Browse transaction history</source>
-        <translation>İşlem geçmişine göz at</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Adres Defteri</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit the list of stored addresses and labels</source>
-        <translation>Kayıtlı adresler ve etiketler listesini düzenle</translation>
-    </message>
-    <message>
-        <location line="-13"/>
-        <source>&amp;Receive coins</source>
-        <translation>Coin &amp;al</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show the list of addresses for receiving payments</source>
-        <translation>Ödeme almak için kullanılan adres listesini göster</translation>
-    </message>
-    <message>
-        <location line="-7"/>
-        <source>&amp;Send coins</source>
-        <translation>Coin &amp;gönder</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>E&amp;xit</source>
-        <translation>&amp;Çık</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Quit application</source>
-        <translation>Uygulamadan çık</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Show information about ShadowCoin</source>
-        <translation>ShadowCoin hakkındaki bilgiyi göster</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>About &amp;Qt</source>
-        <translation>&amp;Qt hakkında</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show information about Qt</source>
-        <translation>Qt hakkındaki bilgiyi göster</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Options...</source>
-        <translation>&amp;Seçenekler...</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>&amp;Encrypt Wallet...</source>
-        <translation>Cüzdanı &amp;Şifrele...</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Backup Wallet...</source>
-        <translation>Cüzdanı &amp;Yedekle...</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Change Passphrase...</source>
-        <translation>Parolayı &amp;Değiştir...</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+250"/>
-        <source>~%n block(s) remaining</source>
-        <translation><numerusform>~%n blok kaldı</numerusform><numerusform>~%n blok kaldı</numerusform></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Downloaded %1 of %2 blocks of transaction history (%3% done).</source>
-        <translation>İşlem geçmişindeki %2 bloğun %1&apos;i indirildi (%3% tamamlandı).</translation>
-    </message>
-    <message>
-        <location line="-247"/>
-        <source>&amp;Export...</source>
-        <translation>&amp;Dışarı aktar...</translation>
-    </message>
-    <message>
-        <location line="-62"/>
-        <source>Send coins to a ShadowCoin address</source>
-        <translation>Bir ShadowCoin adresine coin gönder</translation>
-    </message>
-    <message>
-        <location line="+45"/>
-        <source>Modify configuration options for ShadowCoin</source>
-        <translation>ShadowCoin yapılandırma seçeneklerini değiştir</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Export the data in the current tab to a file</source>
-        <translation>Mevcut sekmedeki veriyi bir dosyaya aktar</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Encrypt or decrypt wallet</source>
-        <translation>Cüzdanı şifrele veya cüzdanın şifresini aç</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Backup wallet to another location</source>
-        <translation>Cüzdanı başka bir konuma yedekle</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Change the passphrase used for wallet encryption</source>
-        <translation>Cüzdan şifrelemesi için kullanılan parolayı değiştir</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>&amp;Debug window</source>
-        <translation>&amp;Hata ayıklama penceresi</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Open debugging and diagnostic console</source>
-        <translation>Hata ayıklama ve teşhis penceresini aç</translation>
-    </message>
-    <message>
-        <location line="-5"/>
-        <source>&amp;Verify message...</source>
-        <translation>Mesajı &amp;doğrula...</translation>
-    </message>
-    <message>
-        <location line="-200"/>
-        <source>ShadowCoin</source>
-        <translation>ShadowCoin</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Wallet</source>
-        <translation>Cüzdan</translation>
-    </message>
-    <message>
-        <location line="+178"/>
-        <source>&amp;About ShadowCoin</source>
-        <translation>ShadowCoin &amp;Hakkında</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>&amp;Show / Hide</source>
-        <translation>&amp;Göster / Gizle</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Unlock wallet</source>
-        <translation>Cüzdanın kilidini aç</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Lock Wallet</source>
-        <translation>Cüzdanı &amp;Kilitle</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Lock wallet</source>
-        <translation>Cüzdanı kilitle</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>&amp;File</source>
-        <translation>&amp;Dosya</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>&amp;Settings</source>
-        <translation>&amp;Ayarlar</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>&amp;Help</source>
-        <translation>&amp;Yardım</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Tabs toolbar</source>
-        <translation>Sekme araç çubuğu</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Actions toolbar</source>
-        <translation>Eylem araç çubuğu</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <location line="+9"/>
-        <source>[testnet]</source>
-        <translation>[testnet]</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+60"/>
-        <source>ShadowCoin client</source>
-        <translation>ShadowCoin istemcisi</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+70"/>
-        <source>%n active connection(s) to ShadowCoin network</source>
-        <translation><numerusform>ShadowCoin ağına %n etkin bağlantı</numerusform><numerusform>ShadowCoin ağına %n etkin bağlantı</numerusform></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Downloaded %1 blocks of transaction history.</source>
-        <translation>İşlem geçmişinin %1 bloğu indirildi.</translation>
-    </message>
-    <message>
-        <location line="+413"/>
-        <source>Staking.&lt;br&gt;Your weight is %1&lt;br&gt;Network weight is %2&lt;br&gt;Expected time to earn reward is %3</source>
-        <translation>Pay alınıyor.&lt;br&gt;Sizin ağırlığınız %1&lt;br&gt;Ağın ağırlığı %2&lt;br&gt;Ödül almak için tahmini süre %3</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Not staking because wallet is locked</source>
-        <translation>Pay alınmıyor çünkü cüzdan kilitlidir</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Not staking because wallet is offline</source>
-        <translation>Pay alınmıyor çünkü cüzdan çevrimdışıdır</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Not staking because wallet is syncing</source>
-        <translation>Pay alınmıyor çünkü cüzdan senkronize ediliyor</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Not staking because you don&apos;t have mature coins</source>
-        <translation>Pay alınmıyor çünkü olgunlaşmış coininiz yoktur</translation>
-    </message>
-    <message numerus="yes">
-        <location line="-403"/>
-        <source>%n second(s) ago</source>
-        <translation><numerusform>%n saniye önce</numerusform><numerusform>%n saniye önce</numerusform></translation>
-    </message>
-    <message>
-        <location line="-284"/>
-        <source>&amp;Unlock Wallet...</source>
-        <translation>Cüzdanı &amp;Kilitle...</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+288"/>
-        <source>%n minute(s) ago</source>
-        <translation><numerusform>%n dakika önce</numerusform><numerusform>%n dakika önce</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n hour(s) ago</source>
-        <translation><numerusform>%n saat önce</numerusform><numerusform>%n saat önce</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n day(s) ago</source>
-        <translation><numerusform>%n gün önce</numerusform><numerusform>%n gün önce</numerusform></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Up to date</source>
-        <translation>Güncel</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Catching up...</source>
-        <translation>Aralık kapatılıyor...</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Son alınan blok, üretildi %1.</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation>Bu işlem, büyüklük sınırının üzerindedir. İşleminizi gerçekleştirecek devrelere gidecek ve ağı desteklemeye yardımcı olacak %1 ücretle coin gönderebilirsiniz. Ücreti ödemek istiyor musunuz?</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Confirm transaction fee</source>
-        <translation>İşlem ücretini onayla</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Sent transaction</source>
-        <translation>İşlem gerçekleştirildi</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Incoming transaction</source>
-        <translation>Gelen işlem</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Date: %1
-Amount: %2
-Type: %3
-Address: %4
-</source>
-        <translation>Tarih: %1
-Miktar: %2
-Tür: %3
-Adres: %4
-</translation>
-    </message>
-    <message>
-        <location line="+100"/>
-        <location line="+15"/>
-        <source>URI handling</source>
-        <translation>URI işleme</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <location line="+15"/>
-        <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
-        <translation>URI ayrıştırılamadı! Bu, geçersiz bir ShadowCoin adresi veya hatalı URI parametreleri nedeniyle olabilir.</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation>Cüzdan &lt;b&gt;şifrelenmiştir&lt;/b&gt; ve şu anda &lt;b&gt;kilidi açıktır&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation>Cüzdan &lt;b&gt;şifrelenmiştir&lt;/b&gt; ve şu anda &lt;b&gt;kilitlidir&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Backup Wallet</source>
-        <translation>Cüzdanı Yedekle</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Wallet Data (*.dat)</source>
-        <translation>Cüzdan Verisi (*.dat)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Backup Failed</source>
-        <translation>Yedekleme Başarısız Oldu</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>There was an error trying to save the wallet data to the new location.</source>
-        <translation>Cüzdan verisi, yeni bir konuma kaydedilmeye çalışılırken bir hata oluştu.</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+76"/>
-        <source>%n second(s)</source>
-        <translation><numerusform>%n saniye</numerusform><numerusform>%n saniye</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n minute(s)</source>
-        <translation><numerusform>%n dakika</numerusform><numerusform>%n dakika</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n hour(s)</source>
-        <translation><numerusform>%n saat</numerusform><numerusform>%n saat</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n day(s)</source>
-        <translation><numerusform>%n gün</numerusform><numerusform>%n gün</numerusform></translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Not staking</source>
-        <translation>Pay alınmıyor</translation>
-    </message>
-    <message>
-        <location filename="../bitcoin.cpp" line="+109"/>
-        <source>A fatal error occurred. ShadowCoin can no longer continue safely and will quit.</source>
-        <translation>Önemli bir hata oluştu. ShadowCoin artık güvenli bir şekilde devam edemez ve şimdi kapatılacak.</translation>
-    </message>
-</context>
-<context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+90"/>
+        <location filename="../clientmodel.cpp" line="+137"/>
         <source>Network Alert</source>
         <translation>Ağ Uyarısı</translation>
     </message>
@@ -768,7 +267,8 @@ Adres: %4
         <translation>Düşük Çıktı:</translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="+551"/>
+        <location filename="../coincontroldialog.cpp" line="+528"/>
+        <location line="+30"/>
         <source>no</source>
         <translation>hayır</translation>
     </message>
@@ -833,7 +333,7 @@ Adres: %4
         <translation>Öncelik</translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="-515"/>
+        <location filename="../coincontroldialog.cpp" line="-520"/>
         <source>Copy address</source>
         <translation>Adresi kopyala</translation>
     </message>
@@ -924,12 +424,14 @@ Adres: %4
         <translation>en düşük</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+130"/>
+        <location line="+30"/>
         <source>DUST</source>
         <translation>BOZUKLUK</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-30"/>
+        <location line="+30"/>
         <source>yes</source>
         <translation>evet</translation>
     </message>
@@ -982,7 +484,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
  Bu, en az %2 bir ücretin gerektiği anlamına gelir.</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+40"/>
         <location line="+66"/>
         <source>(no label)</source>
         <translation>(boş etiket)</translation>
@@ -1026,27 +528,32 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Bu adres defteri kaydıyla ilişkili etiket. Bu, sadece gönderi adresleri için değiştirilebilir.</translation>
     </message>
     <message>
+        <location line="+7"/>
+        <source>&amp;Stealth Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../editaddressdialog.cpp" line="+20"/>
         <source>New receiving address</source>
         <translation>Yeni alım adresi</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>New sending address</source>
         <translation>Yeni gönderi adresi</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Edit receiving address</source>
         <translation>Alım adresini düzenle</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>Edit sending address</source>
         <translation>Gönderi adresini düzenle</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+82"/>
         <source>The entered address &quot;%1&quot; is already in the address book.</source>
         <translation>Girilen &quot;%1&quot; adresi hâlihazırda adres defterinde mevcuttur.</translation>
     </message>
@@ -1069,18 +576,18 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="+420"/>
-        <location line="+12"/>
-        <source>ShadowCoin-Qt</source>
-        <translation>ShadowCoin-Qt</translation>
-    </message>
-    <message>
-        <location line="-12"/>
+        <location filename="../guiutil.cpp" line="+526"/>
         <source>version</source>
         <translation>versiyon</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+0"/>
+        <location line="+12"/>
+        <source>Shadow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-10"/>
         <source>Usage:</source>
         <translation>Kullanım:</translation>
     </message>
@@ -1111,356 +618,122 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
 </context>
 <context>
-    <name>OptionsDialog</name>
-    <message>
-        <location filename="../forms/optionsdialog.ui" line="+14"/>
-        <source>Options</source>
-        <translation>Seçenekler</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>&amp;Main</source>
-        <translation>&amp;Esas ayarlar</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Optional transaction fee per kB that helps make sure your transactions are processed quickly. Most transactions are 1 kB. Fee 0.01 recommended.</source>
-        <translation>İşlemlerinizin hızlıca gerçekleştirilmesini sağlayan kB başına opsiyonel işlem ücreti. Birçok işlem 1 kB&apos;tır. Tavsiye edilen ücret 0.01&apos;dir.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Pay transaction &amp;fee</source>
-        <translation>Muamele ücreti &amp;öde</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
-        <translation>Ayrılan miktar, pay almaya katılamıyor ve bu yüzden herhangi bir anda harcanabilir.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Reserve</source>
-        <translation>Ayrılan</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Automatically start ShadowCoin after logging in to the system.</source>
-        <translation>Sisteme giriş yaptıktan sonra ShadowCoin&apos;i otomatik olarak başlat</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Start ShadowCoin on system login</source>
-        <translation>Sisteme girişte ShadowCoin&apos;i &amp;başlat</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Detach block and address databases at shutdown. This means they can be moved to another data directory, but it slows down shutdown. The wallet is always detached.</source>
-        <translation>Kapanışta blok ve adres veritabanlarını birbirinden ayır. Bu, onların başka bir veri klasörüne taşınabileceği anlamına gelir ancak bu işlem kapanışı yavaşlatır. Cüzdan ise her zaman ayrılmıştır.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Detach databases at shutdown</source>
-        <translation>Kapanışta veritabanlarını &amp;ayır</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>&amp;Network</source>
-        <translation>&amp;Şebeke</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Automatically open the ShadowCoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Yönelticide ShadowCoin istemci portunu otomatik olarak aç. Bu, sadece yönelticiniz UPnP&apos;i desteklediğinde ve etkin olduğunda çalışır.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Map port using &amp;UPnP</source>
-        <translation>Portları &amp;UPnP kullanarak haritala</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Connect to the ShadowCoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>ShadowCoin ağına bir SOCKS vekil sunucusu yoluyla bağlan (örn. Tor yoluyla bağlanıldığında)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Connect through SOCKS proxy:</source>
-        <translation>SOCKS vekil sunucusu yoluyla &amp;bağlan:</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Proxy &amp;IP:</source>
-        <translation>Vekil &amp;İP:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>IP address of the proxy (e.g. 127.0.0.1)</source>
-        <translation>Vekil sunucunun IP adresi (örn. 127.0.0.1)</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>&amp;Port:</source>
-        <translation>&amp;Port:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Port of the proxy (e.g. 9050)</source>
-        <translation>Vekil sunucunun portu (mesela 9050)</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>SOCKS &amp;Version:</source>
-        <translation>SOCKS &amp;sürümü:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>SOCKS version of the proxy (e.g. 5)</source>
-        <translation>Vekil sunucunun SOCKS sürümü (mesela 5)</translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>&amp;Window</source>
-        <translation>&amp;Pencere</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Show only a tray icon after minimizing the window.</source>
-        <translation>Küçültüldükten sonra sadece çekmece ikonu göster.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Minimize to the tray instead of the taskbar</source>
-        <translation>İşlem çubuğu yerine sistem çekmecesine &amp;küçült</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Quit in the menu.</source>
-        <translation>Pencere kapatıldığında uygulamadan çıkmak yerine uygulamayı küçültür. Bu seçenek etkinleştirildiğinde, uygulama sadece menüden çıkış seçildiğinde kapanacaktır.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>M&amp;inimize on close</source>
-        <translation>Kapatma sırasında k&amp;üçült</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>&amp;Display</source>
-        <translation>&amp;Görünüm</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>User Interface &amp;language:</source>
-        <translation>Kullanıcı arayüzü &amp;lisanı:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting ShadowCoin.</source>
-        <translation>Kullanıcı arabirimi dili buradan ayarlanabilir. Ayar, ShadowCoin yeniden başlatıldığında etkin olacaktır.</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>&amp;Unit to show amounts in:</source>
-        <translation>Meblağları göstermek için &amp;birim:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>Bitcoin gönderildiğinde arayüzde gösterilecek varsayılan alt birimi seçiniz.</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Whether to show ShadowCoin addresses in the transaction list or not.</source>
-        <translation>ShadowCoin adresinin işlem listesinde gösterilmesi veya gösterilmemesi</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Display addresses in transaction list</source>
-        <translation>Muamele listesinde adresleri &amp;göster</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Whether to show coin control features or not.</source>
-        <translation>Para kontrol özelliklerinin gösterilip gösterilmeyeceğini ayarlar.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Display coin &amp;control features (experts only!)</source>
-        <translation>Coin &amp;kontrol özelliklerini göster (sadece uzman kişiler!)</translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>&amp;OK</source>
-        <translation>&amp;Tamam</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>&amp;Cancel</source>
-        <translation>&amp;İptal</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>&amp;Apply</source>
-        <translation>&amp;Uygula</translation>
-    </message>
-    <message>
-        <location filename="../optionsdialog.cpp" line="+55"/>
-        <source>default</source>
-        <translation>varsayılan</translation>
-    </message>
-    <message>
-        <location line="+149"/>
-        <location line="+9"/>
-        <source>Warning</source>
-        <translation>Uyarı</translation>
-    </message>
-    <message>
-        <location line="-9"/>
-        <location line="+9"/>
-        <source>This setting will take effect after restarting ShadowCoin.</source>
-        <translation>Bu ayar, ShadowCoin&apos;i yeniden başlattıktan sonra etkin olacaktır.</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>The supplied proxy address is invalid.</source>
-        <translation>Girilen vekil sunucu adresi geçersizdir.</translation>
-    </message>
-</context>
-<context>
-    <name>OverviewPage</name>
-    <message>
-        <location filename="../forms/overviewpage.ui" line="+14"/>
-        <source>Form</source>
-        <translation>Form</translation>
-    </message>
-    <message>
-        <location line="+33"/>
-        <location line="+231"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the ShadowCoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>Görüntülenen bilginin tarihi geçmiş olabilir. Cüzdanınız, bağlantı kurulduktan sonra otomatik olarak ShadowCoin ağı ile senkronize olur ancak bu süreç, henüz tamamlanmamıştır.</translation>
-    </message>
-    <message>
-        <location line="-160"/>
-        <source>Stake:</source>
-        <translation>Pay:</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Unconfirmed:</source>
-        <translation>Doğrulanmamış:</translation>
-    </message>
-    <message>
-        <location line="-107"/>
-        <source>Wallet</source>
-        <translation>Cüzdan</translation>
-    </message>
-    <message>
-        <location line="+49"/>
-        <source>Spendable:</source>
-        <translation>Harcanabilir:</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Your current spendable balance</source>
-        <translation>Güncel harcanabilir bakiyeniz</translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>Immature:</source>
-        <translation>Olgunlaşmamış:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Mined balance that has not yet matured</source>
-        <translation>Oluşturulan bakiye henüz olgunlaşmamıştır</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Total:</source>
-        <translation>Toplam:</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Your current total balance</source>
-        <translation>Güncel toplam bakiyeniz</translation>
-    </message>
-    <message>
-        <location line="+46"/>
-        <source>&lt;b&gt;Recent transactions&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Son muameleler&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location line="-108"/>
-        <source>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</source>
-        <translation>Henüz onaylanmamış ve mevcut bakiyede yer almayan işlemler toplamı</translation>
-    </message>
-    <message>
-        <location line="-29"/>
-        <source>Total of coins that was staked, and do not yet count toward the current balance</source>
-        <translation>Pay alınmış ve mevcut bakiyede yer almayan coin toplamı</translation>
-    </message>
-    <message>
-        <location filename="../overviewpage.cpp" line="+113"/>
-        <location line="+1"/>
-        <source>out of sync</source>
-        <translation>eşleşme dışı</translation>
-    </message>
-</context>
-<context>
-    <name>QRCodeDialog</name>
-    <message>
-        <location filename="../forms/qrcodedialog.ui" line="+14"/>
-        <source>QR Code Dialog</source>
-        <translation>QR Kodu İletisi</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Request Payment</source>
-        <translation>Ödeme Talep Et</translation>
-    </message>
-    <message>
-        <location line="+56"/>
-        <source>Amount:</source>
-        <translation>Miktar:</translation>
-    </message>
-    <message>
-        <location line="-44"/>
-        <source>Label:</source>
-        <translation>Etiket:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Message:</source>
-        <translation>Mesaj:</translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>&amp;Save As...</source>
-        <translation>&amp;Farklı Kaydet...</translation>
-    </message>
-    <message>
-        <location filename="../qrcodedialog.cpp" line="+62"/>
-        <source>Error encoding URI into QR Code.</source>
-        <translation>URI&apos;nin QR koduna kodlanmasında hata oluştu.</translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>The entered amount is invalid, please check.</source>
-        <translation>Girilen miktar geçersizdir, lütfen kontrol ediniz.</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Resulting URI too long, try to reduce the text for label / message.</source>
-        <translation>Sonuç URI&apos;si çok uzundur, etiket / mesaj için olan metni kısaltmaya çalışın.</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Save QR Code</source>
-        <translation>QR Kodu&apos;nu Kaydet</translation>
+    <name>MessageModel</name>
+    <message>
+        <location filename="../messagemodel.cpp" line="+375"/>
+        <source>Type</source>
+        <translation type="unfinished">Tür</translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>PNG Images (*.png)</source>
-        <translation>PNG İmgeleri (*.png)</translation>
+        <source>Sent Date Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Received Date Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Label</source>
+        <translation type="unfinished">Etiket</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>To Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>From Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Message</source>
+        <translation type="unfinished">Mesaj</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Send Secure Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send failed: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+1"/>
+        <source>(no label)</source>
+        <translation type="unfinished">(boş etiket)</translation>
+    </message>
+</context>
+<context>
+    <name>PaymentServer</name>
+    <message>
+        <location filename="../paymentserver.cpp" line="+107"/>
+        <source>Cannot start shadow: click-to-pay handler</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PeerTableModel</name>
+    <message>
+        <location filename="../peertablemodel.cpp" line="+118"/>
+        <source>Address/Hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>User Agent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Ping Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../guiutil.cpp" line="-470"/>
+        <source>%1 d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+55"/>
+        <source>%1 s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>N/A</source>
+        <translation type="unfinished">Mevcut değil</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>%1 ms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1474,18 +747,34 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+10"/>
         <location line="+23"/>
         <location line="+26"/>
+        <location line="+26"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+36"/>
-        <location line="+53"/>
+        <location line="+23"/>
+        <location line="+36"/>
         <location line="+23"/>
         <location line="+23"/>
-        <location filename="../rpcconsole.cpp" line="+348"/>
+        <location line="+491"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
         <source>N/A</source>
         <translation>Mevcut değil</translation>
     </message>
     <message>
-        <location line="-217"/>
+        <location line="-1062"/>
         <source>Client version</source>
         <translation>İstemci sürümü</translation>
     </message>
@@ -1495,9 +784,24 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>&amp;Malumat</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="-10"/>
+        <source>Shadow - Debug window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Shadow Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+53"/>
         <source>Using OpenSSL version</source>
         <translation>Kullanılan OpenSSL sürümü</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Using BerkeleyDB version</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+49"/>
@@ -1511,16 +815,135 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
         <source>Number of connections</source>
         <translation>Bağlantı sayısı</translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>On testnet</source>
-        <translation>Testnet üzerinde</translation>
+        <location line="+157"/>
+        <source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+99"/>
+        <source>&amp;Network Traffic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>&amp;Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Totals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+64"/>
+        <location filename="../rpcconsole.cpp" line="+396"/>
+        <source>In:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+80"/>
+        <location filename="../rpcconsole.cpp" line="+1"/>
+        <source>Out:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>&amp;Peers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location filename="../rpcconsole.cpp" line="-167"/>
+        <location line="+328"/>
+        <source>Select a peer to view detailed information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Peer ID</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+23"/>
+        <source>Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>User Agent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Starting Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Sync Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Ban Score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Connection Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last Send</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last Receive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Bytes Sent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Bytes Received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Ping Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Time Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-866"/>
         <source>Block chain</source>
         <translation>Blok zinciri</translation>
     </message>
@@ -1540,7 +963,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Son blok zamanı</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+49"/>
+        <source>Open the Shadow debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>&amp;Open</source>
         <translation>&amp;Aç</translation>
     </message>
@@ -1550,12 +978,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Komut satırı seçenekleri</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Show the ShadowCoin-Qt help message to get a list with possible ShadowCoin command-line options.</source>
-        <translation>Muhtemel ShadowCoin komut satırı seçeneklerinin bir listesini getirmek için ShadowCoin-Qt yardım mesajını göster</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+10"/>
         <source>&amp;Show</source>
         <translation>&amp;Göster</translation>
     </message>
@@ -1565,39 +988,24 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>&amp;Konsol</translation>
     </message>
     <message>
-        <location line="-260"/>
+        <location line="-266"/>
         <source>Build date</source>
         <translation>Derleme tarihi</translation>
     </message>
     <message>
-        <location line="-104"/>
-        <source>ShadowCoin - Debug window</source>
-        <translation>ShadowCoin - Hata ayıklama penceresi</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>ShadowCoin Core</source>
-        <translation>ShadowCoin Core</translation>
-    </message>
-    <message>
-        <location line="+279"/>
+        <location line="+206"/>
         <source>Debug log file</source>
         <translation>Hata ayıklama kütük dosyası</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Open the ShadowCoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>ShadowCoin hata ayıklama günlük kütüğü dosyasını, mevcut veri klasöründen aç. Bu işlem, büyük günlük kütüğü dosyaları için birkaç saniye sürebilir.</translation>
-    </message>
-    <message>
-        <location line="+102"/>
+        <location line="+109"/>
         <source>Clear console</source>
         <translation>Konsolu temizle</translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-33"/>
-        <source>Welcome to the ShadowCoin RPC console.</source>
-        <translation>ShadowCoin RPC konsoluna hoş geldiniz.</translation>
+        <location filename="../rpcconsole.cpp" line="-197"/>
+        <source>Welcome to the Shadow Core RPC console.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1609,524 +1017,769 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
         <translation>Mevcut komutların listesi için &lt;b&gt;help&lt;/b&gt; yazınız.</translation>
     </message>
+    <message>
+        <location line="+233"/>
+        <source>via %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+1"/>
+        <source>never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Inbound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Outbound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+1"/>
+        <source>Fetching...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
-    <name>SendCoinsDialog</name>
+    <name>ShadowBridge</name>
     <message>
-        <location filename="../forms/sendcoinsdialog.ui" line="+14"/>
-        <location filename="../sendcoinsdialog.cpp" line="+182"/>
+        <location filename="../shadowbridge.cpp" line="+399"/>
+        <source>Incoming Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>default</source>
+        <translation type="unfinished">varsayılan</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
+        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt; %2&apos;ye (%3)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; to SHADOW %2 (%3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SHADOW %3 (%4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SDC %3 (%4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+10"/>
+        <location line="+12"/>
+        <location line="+8"/>
+        <source>Error:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-30"/>
+        <source>Unknown txn type detected %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Input types must match for all recipients.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Ring sizes must match for all recipients.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Ring size outside range [%1, %2].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+9"/>
+        <source>Confirm send coins</source>
+        <translation type="unfinished">Gönderiyi teyit ediniz</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Are you sure you want to send?
+Ring size of one is not anonymous, and harms the network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+9"/>
+        <source> and </source>
+        <translation type="unfinished">ve</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Are you sure you want to send %1?</source>
+        <translation type="unfinished">%1 göndermek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <location line="+25"/>
         <location line="+5"/>
         <location line="+5"/>
         <location line="+5"/>
         <location line="+6"/>
         <location line="+5"/>
         <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
         <source>Send Coins</source>
-        <translation>Bitcoin yolla</translation>
+        <translation type="unfinished">Bitcoin yolla</translation>
     </message>
     <message>
-        <location line="+76"/>
-        <source>Coin Control Features</source>
-        <translation>Para kontrolü özellikleri</translation>
+        <location line="-95"/>
+        <source>The change address is not valid, please recheck.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Inputs...</source>
-        <translation>Girdiler...</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>automatically selected</source>
-        <translation>otomatik seçilmiş</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Insufficient funds!</source>
-        <translation>Yetersiz fon!</translation>
-    </message>
-    <message>
-        <location line="+77"/>
-        <source>Quantity:</source>
-        <translation>Miktar:</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <location line="+35"/>
-        <source>0</source>
-        <translation>0</translation>
-    </message>
-    <message>
-        <location line="-19"/>
-        <source>Bytes:</source>
-        <translation>Bayt:</translation>
-    </message>
-    <message>
-        <location line="+51"/>
-        <source>Amount:</source>
-        <translation>Meblağ:</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <location line="+86"/>
-        <location line="+86"/>
-        <location line="+32"/>
-        <source>0.00 SDC</source>
-        <translation>123.456 SDC {0.00 ?}</translation>
-    </message>
-    <message>
-        <location line="-191"/>
-        <source>Priority:</source>
-        <translation>Öncelik:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>medium</source>
-        <translation>orta</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>Fee:</source>
-        <translation>Ücret:</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Low Output:</source>
-        <translation>Düşük çıktı:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>no</source>
-        <translation>hayır</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>After Fee:</source>
-        <translation>Ücretten sonra:</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Change</source>
-        <translation>Değiştir</translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>custom change address</source>
-        <translation>özel adres değişikliği</translation>
-    </message>
-    <message>
-        <location line="+106"/>
-        <source>Send to multiple recipients at once</source>
-        <translation>Birçok alıcıya aynı anda gönder</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Add &amp;Recipient</source>
-        <translation>&amp;Alıcı ekle</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Remove all transaction fields</source>
-        <translation>Tüm işlem alanlarını kaldır</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Clear &amp;All</source>
-        <translation>Tümünü &amp;temizle</translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>Balance:</source>
-        <translation>Bakiye:</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>123.456 SDC</source>
-        <translation>123.456 SDC</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Confirm the send action</source>
-        <translation>Yollama etkinliğini teyit ediniz</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>S&amp;end</source>
-        <translation>G&amp;önder</translation>
-    </message>
-    <message>
-        <location filename="../sendcoinsdialog.cpp" line="-173"/>
-        <source>Enter a ShadowCoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Bir ShadowCoin adresi gir (örn: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Copy quantity</source>
-        <translation>Miktarı kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy amount</source>
-        <translation>Meblağı kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy fee</source>
-        <translation>Ücreti kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy after fee</source>
-        <translation>Ücretten sonrakini kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy bytes</source>
-        <translation>Baytları kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy priority</source>
-        <translation>Önceliği kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy low output</source>
-        <translation>Düşük çıktıyı kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy change</source>
-        <translation>Para üstünü kopyala</translation>
-    </message>
-    <message>
-        <location line="+86"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; %2&apos;ye (%3)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Confirm send coins</source>
-        <translation>Gönderiyi teyit ediniz</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Are you sure you want to send %1?</source>
-        <translation>%1 göndermek istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source> and </source>
-        <translation>ve</translation>
-    </message>
-    <message>
-        <location line="+29"/>
+        <location line="+25"/>
+        <location line="+362"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation>Alıcı adresi geçerli değildir, lütfen denetleyiniz.</translation>
+        <translation type="unfinished">Alıcı adresi geçerli değildir, lütfen denetleyiniz.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-357"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation>Ödeyeceğiniz tutarın sıfırdan yüksek olması gerekir.</translation>
+        <translation type="unfinished">Ödeyeceğiniz tutarın sıfırdan yüksek olması gerekir.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The amount exceeds your balance.</source>
-        <translation>Tutar bakiyenizden yüksektir.</translation>
+        <translation type="unfinished">Tutar bakiyenizden yüksektir.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation>Toplam, %1 muamele ücreti ilâve edildiğinde bakiyenizi geçmektedir.</translation>
+        <translation type="unfinished">Toplam, %1 muamele ücreti ilâve edildiğinde bakiyenizi geçmektedir.</translation>
     </message>
     <message>
         <location line="+6"/>
+        <location line="+351"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation>Çift adres bulundu, belli bir gönderi sırasında her adrese sadece tek bir gönderide bulunulabilir.</translation>
+        <translation type="unfinished">Çift adres bulundu, belli bir gönderi sırasında her adrese sadece tek bir gönderide bulunulabilir.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-346"/>
         <source>Error: Transaction creation failed.</source>
-        <translation>Hata: İşlem yaratma başarısız oldu.</translation>
+        <translation type="unfinished">Hata: İşlem yaratma başarısız oldu.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Hata: İşlem reddedildi. Bu, örneğin wallet.dat dosyasının bir kopyasını kullandıysanız ve coinler, kopyada harcanmış ve burada harcanmış olarak işaretlenmemişse, cüzdanınızdaki coinlerin bir bölümünün harcanması nedeniyle olabilir. </translation>
+        <translation type="unfinished">Hata: İşlem reddedildi. Bu, örneğin wallet.dat dosyasının bir kopyasını kullandıysanız ve coinler, kopyada harcanmış ve burada harcanmış olarak işaretlenmemişse, cüzdanınızdaki coinlerin bir bölümünün harcanması nedeniyle olabilir. </translation>
     </message>
     <message>
-        <location line="+251"/>
-        <source>WARNING: Invalid ShadowCoin address</source>
-        <translation>UYARI: Geçersiz ShadowCoin adresi</translation>
+        <location line="+5"/>
+        <source>Error: Narration is too long.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>(no label)</source>
-        <translation>(boş etiket)</translation>
+        <location line="+5"/>
+        <source>Error: Ring Size Error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: Input Type Error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: Must be in full mode to send anon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: Invalid Stealth Address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The total exceeds your shadow balance when the %1 transaction fee is included.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error generating transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error generating transaction: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+290"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <source>Send Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>The message can&apos;t be empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Error: Message creation failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: The message was rejected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+98"/>
+        <source>Sanity Error!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ShadowGUI</name>
+    <message>
+        <location filename="../shadow.cpp" line="+111"/>
+        <source>A fatal error occurred. Shadow can no longer continue safely and will quit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../shadowgui.cpp" line="+89"/>
+        <location line="+178"/>
+        <source>Umbra</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-178"/>
+        <source>Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <source>E&amp;xit</source>
+        <translation type="unfinished">&amp;Çık</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit application</source>
+        <translation type="unfinished">Uygulamadan çık</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;About ShadowCoin</source>
+        <translation type="unfinished">ShadowCoin &amp;Hakkında</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show information about ShadowCoin</source>
+        <translation type="unfinished">ShadowCoin hakkındaki bilgiyi göster</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>About &amp;Qt</source>
+        <translation type="unfinished">&amp;Qt hakkında</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show information about Qt</source>
+        <translation type="unfinished">Qt hakkındaki bilgiyi göster</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Options...</source>
+        <translation type="unfinished">&amp;Seçenekler...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Modify configuration options for ShadowCoin</source>
+        <translation type="unfinished">ShadowCoin yapılandırma seçeneklerini değiştir</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Show / Hide</source>
+        <translation type="unfinished">&amp;Göster / Gizle</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Encrypt Wallet...</source>
+        <translation type="unfinished">Cüzdanı &amp;Şifrele...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Encrypt or decrypt wallet</source>
+        <translation type="unfinished">Cüzdanı şifrele veya cüzdanın şifresini aç</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Backup Wallet...</source>
+        <translation type="unfinished">Cüzdanı &amp;Yedekle...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Backup wallet to another location</source>
+        <translation type="unfinished">Cüzdanı başka bir konuma yedekle</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Change Passphrase...</source>
+        <translation type="unfinished">Parolayı &amp;Değiştir...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the passphrase used for wallet encryption</source>
+        <translation type="unfinished">Cüzdan şifrelemesi için kullanılan parolayı değiştir</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Unlock Wallet...</source>
+        <translation type="unfinished">Cüzdanı &amp;Kilitle...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unlock wallet</source>
+        <translation type="unfinished">Cüzdan kilidini aç</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Lock Wallet</source>
+        <translation type="unfinished">Cüzdanı &amp;Kilitle</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Lock wallet</source>
+        <translation type="unfinished">Cüzdanı kilitle</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>WARNING: unknown change address</source>
-        <translation>UYARI: bilinmeyen adres değişikliği</translation>
-    </message>
-</context>
-<context>
-    <name>SendCoinsEntry</name>
-    <message>
-        <location filename="../forms/sendcoinsentry.ui" line="+14"/>
-        <source>Form</source>
-        <translation>Form</translation>
+        <source>&amp;Debug window</source>
+        <translation type="unfinished">&amp;Hata ayıklama penceresi</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>A&amp;mount:</source>
-        <translation>Mebla&amp;ğ:</translation>
+        <location line="+1"/>
+        <source>Open debugging and diagnostic console</source>
+        <translation type="unfinished">Hata ayıklama ve teşhis penceresini aç</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Pay &amp;To:</source>
-        <translation>&amp;Şu adrese öde:</translation>
+        <location line="+26"/>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;Dosya</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <location filename="../sendcoinsentry.cpp" line="+25"/>
-        <source>Enter a label for this address to add it to your address book</source>
-        <translation>Adres defterinize eklemek için bu adrese ilişik bir etiket giriniz</translation>
+        <location line="+6"/>
+        <source>&amp;Settings</source>
+        <translation type="unfinished">&amp;Ayarlar</translation>
     </message>
     <message>
+        <location line="+8"/>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;Yardım</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Wallet</source>
+        <translation type="unfinished">Cüzdan</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <location line="+9"/>
-        <source>&amp;Label:</source>
-        <translation>&amp;Etiket:</translation>
+        <source>[testnet]</source>
+        <translation type="unfinished">[testnet]</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+74"/>
+        <source>Umbra client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+63"/>
+        <source>%n active connection(s) to ShadowCoin network</source>
+        <translation type="unfinished">
+            <numerusform>ShadowCoin ağına %n etkin bağlantı</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Ödemenin gönderileceği adres (örn: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+        <source>block</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Choose address from address book</source>
-        <translation>Adres defterinden adres seç</translation>
+        <location line="+0"/>
+        <source>header</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Alt+A</source>
-        <translation>Alt+A</translation>
+        <location line="+1"/>
+        <source>blocks</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Paste address from clipboard</source>
-        <translation>Panodan adres yapıştır</translation>
+        <location line="+0"/>
+        <source>headers</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Alt+P</source>
-        <translation>Alt+P</translation>
+        <location line="+8"/>
+        <source>Synchronizing with network...</source>
+        <translation type="unfinished">Ağ ile senkronizasyon...</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Remove this recipient</source>
-        <translation>Bu alıcıyı kaldır</translation>
+        <location line="+2"/>
+        <source>Downloading filtered blocks...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a ShadowCoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Bir ShadowCoin adresi girin (örn: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+        <location line="+6"/>
+        <source>~%1 filtered block(s) remaining (%2% done).</source>
+        <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>SignVerifyMessageDialog</name>
-    <message>
-        <location filename="../forms/signverifymessagedialog.ui" line="+14"/>
-        <source>Signatures - Sign / Verify a Message</source>
-        <translation>İmzalar - Mesaj İmzala / Kontrol et</translation>
+    <message numerus="yes">
+        <location line="+19"/>
+        <source>~%n block(s) remaining</source>
+        <translation type="unfinished">
+            <numerusform>~%n blok kaldı</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+13"/>
-        <location line="+124"/>
-        <source>&amp;Sign Message</source>
-        <translation>Mesaj &amp;imzala</translation>
+        <location line="+4"/>
+        <source>Imported</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-118"/>
-        <source>You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>Bir adresin sizin olduğunu ispatlamak için adresinizle mesaj imzalayabilirsiniz. Oltalama saldırılarının kimliğinizi imzanızla elde etmeyi deneyebilecekleri için belirsiz hiçbir şey imzalamamaya dikkat ediniz. Sadece ayrıntılı açıklaması olan ve tümüne katıldığınız ifadeleri imzalayınız.</translation>
+        <location line="-4"/>
+        <location line="+4"/>
+        <source>Downloaded</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>The address to sign the message with (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Mesajın imzalanacağı adres (örn: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+        <location line="-3"/>
+        <source>%1 of %2 %3 of transaction history (%4% done).</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <location line="+203"/>
-        <source>Choose an address from the address book</source>
-        <translation>Adres defterinden adres seç</translation>
+        <location line="+3"/>
+        <source>%1 blocks of transaction history.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+23"/>
+        <source>%n second(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>%n saniye önce</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n minute(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>%n dakika önce</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n hour(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>%n saat önce</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n day(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>%n gün önce</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="-193"/>
-        <location line="+203"/>
-        <source>Alt+A</source>
-        <translation>Alt+A</translation>
-    </message>
-    <message>
-        <location line="-193"/>
-        <source>Paste address from clipboard</source>
-        <translation>Panodan adres yapıştır</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Alt+P</source>
-        <translation>Alt+P</translation>
+        <location line="+7"/>
+        <source>Up to date</source>
+        <translation type="unfinished">Güncel</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>Enter the message you want to sign here</source>
-        <translation>İmzalamak istediğiniz mesajı burada giriniz</translation>
+        <source>Catching up...</source>
+        <translation type="unfinished">Aralık kapatılıyor...</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Copy the current signature to the system clipboard</source>
-        <translation>Güncel imzayı sistem panosuna kopyala</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>Sign the message to prove you own this ShadowCoin address</source>
-        <translation>Bu ShadowCoin adresine sahip olduğunuzu ispatlamak için mesajı imzala</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Reset all sign message fields</source>
-        <translation>Tüm mesaj alanlarını sıfırla</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <location line="+146"/>
-        <source>Clear &amp;All</source>
-        <translation>Tümünü &amp;temizle</translation>
-    </message>
-    <message>
-        <location line="-87"/>
-        <location line="+70"/>
-        <source>&amp;Verify Message</source>
-        <translation>Mesaj &amp;kontrol et</translation>
-    </message>
-    <message>
-        <location line="-64"/>
-        <source>Enter the signing address, message (ensure you copy line breaks, spaces, tabs, etc. exactly) and signature below to verify the message. Be careful not to read more into the signature than what is in the signed message itself, to avoid being tricked by a man-in-the-middle attack.</source>
-        <translation>İmza için kullanılan adresi, mesajı (satır sonları, boşluklar, sekmeler vs. karakterleri tam olarak kopyaladığınızdan emin olunuz) ve imzayı aşağıda giriniz. Bir ortadaki adam saldırısı tarafından kandırılmaya mâni olmak için imzadan, imzalı mesajın içeriğini aşan bir anlam çıkarmamaya dikkat ediniz.</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>The address the message was signed with (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Mesajın imzalandığı adres (örn: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified ShadowCoin address</source>
-        <translation>Mesajın, belirtilen ShadowCoin adresiyle imzalandığından emin olmak için onu doğrula</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Reset all verify message fields</source>
-        <translation>Tüm mesaj kontrolü alanlarını sıfırla</translation>
-    </message>
-    <message>
-        <location filename="../signverifymessagedialog.cpp" line="+27"/>
-        <location line="+3"/>
-        <source>Enter a ShadowCoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Bir ShadowCoin adresi girin (örn: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location line="-2"/>
-        <source>Click &quot;Sign Message&quot; to generate signature</source>
-        <translation>İmzayı oluşturmak için &quot;Mesaj İmzala&quot; unsurunu tıklayın</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Enter ShadowCoin signature</source>
-        <translation>ShadowCoin imzası gir</translation>
-    </message>
-    <message>
-        <location line="+82"/>
-        <location line="+81"/>
-        <source>The entered address is invalid.</source>
-        <translation>Girilen adres geçersizdir.</translation>
-    </message>
-    <message>
-        <location line="-81"/>
-        <location line="+8"/>
-        <location line="+73"/>
-        <location line="+8"/>
-        <source>Please check the address and try again.</source>
-        <translation>Adresi kontrol edip tekrar deneyiniz.</translation>
-    </message>
-    <message>
-        <location line="-81"/>
-        <location line="+81"/>
-        <source>The entered address does not refer to a key.</source>
-        <translation>Girilen adres herhangi bir anahtara işaret etmemektedir.</translation>
-    </message>
-    <message>
-        <location line="-73"/>
-        <source>Wallet unlock was cancelled.</source>
-        <translation>Cüzdan kilidinin açılması iptal edildi.</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Private key for the entered address is not available.</source>
-        <translation>Girilen adres için özel anahtar mevcut değildir.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Message signing failed.</source>
-        <translation>Mesajın imzalanması başarısız oldu.</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Message signed.</source>
-        <translation>Mesaj imzalandı.</translation>
+        <location line="+16"/>
+        <source>Last received %1 was generated %2.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+59"/>
-        <source>The signature could not be decoded.</source>
-        <translation>İmzanın kodu çözülemedi.</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+13"/>
-        <source>Please check the signature and try again.</source>
-        <translation>İmzayı kontrol edip tekrar deneyiniz.</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>The signature did not match the message digest.</source>
-        <translation>İmza mesajın hash değeri ile eşleşmedi.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Message verification failed.</source>
-        <translation>Mesaj doğrulaması başarısız oldu.</translation>
+        <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
+        <translation type="unfinished">Bu işlem, büyüklük sınırının üzerindedir. İşleminizi gerçekleştirecek devrelere gidecek ve ağı desteklemeye yardımcı olacak %1 ücretle coin gönderebilirsiniz. Ücreti ödemek istiyor musunuz?</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Message verified.</source>
-        <translation>Mesaj doğrulandı.</translation>
+        <source>Confirm transaction fee</source>
+        <translation type="unfinished">İşlem ücretini onayla</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Sent transaction</source>
+        <translation type="unfinished">İşlem gerçekleştirildi</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Incoming transaction</source>
+        <translation type="unfinished">Gelen işlem</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Date: %1
+Amount: %2
+Type: %3
+Address: %4
+</source>
+        <translation type="unfinished">Tarih: %1
+Miktar: %2
+Tür: %3
+Adres: %4
+</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <location line="+15"/>
+        <source>Incoming Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Date: %1
+From Address: %2
+To Address: %3
+Message: %4
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <location line="+23"/>
+        <source>URI handling</source>
+        <translation type="unfinished">URI işleme</translation>
+    </message>
+    <message>
+        <location line="-23"/>
+        <location line="+23"/>
+        <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
+        <translation type="unfinished">URI ayrıştırılamadı! Bu, geçersiz bir ShadowCoin adresi veya hatalı URI parametreleri nedeniyle olabilir.</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
+        <translation type="unfinished">Cüzdan &lt;b&gt;şifrelenmiştir&lt;/b&gt; ve şu anda &lt;b&gt;kilidi açıktır&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
+        <translation type="unfinished">Cüzdan &lt;b&gt;şifrelenmiştir&lt;/b&gt; ve şu anda &lt;b&gt;kilitlidir&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Backup Wallet</source>
+        <translation type="unfinished">Cüzdanı Yedekle</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Wallet Data (*.dat)</source>
+        <translation type="unfinished">Cüzdan Verisi (*.dat)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Backup Failed</source>
+        <translation type="unfinished">Yedekleme Başarısız Oldu</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>There was an error trying to save the wallet data to the new location.</source>
+        <translation type="unfinished">Cüzdan verisi, yeni bir konuma kaydedilmeye çalışılırken bir hata oluştu.</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Lock Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error: Wallet must first be encrypted to be locked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+69"/>
+        <source>%n second(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n saniye</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n minute(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n dakika</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n hour(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n saat</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n day(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n gün</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Staking.
+Your weight is %1
+Network weight is %2
+Expected time to earn reward is %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Not staking because wallet is in thin mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking, staking is disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because wallet is locked</source>
+        <translation type="unfinished">Pay alınmıyor çünkü cüzdan kilitlidir</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because wallet is offline</source>
+        <translation type="unfinished">Pay alınmıyor çünkü cüzdan çevrimdışıdır</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because wallet is syncing</source>
+        <translation type="unfinished">Pay alınmıyor çünkü cüzdan senkronize ediliyor</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because you don&apos;t have mature coins</source>
+        <translation type="unfinished">Pay alınmıyor çünkü olgunlaşmış coininiz yoktur</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking</source>
+        <translation type="unfinished">Pay alınmıyor</translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="+23"/>
+        <source>Received with</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Received from</source>
+        <translation type="unfinished">Alındığı kişi</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sent to</source>
+        <translation type="unfinished">Gönderildiği adres</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Payment to yourself</source>
+        <translation type="unfinished">Kendinize ödeme</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Mined</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Received shadow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sent shadow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other</source>
+        <translation type="unfinished">Diğer</translation>
+    </message>
+</context>
+<context>
+    <name>TrafficGraphWidget</name>
+    <message>
+        <location filename="../trafficgraphwidget.cpp" line="+79"/>
+        <source>KB/s</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TransactionDesc</name>
     <message>
-        <location filename="../transactiondesc.cpp" line="+19"/>
+        <location filename="../transactiondesc.cpp" line="+20"/>
         <source>Open until %1</source>
         <translation>%1 değerine dek açık</translation>
     </message>
     <message numerus="yes">
         <location line="-2"/>
         <source>Open for %n block(s)</source>
-        <translation><numerusform>%n blok için aç</numerusform><numerusform>%n blok için aç</numerusform></translation>
+        <translation>
+            <numerusform>%n blok için aç</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>conflicted</source>
         <translation>çakışma</translation>
     </message>
@@ -2153,10 +1806,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message numerus="yes">
         <location line="+7"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, %n devre üzerinde yayınlama</numerusform><numerusform>, %n devre üzerinde yayınlama</numerusform></translation>
+        <translation>
+            <numerusform>, %n devre üzerinde yayınlama</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Date</source>
         <translation>Tarih</translation>
     </message>
@@ -2173,40 +1828,47 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+5"/>
         <location line="+17"/>
+        <location line="+20"/>
         <source>From</source>
         <translation>Gönderen</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+22"/>
-        <location line="+58"/>
+        <location line="-19"/>
+        <location line="+20"/>
+        <location line="+23"/>
+        <location line="+57"/>
         <source>To</source>
         <translation>Alıcı</translation>
     </message>
     <message>
-        <location line="-77"/>
+        <location line="-96"/>
+        <location line="+2"/>
+        <location line="+18"/>
         <location line="+2"/>
         <source>own address</source>
         <translation>kendi adresiniz</translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="-22"/>
+        <location line="+20"/>
         <source>label</source>
         <translation>etiket</translation>
     </message>
     <message>
         <location line="+37"/>
         <location line="+12"/>
-        <location line="+45"/>
-        <location line="+17"/>
-        <location line="+30"/>
+        <location line="+44"/>
+        <location line="+20"/>
+        <location line="+40"/>
         <source>Credit</source>
         <translation>Gider</translation>
     </message>
     <message numerus="yes">
-        <location line="-102"/>
+        <location line="-114"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>%n blok içerisinde olgunlaşıyor</numerusform><numerusform>%n blok içerisinde olgunlaşıyor</numerusform></translation>
+        <translation>
+            <numerusform>%n blok içerisinde olgunlaşıyor</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2214,20 +1876,20 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>kabul edilmedi</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+43"/>
         <location line="+8"/>
-        <location line="+15"/>
-        <location line="+30"/>
+        <location line="+16"/>
+        <location line="+42"/>
         <source>Debit</source>
         <translation>Gelir</translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-52"/>
         <source>Transaction fee</source>
         <translation>Muamele ücreti</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+19"/>
         <source>Net amount</source>
         <translation>Net meblağ</translation>
     </message>
@@ -2242,14 +1904,14 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Yorum</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+12"/>
         <source>Transaction ID</source>
         <translation>Muamele tanımlayıcı</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Generated coins must mature 510 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Üretilen coinler, harcanmaya başlamadan önce 510 blokta olgunlaşmalıdır. Bu bloğu ürettiğinizde, blok zincirine eklenmek üzere ağda yayınlanır. Eğer blok, zincire girmede başarısız olursa, bloğun durumu &quot;kabul edilmedi&quot;ye dönüşür ve harcanamaz. Bu, başka bir devre sizden birkaç saniye önce bir blok ürettiyse gerçekleşebilir.</translation>
+        <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation type="unfinished">Üretilen coinler, harcanmaya başlamadan önce 510 blokta olgunlaşmalıdır. Bu bloğu ürettiğinizde, blok zincirine eklenmek üzere ağda yayınlanır. Eğer blok, zincire girmede başarısız olursa, bloğun durumu &quot;kabul edilmedi&quot;ye dönüşür ve harcanamaz. Bu, başka bir devre sizden birkaç saniye önce bir blok ürettiyse gerçekleşebilir. {120 ?}</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2267,7 +1929,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Girdiler</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+44"/>
         <source>Amount</source>
         <translation>Meblağ</translation>
     </message>
@@ -2282,12 +1944,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>yanlış</translation>
     </message>
     <message>
-        <location line="-211"/>
+        <location line="-266"/>
         <source>, has not been successfully broadcast yet</source>
         <translation>, henüz başarılı bir şekilde yayınlanmadı</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+36"/>
+        <location line="+20"/>
         <source>unknown</source>
         <translation>bilinmiyor</translation>
     </message>
@@ -2308,7 +1971,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+226"/>
+        <location filename="../transactiontablemodel.cpp" line="+217"/>
         <source>Date</source>
         <translation>Tarih</translation>
     </message>
@@ -2328,7 +1991,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Meblağ</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+54"/>
         <source>Open until %1</source>
         <translation>%1 değerine dek açık</translation>
     </message>
@@ -2340,10 +2003,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message numerus="yes">
         <location line="-15"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>%n blok için aç</numerusform><numerusform>%n blok için aç</numerusform></translation>
+        <translation>
+            <numerusform>%n blok için aç</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-51"/>
+        <source>Narration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+57"/>
         <source>Offline</source>
         <translation>Çevrim dışı</translation>
     </message>
@@ -2378,37 +2048,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Oluşturuldu ama kabul edilmedi</translation>
     </message>
     <message>
-        <location line="+42"/>
-        <source>Received with</source>
-        <translation>Şununla alındı</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Received from</source>
-        <translation>Alındığı kişi</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Sent to</source>
-        <translation>Gönderildiği adres</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Payment to yourself</source>
-        <translation>Kendinize ödeme</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Mined</source>
-        <translation>Madenden çıkarılan</translation>
-    </message>
-    <message>
-        <location line="+38"/>
+        <location line="+49"/>
         <source>(n/a)</source>
         <translation>(mevcut değil)</translation>
     </message>
     <message>
-        <location line="+190"/>
+        <location line="+202"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Muamele durumu. Doğrulama sayısını görüntülemek için imleci bu alanda tutunuz.</translation>
     </message>
@@ -2434,178 +2079,10 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
 </context>
 <context>
-    <name>TransactionView</name>
-    <message>
-        <location filename="../transactionview.cpp" line="+55"/>
-        <location line="+16"/>
-        <source>All</source>
-        <translation>Hepsi</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <source>Today</source>
-        <translation>Bugün</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This week</source>
-        <translation>Bu hafta</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This month</source>
-        <translation>Bu ay</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Last month</source>
-        <translation>Geçen ay</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This year</source>
-        <translation>Bu sene</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Range...</source>
-        <translation>Aralık...</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Received with</source>
-        <translation>Şununla alınan</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Sent to</source>
-        <translation>Gönderildiği adres</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>To yourself</source>
-        <translation>Kendinize</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Mined</source>
-        <translation>Oluşturulan</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Other</source>
-        <translation>Diğer</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Enter address or label to search</source>
-        <translation>Aranacak adres ya da etiket giriniz</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Min amount</source>
-        <translation>Asgari meblağ</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Copy address</source>
-        <translation>Adresi kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy label</source>
-        <translation>Etiketi kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy amount</source>
-        <translation>Meblağı kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy transaction ID</source>
-        <translation>Muamele kimliğini kopyala</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit label</source>
-        <translation>Etiketi düzenle</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show transaction details</source>
-        <translation>Muamele detaylarını göster</translation>
-    </message>
-    <message>
-        <location line="+144"/>
-        <source>Export Transaction Data</source>
-        <translation>İşlem Verisini Dışarı Aktar</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Comma separated file (*.csv)</source>
-        <translation>Virgülle ayrılmış değerler dosyası (*.csv)</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Confirmed</source>
-        <translation>Doğrulandı</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Date</source>
-        <translation>Tarih</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Type</source>
-        <translation>Tür</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Label</source>
-        <translation>Etiket</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Address</source>
-        <translation>Adres</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Amount</source>
-        <translation>Meblağ</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>ID</source>
-        <translation>Tanımlayıcı</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error exporting</source>
-        <translation>Dışarı aktarmada hata</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Could not write to file %1.</source>
-        <translation>%1 dosyasına yazılamadı.</translation>
-    </message>
-    <message>
-        <location line="+100"/>
-        <source>Range:</source>
-        <translation>Aralık:</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>to</source>
-        <translation>ilâ</translation>
-    </message>
-</context>
-<context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+206"/>
+        <location filename="../walletmodel.cpp" line="+393"/>
+        <location line="+246"/>
         <source>Sending...</source>
         <translation>Gönderiyor...</translation>
     </message>
@@ -3022,7 +2499,7 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+15"/>
         <source>When creating transactions, ignore inputs with value less than this (default: 0.01)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+16"/>
@@ -3047,17 +2524,17 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+3"/>
         <source>Require a confirmations for change (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3077,17 +2554,17 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+2"/>
         <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>How thorough the block verification is (0-6, default: 1)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Imports blocks from external blk000?.dat file</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+8"/>
@@ -3107,17 +2584,17 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+1"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+53"/>
         <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+18"/>
         <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-158"/>
@@ -3127,17 +2604,17 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+95"/>
         <source>Wallet %s resides outside data directory %s.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Cannot obtain a lock on data directory %s.  ShadowCoin is probably already running.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-98"/>
         <source>ShadowCoin</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">ShadowCoin</translation>
     </message>
     <message>
         <location line="+140"/>
@@ -3147,7 +2624,7 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="-130"/>
         <source>Connect through socks proxy</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3162,7 +2639,7 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="-15"/>
         <source>Error loading blkindex.dat</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3172,12 +2649,12 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+4"/>
         <source>Error loading wallet.dat: Wallet requires newer version of ShadowCoin</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet needed to be rewritten: restart ShadowCoin to complete</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3217,12 +2694,12 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+44"/>
         <source>Error: could not start node</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Sending...</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">Gönderiyor...</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -3247,17 +2724,17 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+122"/>
         <source>Unable to bind to %s on this computer. ShadowCoin is probably already running.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-97"/>
         <source>Fee per KB to add to transactions you send</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+55"/>
         <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+25"/>
@@ -3272,7 +2749,7 @@ alertnotify ayarlamanız da ayrıca tavsiye edilir böylece sorunlar, size bildi
     <message>
         <location line="+1"/>
         <source>Cannot initialize keypool</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>

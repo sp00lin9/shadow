@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = umbra
-VERSION = 1.5.0.1
+VERSION = 1.5.0.2
 INCLUDEPATH += src src/json src/qt
 DEFINES += BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
@@ -382,8 +382,8 @@ FORMS += \
 CODECFORTR = UTF-8
 
 # for lrelease/lupdate
-# also add new translations to src/qt/bitcoin.qrc under translations/
-TRANSLATIONS = $$files(src/qt/locale/bitcoin_*.ts)
+# also add new translations to shadow.qrc under translations/
+TRANSLATIONS = $$files(src/qt/locale/umbra*.ts)
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe

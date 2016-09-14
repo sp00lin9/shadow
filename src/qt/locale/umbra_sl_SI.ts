@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="sl_SI" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="sl_SI">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -17,131 +19,23 @@
 Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The BlackCoin developers
 Copyright © 2014-2015 The ShadowCoin developers</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>
 This is experimental software.
 
-Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
+Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
-This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (http://www.openssl.org/) and cryptographic software written by Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.</source>
-        <translation>
-To je poizkusen softver. 
-
-Distribuiran pod MIT/X11 softversko licenco, glej priloženo datoteko COPYING ali http://www.opensource.org/licenses/mit-license.php.
-
-Ta proizvod vključuje softver razvit s strani projekta OpenSSL za uporabo v OpenSSL Toolkit (http://www.openssl.org/) in kriptografski softver, ki ga je napisal Eric Young (eay@cryptsoft.com), ter UPnP softver, ki ga je napisal Thomas Bernard.</translation>
-    </message>
-</context>
-<context>
-    <name>AddressBookPage</name>
-    <message>
-        <location filename="../forms/addressbookpage.ui" line="+14"/>
-        <source>Address Book</source>
-        <translation>Imenik</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Double-click to edit address or label</source>
-        <translation>Dvakrat kliknite za urejanje naslovov ali oznak</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Create a new address</source>
-        <translation>Ustvari nov naslov</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Copy the currently selected address to the system clipboard</source>
-        <translation>Kopiraj trenutno izbrani naslov v odložišče</translation>
-    </message>
-    <message>
-        <location line="-11"/>
-        <source>&amp;New Address</source>
-        <translation>&amp;Nov naslov</translation>
-    </message>
-    <message>
-        <location line="-46"/>
-        <source>These are your ShadowCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>To so vaši ShadowCoin naslovi za prejemanje plačil. Priporočeno je da vsakemu pošiljatelju namenite drugega in tako dobite večji pregled nad svojimi nakazili.</translation>
-    </message>
-    <message>
-        <location line="+60"/>
-        <source>&amp;Copy Address</source>
-        <translation>&amp;Kopiraj naslov</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Show &amp;QR Code</source>
-        <translation>Prikaži &amp;QR kodo</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Sign a message to prove you own a ShadowCoin address</source>
-        <translation>Podpišite sporočilo, kot dokazilo lastništva ShadowCoin naslova</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Sign &amp;Message</source>
-        <translation>Podpiši &amp;sporočilo</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Delete the currently selected address from the list</source>
-        <translation>Izbriši izbran naslov iz seznama</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Verify a message to ensure it was signed with a specified ShadowCoin address</source>
-        <translation>Potrdi sporočilo, da zagotovite, da je bilo podpisano z izbranim ShadowCoin naslovom</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Verify Message</source>
-        <translation>&amp;Potrdi sporočilo</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>&amp;Delete</source>
-        <translation>&amp;Izbriši</translation>
-    </message>
-    <message>
-        <location filename="../addressbookpage.cpp" line="+65"/>
-        <source>Copy &amp;Label</source>
-        <translation>Kopiraj &amp;oznako</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Edit</source>
-        <translation>&amp;Uredi</translation>
-    </message>
-    <message>
-        <location line="+250"/>
-        <source>Export Address Book Data</source>
-        <translation>Izvozi podatke imenika</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Comma separated file (*.csv)</source>
-        <translation>Datoteka s podatki, ločenimi z vejico (*.csv)</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Error exporting</source>
-        <translation>Napaka pri izvozu datoteke</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Could not write to file %1.</source>
-        <translation>Napaka pri pisanju na datoteko %1.</translation>
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>AddressTableModel</name>
     <message>
-        <location filename="../addresstablemodel.cpp" line="+144"/>
+        <location filename="../addresstablemodel.cpp" line="+218"/>
         <source>Label</source>
         <translation>Oznaka</translation>
     </message>
@@ -151,9 +45,29 @@ Ta proizvod vključuje softver razvit s strani projekta OpenSSL za uporabo v Ope
         <translation>Naslov</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+0"/>
+        <source>pubkey</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>stealth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
         <source>(no label)</source>
         <translation>(ni oznake)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stealth Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>n/a</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -189,7 +103,7 @@ Ta proizvod vključuje softver razvit s strani projekta OpenSSL za uporabo v Ope
         <translation>Samo za staking.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="+35"/>
+        <location filename="../askpassphrasedialog.cpp" line="+37"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <translation>Vnesite novo geslo za vstop v denarnico.&lt;br/&gt;Prosimo, da geslo sestavite iz &lt;b&gt; 10 ali več naključnih znakov&lt;/b&gt; oz. &lt;b&gt;osem ali več besed&lt;/b&gt;.</translation>
     </message>
@@ -229,7 +143,7 @@ Ta proizvod vključuje softver razvit s strani projekta OpenSSL za uporabo v Ope
         <translation>Vnesite staro in novo geslo denarnice.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+45"/>
         <source>Confirm wallet encryption</source>
         <translation>Potrdi šifriranje denarnice</translation>
     </message>
@@ -308,424 +222,9 @@ Ta proizvod vključuje softver razvit s strani projekta OpenSSL za uporabo v Ope
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
-    <message>
-        <location filename="../bitcoingui.cpp" line="+280"/>
-        <source>Sign &amp;message...</source>
-        <translation>Podpiši &amp;sporočilo ...</translation>
-    </message>
-    <message>
-        <location line="+242"/>
-        <source>Synchronizing with network...</source>
-        <translation>Sinhroniziranje z omrežjem ...</translation>
-    </message>
-    <message>
-        <location line="-308"/>
-        <source>&amp;Overview</source>
-        <translation>&amp;Pregled</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show general overview of wallet</source>
-        <translation>Pokaži splošen pregled denarnice</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>&amp;Transactions</source>
-        <translation>&amp;Transakcije</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Browse transaction history</source>
-        <translation>Brskaj po zgodovini transakcij</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Imenik</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit the list of stored addresses and labels</source>
-        <translation>Uredi seznam shranjenih naslovov in oznak</translation>
-    </message>
-    <message>
-        <location line="-13"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;Prejmi kovance</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show the list of addresses for receiving payments</source>
-        <translation>Prikaži seznam naslovov za prejemanje plačil. </translation>
-    </message>
-    <message>
-        <location line="-7"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Pošlji kovance</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>E&amp;xit</source>
-        <translation>I&amp;zhod</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Quit application</source>
-        <translation>Izhod iz aplikacije</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Show information about ShadowCoin</source>
-        <translation>Pokaži informacije o ShadowCoin</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>About &amp;Qt</source>
-        <translation>O &amp;Qt</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show information about Qt</source>
-        <translation>Prikaži informacije o Qt</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Options...</source>
-        <translation>&amp;Možnosti ...</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>&amp;Encrypt Wallet...</source>
-        <translation>&amp;Šifriraj denarnico ...</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Backup Wallet...</source>
-        <translation>&amp;Ustvari varnostno kopijo denarnice ...</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Change Passphrase...</source>
-        <translation>&amp;Spremeni geslo ...</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+250"/>
-        <source>~%n block(s) remaining</source>
-        <translation><numerusform>Ostaja ~%n bloka </numerusform><numerusform>Ostaja ~%n blokov</numerusform><numerusform>Ostaja ~%n blokov</numerusform><numerusform>Ostaja ~%n blokov </numerusform></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Downloaded %1 of %2 blocks of transaction history (%3% done).</source>
-        <translation>Prenešen %1 od %2 blokov transakcijske zgodovine (%3% opravljeno).</translation>
-    </message>
-    <message>
-        <location line="-247"/>
-        <source>&amp;Export...</source>
-        <translation>&amp;Izvozi...</translation>
-    </message>
-    <message>
-        <location line="-62"/>
-        <source>Send coins to a ShadowCoin address</source>
-        <translation>Pošlji kovance na ShadowCoin naslov</translation>
-    </message>
-    <message>
-        <location line="+45"/>
-        <source>Modify configuration options for ShadowCoin</source>
-        <translation>Spremeni nastavitve za ShadowCoin</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Export the data in the current tab to a file</source>
-        <translation>Izvozi podatke v izbranem zavihku v datoteko</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Encrypt or decrypt wallet</source>
-        <translation>Šifriraj ali dešifriraj denarnico</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Backup wallet to another location</source>
-        <translation>Napravi varnostno kopijo denarnice na drugo lokacijo</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Change the passphrase used for wallet encryption</source>
-        <translation>Spremeni šifrirno geslo denarnice</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>&amp;Debug window</source>
-        <translation>&amp;Razhroščevalno okno</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Open debugging and diagnostic console</source>
-        <translation>Odpri razhroščevalno in diagnostično konzolo</translation>
-    </message>
-    <message>
-        <location line="-5"/>
-        <source>&amp;Verify message...</source>
-        <translation>%Potrdi sporočilo ...</translation>
-    </message>
-    <message>
-        <location line="-200"/>
-        <source>ShadowCoin</source>
-        <translation>ShadowCoin</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Wallet</source>
-        <translation>Denarnica</translation>
-    </message>
-    <message>
-        <location line="+178"/>
-        <source>&amp;About ShadowCoin</source>
-        <translation>&amp;O ShadowCoin</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>&amp;Show / Hide</source>
-        <translation>&amp;Prikaži / Skrij</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Unlock wallet</source>
-        <translation>Odkleni denarnico</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>&amp;Lock Wallet</source>
-        <translation>&amp;Zakleni denarnico</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Lock wallet</source>
-        <translation>Zakleni denarnico</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>&amp;File</source>
-        <translation>&amp;Datoteka</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>&amp;Settings</source>
-        <translation>&amp;Nastavitve</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>&amp;Help</source>
-        <translation>&amp;Pomoč</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Tabs toolbar</source>
-        <translation>Orodna vrstica zavihkov</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Actions toolbar</source>
-        <translation>Orodna vrsticai</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <location line="+9"/>
-        <source>[testnet]</source>
-        <translation>[testnet]</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+60"/>
-        <source>ShadowCoin client</source>
-        <translation>ShadowCoin program</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+70"/>
-        <source>%n active connection(s) to ShadowCoin network</source>
-        <translation><numerusform>%n aktivne povezave na ShadowCoin omrežje</numerusform><numerusform>%n aktivnih povezav na ShadowCoin omrežje</numerusform><numerusform>%n aktivnih povezav na ShadowCoin omrežje</numerusform><numerusform>%n aktivnih povezav na ShadowCoin omrežje</numerusform></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Downloaded %1 blocks of transaction history.</source>
-        <translation>Prenešenih %1 blokov transakcijske zgodovine.</translation>
-    </message>
-    <message>
-        <location line="+413"/>
-        <source>Staking.&lt;br&gt;Your weight is %1&lt;br&gt;Network weight is %2&lt;br&gt;Expected time to earn reward is %3</source>
-        <translation>Deležeje [Staking].&lt;br&gt;Teža vašega deleženja je %1&lt;br&gt;Teža celotne mreže deleženja je %2&lt;br&gt;Pričakovan čas do prejema nagrade %3</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Not staking because wallet is locked</source>
-        <translation>Ne deležite ker je denarnica zakljenjena</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Not staking because wallet is offline</source>
-        <translation>Ne deležite ker denarnica ni povezana</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Not staking because wallet is syncing</source>
-        <translation>Ne deležite ker se denarnica sinhronizira z omrežjem</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Not staking because you don&apos;t have mature coins</source>
-        <translation>Ne deležite ker nimate zrelih kovancev. </translation>
-    </message>
-    <message numerus="yes">
-        <location line="-403"/>
-        <source>%n second(s) ago</source>
-        <translation><numerusform>pred %n sekundo</numerusform><numerusform>pred %n sekundama</numerusform><numerusform>pred %n sekundami</numerusform><numerusform>pred %n sekundami </numerusform></translation>
-    </message>
-    <message>
-        <location line="-284"/>
-        <source>&amp;Unlock Wallet...</source>
-        <translation>&amp;Odkleni denarnico...</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+288"/>
-        <source>%n minute(s) ago</source>
-        <translation><numerusform>Pred %n minuto</numerusform><numerusform>Pred %n minutama</numerusform><numerusform>Pred %n minutami</numerusform><numerusform>Pred %n minutami</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n hour(s) ago</source>
-        <translation><numerusform>Pred %n uro.</numerusform><numerusform>Pred %n urama.</numerusform><numerusform>Pred %n urami.</numerusform><numerusform>Pred %n urami.</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n day(s) ago</source>
-        <translation><numerusform>Pred %n dnevom.</numerusform><numerusform>Pred %n dnevoma.</numerusform><numerusform>Pred %n dnevi.</numerusform><numerusform>Pred %n dnevi.</numerusform></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Up to date</source>
-        <translation>Posodobljeno</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Catching up...</source>
-        <translation>Pridobivanje ...</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Zadnji prejeti blok je bil ustvarjen %1.</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation>Ta transakcija je prekoračila limit. Še vedno jo lahko pošljete za plačilo %1 transakcije, ki je plačano vsem delom omrežja kot deležnina in pomaga zagotavljati njegovo varnost. Ali želite plačati provizijo?</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Confirm transaction fee</source>
-        <translation>Potrdi transakcijsko provizijo</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Sent transaction</source>
-        <translation>Odlivi</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Incoming transaction</source>
-        <translation>Prilivi</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Date: %1
-Amount: %2
-Type: %3
-Address: %4
-</source>
-        <translation>Datum: %1
-Količina: %2
-Vrsta: %3
-Naslov: %4
-</translation>
-    </message>
-    <message>
-        <location line="+100"/>
-        <location line="+15"/>
-        <source>URI handling</source>
-        <translation>Rokovanje z URI</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <location line="+15"/>
-        <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
-        <translation>URI ne more biti razčlenjen! To se lahko zgodi zaradi neveljavnega ShadowCoin naslova ali slabih parametrov URI.</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation>Denarnica je &lt;b&gt;šifrirana&lt;/b&gt; in trenutno &lt;b&gt;odklenjena&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation>Denarnica je &lt;b&gt;šifrirana&lt;/b&gt; in trenutno &lt;b&gt;zaklenjena&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Backup Wallet</source>
-        <translation>Napravi varnostno kopijo denarnice</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Wallet Data (*.dat)</source>
-        <translation>Datoteka denarnice (*.dat)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Backup Failed</source>
-        <translation>Ustvarjanje varnostne kopije je spodeltelo </translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>There was an error trying to save the wallet data to the new location.</source>
-        <translation>Prišlo je do napake ob poskušanju shranjevanja datoteke denarnice na novo lokacijo.</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+76"/>
-        <source>%n second(s)</source>
-        <translation><numerusform>%n sekundo</numerusform><numerusform>%n sekundama</numerusform><numerusform>%n sekund</numerusform><numerusform>%n sekund</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n minute(s)</source>
-        <translation><numerusform>%n minuto</numerusform><numerusform>%n minutama</numerusform><numerusform>%n minut</numerusform><numerusform>%n minut</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n hour(s)</source>
-        <translation><numerusform>%n ura</numerusform><numerusform>%n uri</numerusform><numerusform>%n ure</numerusform><numerusform>%n ura</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>%n day(s)</source>
-        <translation><numerusform>%n dan</numerusform><numerusform>%n dneva</numerusform><numerusform>%n dnevi</numerusform><numerusform>%n dni</numerusform></translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Not staking</source>
-        <translation>Ne deležite</translation>
-    </message>
-    <message>
-        <location filename="../bitcoin.cpp" line="+109"/>
-        <source>A fatal error occurred. ShadowCoin can no longer continue safely and will quit.</source>
-        <translation>Prišlo je do usodne napake. Program ShadowCoin se ne more več varno nadaljevati in se bo zato zaprl. </translation>
-    </message>
-</context>
-<context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+90"/>
+        <location filename="../clientmodel.cpp" line="+137"/>
         <source>Network Alert</source>
         <translation>Omrežno Opozorilo</translation>
     </message>
@@ -768,7 +267,8 @@ Naslov: %4
         <translation>Nizek output:</translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="+551"/>
+        <location filename="../coincontroldialog.cpp" line="+528"/>
+        <location line="+30"/>
         <source>no</source>
         <translation>ne</translation>
     </message>
@@ -833,7 +333,7 @@ Naslov: %4
         <translation>Prednostno mesto</translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="-515"/>
+        <location filename="../coincontroldialog.cpp" line="-520"/>
         <source>Copy address</source>
         <translation>Kopiraj naslov</translation>
     </message>
@@ -924,12 +424,14 @@ Naslov: %4
         <translation>najnižja</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+130"/>
+        <location line="+30"/>
         <source>DUST</source>
         <translation>PRAH</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-30"/>
+        <location line="+30"/>
         <source>yes</source>
         <translation>da</translation>
     </message>
@@ -982,7 +484,7 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
  To pomeni, da je zahtevana provizija vsaj %2.</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+40"/>
         <location line="+66"/>
         <source>(no label)</source>
         <translation>(ni oznake)</translation>
@@ -1026,27 +528,32 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Naslov povezan s tem vnosom v imeniku. Spremenite ga lahko le za naslove odlivov.</translation>
     </message>
     <message>
+        <location line="+7"/>
+        <source>&amp;Stealth Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../editaddressdialog.cpp" line="+20"/>
         <source>New receiving address</source>
         <translation>Nov naslov za prilive</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>New sending address</source>
         <translation>Nov naslov za odlive</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Edit receiving address</source>
         <translation>Uredi naslov za prilive</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+7"/>
         <source>Edit sending address</source>
         <translation>Uredi naslov za odlive</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+82"/>
         <source>The entered address &quot;%1&quot; is already in the address book.</source>
         <translation>Vnešeni naslov &quot;&amp;1&quot; je že v imeniku.</translation>
     </message>
@@ -1069,18 +576,18 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="+420"/>
-        <location line="+12"/>
-        <source>ShadowCoin-Qt</source>
-        <translation>ShadowCoin-Qt</translation>
-    </message>
-    <message>
-        <location line="-12"/>
+        <location filename="../guiutil.cpp" line="+526"/>
         <source>version</source>
         <translation>različica</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+0"/>
+        <location line="+12"/>
+        <source>Shadow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-10"/>
         <source>Usage:</source>
         <translation>Uporaba:</translation>
     </message>
@@ -1111,356 +618,122 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
     </message>
 </context>
 <context>
-    <name>OptionsDialog</name>
-    <message>
-        <location filename="../forms/optionsdialog.ui" line="+14"/>
-        <source>Options</source>
-        <translation>Možnosti</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>&amp;Main</source>
-        <translation>&amp;Glavno</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Optional transaction fee per kB that helps make sure your transactions are processed quickly. Most transactions are 1 kB. Fee 0.01 recommended.</source>
-        <translation>Izbirne transakcijske provizije za kB, ki pomagajo pri tem, da so vaše transakcije procesirane hitreje. Večina transakcij je velikih 1 kB. Priporočena je provizija 0.01.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Pay transaction &amp;fee</source>
-        <translation>Nakazilo plačila &amp; provizija</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
-        <translation>Rezervirana količina ne deleži in je tako na voljo za potrošnjo.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Reserve</source>
-        <translation>Rezerva</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Automatically start ShadowCoin after logging in to the system.</source>
-        <translation>Avtomatično zaženi ShadowCoin ob zagonu sistema.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Start ShadowCoin on system login</source>
-        <translation>&amp;Zaženi ShadowCoin ob prijavi v sistem</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Detach block and address databases at shutdown. This means they can be moved to another data directory, but it slows down shutdown. The wallet is always detached.</source>
-        <translation>Loči podatkovne baze blokov in naslovov ob zaustavitvi. To pomeni da jih lahko prenesete na drugo lokacijo, a upočasni zaustavitev. Denarnica je vedno ločena. </translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Detach databases at shutdown</source>
-        <translation>&amp;Loči podatkovne baze ob zaustavitvi</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>&amp;Network</source>
-        <translation>&amp;Omrežje</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Automatically open the ShadowCoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Avtomatično odpri vrata na routerju za ShadowCoin program. To deluje le če vaš router podpira UPnP in je ta omogočen. </translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Map port using &amp;UPnP</source>
-        <translation>Začrtaj vrata z &amp;UPnP</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Connect to the ShadowCoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>Poveži se na ShadowCoin omrežje skozi SOCKS proxy (npr. ko se povezujete prek Tora)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Connect through SOCKS proxy:</source>
-        <translation>&amp;Poveži se skozi SOCKS proxy:</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Proxy &amp;IP:</source>
-        <translation>Proxy &amp;IP:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>IP address of the proxy (e.g. 127.0.0.1)</source>
-        <translation>IP naslov proxy strežnika (npr. 127.0.0.1)</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>&amp;Port:</source>
-        <translation>&amp;Vrata:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Port of the proxy (e.g. 9050)</source>
-        <translation>Vrata strežnika (npr.: 9050)</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>SOCKS &amp;Version:</source>
-        <translation>SOCKS &amp;različica:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>SOCKS version of the proxy (e.g. 5)</source>
-        <translation>SOCKS različica proxya (npr.: 5)</translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>&amp;Window</source>
-        <translation>&amp;Okno</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Show only a tray icon after minimizing the window.</source>
-        <translation>Ob pomanjšanju okna prikaži le ikono v odlagališču.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Minimize to the tray instead of the taskbar</source>
-        <translation>&amp;Pomanjšaj v odlagališče namesto v opravilno vrstico</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Quit in the menu.</source>
-        <translation>Pomanjšaj aplikacijo, ko je okno zaprto. Ko je omogočena ta možnost lahko aplikacijo zaprete le tako, da izberete Izhod v meniju.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>M&amp;inimize on close</source>
-        <translation>P&amp;omanjšaj ko zapreš</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>&amp;Display</source>
-        <translation>&amp;Prikaz</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>User Interface &amp;language:</source>
-        <translation>Uporabniški vmesnik &amp;jezik:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting ShadowCoin.</source>
-        <translation>Tu lahko nastavite jezik uporabniškega vmesnika. Nastavitve bodo pričele delovati ob ponovnem zagonu ShadowCoin aplikacije. </translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>&amp;Unit to show amounts in:</source>
-        <translation>&amp;Enota prikaza količin:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Choose the default subdivision unit to show in the interface and when sending coins.</source>
-        <translation>Izberite privzeto delitev enot, ki naj bodo prikazane v vmesniku ob pošiljanju kovancev.</translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Whether to show ShadowCoin addresses in the transaction list or not.</source>
-        <translation>Izbira prikaza ShadowCoin naslovov v seznamu transakcij.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Display addresses in transaction list</source>
-        <translation>&amp;Prikaz naslovov v seznamu transakcij</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Whether to show coin control features or not.</source>
-        <translation>Izbira prikaza lastnosti kontrole kovancev.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Display coin &amp;control features (experts only!)</source>
-        <translation>Prikaži lastnosti &amp;kontrole kovancev (samo za strokovnjake!)</translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>&amp;OK</source>
-        <translation>&amp;Potrdi</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>&amp;Cancel</source>
-        <translation>&amp;Prekini</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>&amp;Apply</source>
-        <translation>&amp;Uporabi</translation>
-    </message>
-    <message>
-        <location filename="../optionsdialog.cpp" line="+55"/>
-        <source>default</source>
-        <translation>privzeto</translation>
-    </message>
-    <message>
-        <location line="+149"/>
-        <location line="+9"/>
-        <source>Warning</source>
-        <translation>Opozorilo</translation>
-    </message>
-    <message>
-        <location line="-9"/>
-        <location line="+9"/>
-        <source>This setting will take effect after restarting ShadowCoin.</source>
-        <translation>Ta nastavitev bo pričela delovati ob ponovnem zagonu ShadowCoin aplikacije</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>The supplied proxy address is invalid.</source>
-        <translation>Podan naslov proxy strežnika je neveljaven.</translation>
-    </message>
-</context>
-<context>
-    <name>OverviewPage</name>
-    <message>
-        <location filename="../forms/overviewpage.ui" line="+14"/>
-        <source>Form</source>
-        <translation>Oblika</translation>
-    </message>
-    <message>
-        <location line="+33"/>
-        <location line="+231"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the ShadowCoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>Prikazane informacije so morda zastarele. Vaša denarnica se avtomatično sinhronizira z ShadowCoin omrežjem, ko je vzpostavljena povezava, toda ta proces še ni bil zaključen.</translation>
-    </message>
-    <message>
-        <location line="-160"/>
-        <source>Stake:</source>
-        <translation>Deleženje:</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Unconfirmed:</source>
-        <translation>Nepotrjeni:</translation>
-    </message>
-    <message>
-        <location line="-107"/>
-        <source>Wallet</source>
-        <translation>Denarnica</translation>
-    </message>
-    <message>
-        <location line="+49"/>
-        <source>Spendable:</source>
-        <translation>Razpoložljivi:</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Your current spendable balance</source>
-        <translation>Vaše trenutno razpoložljivo stanje</translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>Immature:</source>
-        <translation>Nezreli:</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Mined balance that has not yet matured</source>
-        <translation>Z deleženjem pridobljeni kovanci, ki še niso dozoreli.</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Total:</source>
-        <translation>Skupaj:</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Your current total balance</source>
-        <translation>Vaše trenutno skupno stanje</translation>
-    </message>
-    <message>
-        <location line="+46"/>
-        <source>&lt;b&gt;Recent transactions&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Pogoste transakcije&lt;/&gt;</translation>
-    </message>
-    <message>
-        <location line="-108"/>
-        <source>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</source>
-        <translation>Znesek transakcij, ki še niso bile potrjene in se še ne upoštevajo v trenutnem stanju na računu.</translation>
-    </message>
-    <message>
-        <location line="-29"/>
-        <source>Total of coins that was staked, and do not yet count toward the current balance</source>
-        <translation>Znesek kovancev, ki so bili v deleženju in se še ne upoštevajo v trenutnem stanju na računu.</translation>
-    </message>
-    <message>
-        <location filename="../overviewpage.cpp" line="+113"/>
-        <location line="+1"/>
-        <source>out of sync</source>
-        <translation>nesinhronizirano</translation>
-    </message>
-</context>
-<context>
-    <name>QRCodeDialog</name>
-    <message>
-        <location filename="../forms/qrcodedialog.ui" line="+14"/>
-        <source>QR Code Dialog</source>
-        <translation>QR koda </translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Request Payment</source>
-        <translation>Zahtevaj plačilo</translation>
-    </message>
-    <message>
-        <location line="+56"/>
-        <source>Amount:</source>
-        <translation>Znesek:</translation>
-    </message>
-    <message>
-        <location line="-44"/>
-        <source>Label:</source>
-        <translation>Oznaka:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Message:</source>
-        <translation>Sporočilo:</translation>
-    </message>
-    <message>
-        <location line="+71"/>
-        <source>&amp;Save As...</source>
-        <translation>&amp;Shrani kot...</translation>
-    </message>
-    <message>
-        <location filename="../qrcodedialog.cpp" line="+62"/>
-        <source>Error encoding URI into QR Code.</source>
-        <translation>Napaka pri šifriranju URI v QR kodo.</translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>The entered amount is invalid, please check.</source>
-        <translation>Vnesen znesek je neveljaven, prosimo preverite vnos.</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Resulting URI too long, try to reduce the text for label / message.</source>
-        <translation>URI predolg, skušajte zmanjšati besedilo oznake/sporočila.</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Save QR Code</source>
-        <translation>Shrani QR kodo</translation>
+    <name>MessageModel</name>
+    <message>
+        <location filename="../messagemodel.cpp" line="+375"/>
+        <source>Type</source>
+        <translation type="unfinished">Vrsta</translation>
     </message>
     <message>
         <location line="+0"/>
-        <source>PNG Images (*.png)</source>
-        <translation>PNG slike (*.png)</translation>
+        <source>Sent Date Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Received Date Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Label</source>
+        <translation type="unfinished">Oznaka</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>To Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>From Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Message</source>
+        <translation type="unfinished">Sporočilo</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Send Secure Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send failed: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+1"/>
+        <source>(no label)</source>
+        <translation type="unfinished">(ni oznake)</translation>
+    </message>
+</context>
+<context>
+    <name>PaymentServer</name>
+    <message>
+        <location filename="../paymentserver.cpp" line="+107"/>
+        <source>Cannot start shadow: click-to-pay handler</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PeerTableModel</name>
+    <message>
+        <location filename="../peertablemodel.cpp" line="+118"/>
+        <source>Address/Hostname</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>User Agent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Ping Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../guiutil.cpp" line="-470"/>
+        <source>%1 d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+55"/>
+        <source>%1 s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>N/A</source>
+        <translation type="unfinished">Neznano</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>%1 ms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1474,18 +747,34 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <location line="+10"/>
         <location line="+23"/>
         <location line="+26"/>
+        <location line="+26"/>
         <location line="+23"/>
         <location line="+23"/>
         <location line="+36"/>
-        <location line="+53"/>
+        <location line="+23"/>
+        <location line="+36"/>
         <location line="+23"/>
         <location line="+23"/>
-        <location filename="../rpcconsole.cpp" line="+348"/>
+        <location line="+491"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
         <source>N/A</source>
         <translation>Neznano</translation>
     </message>
     <message>
-        <location line="-217"/>
+        <location line="-1062"/>
         <source>Client version</source>
         <translation>Različica odjemalca</translation>
     </message>
@@ -1495,9 +784,24 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>&amp;Informacije</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="-10"/>
+        <source>Shadow - Debug window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Shadow Core</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+53"/>
         <source>Using OpenSSL version</source>
         <translation>OpenSSL različica v rabi</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Using BerkeleyDB version</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+49"/>
@@ -1511,16 +815,135 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
     </message>
     <message>
         <location line="+7"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
         <source>Number of connections</source>
         <translation>Število povezav</translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>On testnet</source>
-        <translation>Na testnet</translation>
+        <location line="+157"/>
+        <source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+99"/>
+        <source>&amp;Network Traffic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>&amp;Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Totals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+64"/>
+        <location filename="../rpcconsole.cpp" line="+396"/>
+        <source>In:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+80"/>
+        <location filename="../rpcconsole.cpp" line="+1"/>
+        <source>Out:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>&amp;Peers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location filename="../rpcconsole.cpp" line="-167"/>
+        <location line="+328"/>
+        <source>Select a peer to view detailed information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Peer ID</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+23"/>
+        <source>Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>User Agent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Starting Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Sync Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Ban Score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Connection Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last Send</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last Receive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Bytes Sent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Bytes Received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Ping Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Time Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-866"/>
         <source>Block chain</source>
         <translation>veriga blokov</translation>
     </message>
@@ -1540,7 +963,12 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Čas zadnjega bloka</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+49"/>
+        <source>Open the Shadow debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>&amp;Open</source>
         <translation>&amp;Odpri</translation>
     </message>
@@ -1550,12 +978,7 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Možnosti ukazne vrstice.</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Show the ShadowCoin-Qt help message to get a list with possible ShadowCoin command-line options.</source>
-        <translation>Prikaži ShadowCoin-Qt sporočilo za pomoč , ki prikaže vse možnosti ukazne vrstice ShadowCoin aplikacije</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+10"/>
         <source>&amp;Show</source>
         <translation>&amp;Prikaži</translation>
     </message>
@@ -1565,39 +988,24 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>&amp;Konzola</translation>
     </message>
     <message>
-        <location line="-260"/>
+        <location line="-266"/>
         <source>Build date</source>
         <translation>Datum izgradnje</translation>
     </message>
     <message>
-        <location line="-104"/>
-        <source>ShadowCoin - Debug window</source>
-        <translation>ShadowCoin - okno za odpravljanje napak</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>ShadowCoin Core</source>
-        <translation>ShadowCoin jedro</translation>
-    </message>
-    <message>
-        <location line="+279"/>
+        <location line="+206"/>
         <source>Debug log file</source>
         <translation>Razhroščevalna dnevniška datoteka</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Open the ShadowCoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Odpri ShadowCoin datoteko zapisov odpravljanja napak iz trenutnega direktorija podatkov. Če so datoteke zapisov velike, to lahko traja nekaj sekund.</translation>
-    </message>
-    <message>
-        <location line="+102"/>
+        <location line="+109"/>
         <source>Clear console</source>
         <translation>Počisti konzolo</translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-33"/>
-        <source>Welcome to the ShadowCoin RPC console.</source>
-        <translation>Dobrodošli v ShadowCoin RPC konzoli.</translation>
+        <location filename="../rpcconsole.cpp" line="-197"/>
+        <source>Welcome to the Shadow Core RPC console.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1609,524 +1017,802 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
         <translation>Vtipkaj &lt;b&gt;pomoč&lt;/b&gt; za vpogled v razpožljive ukaze.</translation>
     </message>
+    <message>
+        <location line="+233"/>
+        <source>via %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+1"/>
+        <source>never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Inbound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Outbound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+1"/>
+        <source>Fetching...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
-    <name>SendCoinsDialog</name>
+    <name>ShadowBridge</name>
     <message>
-        <location filename="../forms/sendcoinsdialog.ui" line="+14"/>
-        <location filename="../sendcoinsdialog.cpp" line="+182"/>
+        <location filename="../shadowbridge.cpp" line="+399"/>
+        <source>Incoming Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>default</source>
+        <translation type="unfinished">privzeto</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
+        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; to SHADOW %2 (%3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SHADOW %3 (%4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SDC %3 (%4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+10"/>
+        <location line="+12"/>
+        <location line="+8"/>
+        <source>Error:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-30"/>
+        <source>Unknown txn type detected %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Input types must match for all recipients.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Ring sizes must match for all recipients.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Ring size outside range [%1, %2].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+9"/>
+        <source>Confirm send coins</source>
+        <translation type="unfinished">Potrdi odliv kovancev </translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Are you sure you want to send?
+Ring size of one is not anonymous, and harms the network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+9"/>
+        <source> and </source>
+        <translation type="unfinished">in</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Are you sure you want to send %1?</source>
+        <translation type="unfinished">Ali ste prepričani, da želite poslati %1?</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <location line="+25"/>
         <location line="+5"/>
         <location line="+5"/>
         <location line="+5"/>
         <location line="+6"/>
         <location line="+5"/>
         <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
         <source>Send Coins</source>
-        <translation>Pošlji kovance</translation>
+        <translation type="unfinished">Pošlji kovance</translation>
     </message>
     <message>
-        <location line="+76"/>
-        <source>Coin Control Features</source>
-        <translation>Funkcije kontrole kovancev</translation>
+        <location line="-95"/>
+        <source>The change address is not valid, please recheck.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Inputs...</source>
-        <translation>Vnosi...</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>automatically selected</source>
-        <translation>samodejno izbran</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Insufficient funds!</source>
-        <translation>Premalo sredstev!</translation>
-    </message>
-    <message>
-        <location line="+77"/>
-        <source>Quantity:</source>
-        <translation>Količina:</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <location line="+35"/>
-        <source>0</source>
-        <translation>0</translation>
-    </message>
-    <message>
-        <location line="-19"/>
-        <source>Bytes:</source>
-        <translation>Biti:</translation>
-    </message>
-    <message>
-        <location line="+51"/>
-        <source>Amount:</source>
-        <translation>Znesek:</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <location line="+86"/>
-        <location line="+86"/>
-        <location line="+32"/>
-        <source>0.00 SDC</source>
-        <translation>123.456 SDC {0.00 ?}</translation>
-    </message>
-    <message>
-        <location line="-191"/>
-        <source>Priority:</source>
-        <translation>Prednostno mesto:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>medium</source>
-        <translation>srednje</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>Fee:</source>
-        <translation>Provizija:</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Low Output:</source>
-        <translation>Nizek output:</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>no</source>
-        <translation>ne</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>After Fee:</source>
-        <translation>Po proviziji:</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Change</source>
-        <translation>Sprememba</translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>custom change address</source>
-        <translation>izbira spremembe naslova</translation>
-    </message>
-    <message>
-        <location line="+106"/>
-        <source>Send to multiple recipients at once</source>
-        <translation>Pošlji več prejemnikom hkrati</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Add &amp;Recipient</source>
-        <translation>Dodaj &amp;prejemnika</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Remove all transaction fields</source>
-        <translation>Odstrani vsa polja transakcij</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Clear &amp;All</source>
-        <translation>Počisti &amp;vse</translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>Balance:</source>
-        <translation>Dobroimetje:</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>123.456 SDC</source>
-        <translation>123.456 SDC</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Confirm the send action</source>
-        <translation>Potrdi odlivno dejanje</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>S&amp;end</source>
-        <translation>P&amp;ošlji</translation>
-    </message>
-    <message>
-        <location filename="../sendcoinsdialog.cpp" line="-173"/>
-        <source>Enter a ShadowCoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Vnesite ShadowCoin naslov (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Copy quantity</source>
-        <translation>Kopiraj količino</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy amount</source>
-        <translation>Kopiraj količino</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy fee</source>
-        <translation>Kopiraj provizijo</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy after fee</source>
-        <translation>Kopiraj po proviziji</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy bytes</source>
-        <translation>Kopiraj bite</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy priority</source>
-        <translation>Kopiraj prednostno mesto</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy low output</source>
-        <translation>Kopiraj nizek output</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy change</source>
-        <translation>Kopiraj spremembo</translation>
-    </message>
-    <message>
-        <location line="+86"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Confirm send coins</source>
-        <translation>Potrdi odliv kovancev </translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Are you sure you want to send %1?</source>
-        <translation>Ali ste prepričani, da želite poslati %1?</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source> and </source>
-        <translation>in</translation>
-    </message>
-    <message>
-        <location line="+29"/>
+        <location line="+25"/>
+        <location line="+362"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation>Prejemnikov naslov ni veljaven, prosimo če ga ponovno preverite.</translation>
+        <translation type="unfinished">Prejemnikov naslov ni veljaven, prosimo če ga ponovno preverite.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-357"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation>Količina za plačilo mora biti večja od 0.</translation>
+        <translation type="unfinished">Količina za plačilo mora biti večja od 0.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The amount exceeds your balance.</source>
-        <translation>Količina presega vaše dobroimetje</translation>
+        <translation type="unfinished">Količina presega vaše dobroimetje</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation>Seštevek presega vaše stanje na računu ko je vključen %1 provizije na transakcijo. </translation>
+        <translation type="unfinished">Seštevek presega vaše stanje na računu ko je vključen %1 provizije na transakcijo. </translation>
     </message>
     <message>
         <location line="+6"/>
+        <location line="+351"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation>Najdena kopija naslova, možnost pošiljanja na vsakega izmed naslov le enkrat ob pošiljanju.</translation>
+        <translation type="unfinished">Najdena kopija naslova, možnost pošiljanja na vsakega izmed naslov le enkrat ob pošiljanju.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-346"/>
         <source>Error: Transaction creation failed.</source>
-        <translation>Napaka: Ustvarjanje transakcije spodletelo</translation>
+        <translation type="unfinished">Napaka: Ustvarjanje transakcije spodletelo</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Napaka: Transakcija je bila zavrnjena. To se je lahko zgodilo, če so bili kovanci v vaši denarnici že zapravljeni, na primer če ste uporabili kopijo wallet.dat in so bili kovanci zapravljeni v kopiji, a tu še niso bili označeni kot zapravljeni.</translation>
+        <translation type="unfinished">Napaka: Transakcija je bila zavrnjena. To se je lahko zgodilo, če so bili kovanci v vaši denarnici že zapravljeni, na primer če ste uporabili kopijo wallet.dat in so bili kovanci zapravljeni v kopiji, a tu še niso bili označeni kot zapravljeni.</translation>
     </message>
     <message>
-        <location line="+251"/>
-        <source>WARNING: Invalid ShadowCoin address</source>
-        <translation>OPOZORILO: Neveljaven ShadowCoin naslov</translation>
+        <location line="+5"/>
+        <source>Error: Narration is too long.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>(no label)</source>
-        <translation>(ni oznake)</translation>
+        <location line="+5"/>
+        <source>Error: Ring Size Error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: Input Type Error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: Must be in full mode to send anon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: Invalid Stealth Address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The total exceeds your shadow balance when the %1 transaction fee is included.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error generating transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error generating transaction: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+290"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <source>Send Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>The message can&apos;t be empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Error: Message creation failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: The message was rejected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+98"/>
+        <source>Sanity Error!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ShadowGUI</name>
+    <message>
+        <location filename="../shadow.cpp" line="+111"/>
+        <source>A fatal error occurred. Shadow can no longer continue safely and will quit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../shadowgui.cpp" line="+89"/>
+        <location line="+178"/>
+        <source>Umbra</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-178"/>
+        <source>Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <source>E&amp;xit</source>
+        <translation type="unfinished">I&amp;zhod</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit application</source>
+        <translation type="unfinished">Izhod iz aplikacije</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;About ShadowCoin</source>
+        <translation type="unfinished">&amp;O ShadowCoin</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show information about ShadowCoin</source>
+        <translation type="unfinished">Pokaži informacije o ShadowCoin</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>About &amp;Qt</source>
+        <translation type="unfinished">O &amp;Qt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show information about Qt</source>
+        <translation type="unfinished">Prikaži informacije o Qt</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Options...</source>
+        <translation type="unfinished">&amp;Možnosti ...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Modify configuration options for ShadowCoin</source>
+        <translation type="unfinished">Spremeni nastavitve za ShadowCoin</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Show / Hide</source>
+        <translation type="unfinished">&amp;Prikaži / Skrij</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Encrypt Wallet...</source>
+        <translation type="unfinished">&amp;Šifriraj denarnico ...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Encrypt or decrypt wallet</source>
+        <translation type="unfinished">Šifriraj ali dešifriraj denarnico</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Backup Wallet...</source>
+        <translation type="unfinished">&amp;Ustvari varnostno kopijo denarnice ...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Backup wallet to another location</source>
+        <translation type="unfinished">Napravi varnostno kopijo denarnice na drugo lokacijo</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Change Passphrase...</source>
+        <translation type="unfinished">&amp;Spremeni geslo ...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the passphrase used for wallet encryption</source>
+        <translation type="unfinished">Spremeni šifrirno geslo denarnice</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Unlock Wallet...</source>
+        <translation type="unfinished">&amp;Odkleni denarnico...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unlock wallet</source>
+        <translation type="unfinished">Odkleni denarnico</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Lock Wallet</source>
+        <translation type="unfinished">&amp;Zakleni denarnico</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Lock wallet</source>
+        <translation type="unfinished">Zakleni denarnico</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>WARNING: unknown change address</source>
-        <translation>OPOZORILO: neznana sprememba naslova</translation>
-    </message>
-</context>
-<context>
-    <name>SendCoinsEntry</name>
-    <message>
-        <location filename="../forms/sendcoinsentry.ui" line="+14"/>
-        <source>Form</source>
-        <translation>Oblika</translation>
+        <source>&amp;Debug window</source>
+        <translation type="unfinished">&amp;Razhroščevalno okno</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>A&amp;mount:</source>
-        <translation>K&amp;oličina:</translation>
+        <location line="+1"/>
+        <source>Open debugging and diagnostic console</source>
+        <translation type="unfinished">Odpri razhroščevalno in diagnostično konzolo</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Pay &amp;To:</source>
-        <translation>Prejemnik &amp;plačila:</translation>
+        <location line="+26"/>
+        <source>&amp;File</source>
+        <translation type="unfinished">&amp;Datoteka</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <location filename="../sendcoinsentry.cpp" line="+25"/>
-        <source>Enter a label for this address to add it to your address book</source>
-        <translation>Vnesite oznako za ta naslov, ki bo shranjena v imenik</translation>
+        <location line="+6"/>
+        <source>&amp;Settings</source>
+        <translation type="unfinished">&amp;Nastavitve</translation>
     </message>
     <message>
+        <location line="+8"/>
+        <source>&amp;Help</source>
+        <translation type="unfinished">&amp;Pomoč</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Wallet</source>
+        <translation type="unfinished">Denarnica</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <location line="+9"/>
-        <source>&amp;Label:</source>
-        <translation>&amp;Oznaka:</translation>
+        <source>[testnet]</source>
+        <translation type="unfinished">[testnet]</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+74"/>
+        <source>Umbra client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+63"/>
+        <source>%n active connection(s) to ShadowCoin network</source>
+        <translation type="unfinished">
+            <numerusform>%n aktivne povezave na ShadowCoin omrežje</numerusform>
+            <numerusform>%n aktivnih povezav na ShadowCoin omrežje</numerusform>
+            <numerusform>%n aktivnih povezav na ShadowCoin omrežje</numerusform>
+            <numerusform>%n aktivnih povezav na ShadowCoin omrežje</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Naslov kamor želite poslati plačilo (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+        <source>block</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Choose address from address book</source>
-        <translation>Izberite naslov iz imenika</translation>
+        <location line="+0"/>
+        <source>header</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Alt+A</source>
-        <translation>Alt+A</translation>
+        <location line="+1"/>
+        <source>blocks</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Paste address from clipboard</source>
-        <translation>Prilepi naslov iz odložišča</translation>
+        <location line="+0"/>
+        <source>headers</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Alt+P</source>
-        <translation>Alt+P</translation>
+        <location line="+8"/>
+        <source>Synchronizing with network...</source>
+        <translation type="unfinished">Sinhroniziranje z omrežjem ...</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Remove this recipient</source>
-        <translation>Odstrani tega prejemnika</translation>
+        <location line="+2"/>
+        <source>Downloading filtered blocks...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a ShadowCoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Vnesite ShadowCoin naslov (npr. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+        <location line="+6"/>
+        <source>~%1 filtered block(s) remaining (%2% done).</source>
+        <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>SignVerifyMessageDialog</name>
-    <message>
-        <location filename="../forms/signverifymessagedialog.ui" line="+14"/>
-        <source>Signatures - Sign / Verify a Message</source>
-        <translation>Podpisi - Podpiši/potrdi sporočilo</translation>
+    <message numerus="yes">
+        <location line="+19"/>
+        <source>~%n block(s) remaining</source>
+        <translation type="unfinished">
+            <numerusform>Ostaja ~%n bloka </numerusform>
+            <numerusform>Ostaja ~%n blokov</numerusform>
+            <numerusform>Ostaja ~%n blokov</numerusform>
+            <numerusform>Ostaja ~%n blokov </numerusform>
+        </translation>
     </message>
     <message>
         <location line="+13"/>
-        <location line="+124"/>
-        <source>&amp;Sign Message</source>
-        <translation>&amp;Podpiši sporočilo</translation>
+        <location line="+4"/>
+        <source>Imported</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-118"/>
-        <source>You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
-        <translation>Sporočila lahko podpišete s svojim naslovom, da dokažete lastništvo. Bodite previdni, saj vas lahko phishing napadi skušajo pretentati v to, da jim prepišete svojo identiteto. Podpisujte le jasne in razločne izjave, s katerimi se strinjate.</translation>
+        <location line="-4"/>
+        <location line="+4"/>
+        <source>Downloaded</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>The address to sign the message with (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Naslov s katerim želite podpisati sporočilo (npr. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+        <location line="-3"/>
+        <source>%1 of %2 %3 of transaction history (%4% done).</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <location line="+203"/>
-        <source>Choose an address from the address book</source>
-        <translation>Izberite naslov iz imenika</translation>
+        <location line="+3"/>
+        <source>%1 blocks of transaction history.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+23"/>
+        <source>%n second(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>pred %n sekundo</numerusform>
+            <numerusform>pred %n sekundama</numerusform>
+            <numerusform>pred %n sekundami</numerusform>
+            <numerusform>pred %n sekundami </numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n minute(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>Pred %n minuto</numerusform>
+            <numerusform>Pred %n minutama</numerusform>
+            <numerusform>Pred %n minutami</numerusform>
+            <numerusform>Pred %n minutami</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n hour(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>Pred %n uro.</numerusform>
+            <numerusform>Pred %n urama.</numerusform>
+            <numerusform>Pred %n urami.</numerusform>
+            <numerusform>Pred %n urami.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n day(s) ago</source>
+        <translation type="unfinished">
+            <numerusform>Pred %n dnevom.</numerusform>
+            <numerusform>Pred %n dnevoma.</numerusform>
+            <numerusform>Pred %n dnevi.</numerusform>
+            <numerusform>Pred %n dnevi.</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="-193"/>
-        <location line="+203"/>
-        <source>Alt+A</source>
-        <translation>Alt+A</translation>
-    </message>
-    <message>
-        <location line="-193"/>
-        <source>Paste address from clipboard</source>
-        <translation>Prilepi naslov iz odložišča</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Alt+P</source>
-        <translation>Alt+P</translation>
+        <location line="+7"/>
+        <source>Up to date</source>
+        <translation type="unfinished">Posodobljeno</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>Enter the message you want to sign here</source>
-        <translation>Vnesite sporočilo, ki ga želite podpisati</translation>
+        <source>Catching up...</source>
+        <translation type="unfinished">Pridobivanje ...</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Copy the current signature to the system clipboard</source>
-        <translation>Kopiraj trenutno izbrani naslov v odložišče</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>Sign the message to prove you own this ShadowCoin address</source>
-        <translation>Podpišite sporočilo, kot dokazilo lastništva ShadowCoin naslova</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Reset all sign message fields</source>
-        <translation>Ponastavite vse polja sporočila s podpisom</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <location line="+146"/>
-        <source>Clear &amp;All</source>
-        <translation>Počisti &amp;vse </translation>
-    </message>
-    <message>
-        <location line="-87"/>
-        <location line="+70"/>
-        <source>&amp;Verify Message</source>
-        <translation>&amp;Potrdi sporočilo</translation>
-    </message>
-    <message>
-        <location line="-64"/>
-        <source>Enter the signing address, message (ensure you copy line breaks, spaces, tabs, etc. exactly) and signature below to verify the message. Be careful not to read more into the signature than what is in the signed message itself, to avoid being tricked by a man-in-the-middle attack.</source>
-        <translation>Vnesite naslov za podpis, sporočilo (poskribte da točno skopirate presledke med vrsticami, črkami, itd.) in podpis spodaj, da potrdite sporočilo Da se ognete napadom posrednika, bodite pozorni, da ne boste v podpisu ugledali več, kot je v podpisanemu sporočilu samem.</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>The address the message was signed with (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Naslov s katerim je bilo podpisano sporočilo (npr. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified ShadowCoin address</source>
-        <translation>Potrdite sporočilo, da zagotovite, da je bilo podpisano z izbranim ShadowCoin naslovom</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Reset all verify message fields</source>
-        <translation>Ponastavite vse polja sporočila potrditve</translation>
-    </message>
-    <message>
-        <location filename="../signverifymessagedialog.cpp" line="+27"/>
-        <location line="+3"/>
-        <source>Enter a ShadowCoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>Vnesite ShadowCoin naslov (npr. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location line="-2"/>
-        <source>Click &quot;Sign Message&quot; to generate signature</source>
-        <translation>Kliknite &quot;Podpiši sporočilo&quot; za ustvaritev podpisa</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Enter ShadowCoin signature</source>
-        <translation>Vnesite ShadowCoin podpis</translation>
-    </message>
-    <message>
-        <location line="+82"/>
-        <location line="+81"/>
-        <source>The entered address is invalid.</source>
-        <translation>Vnešeni naslov ni veljaven.</translation>
-    </message>
-    <message>
-        <location line="-81"/>
-        <location line="+8"/>
-        <location line="+73"/>
-        <location line="+8"/>
-        <source>Please check the address and try again.</source>
-        <translation>Prosimo preverite naslov in poizkusite znova.</translation>
-    </message>
-    <message>
-        <location line="-81"/>
-        <location line="+81"/>
-        <source>The entered address does not refer to a key.</source>
-        <translation>Vnešen naslov se ne nanaša na ključ.</translation>
-    </message>
-    <message>
-        <location line="-73"/>
-        <source>Wallet unlock was cancelled.</source>
-        <translation>Odklepanje denarnice je bilo prekinjeno.</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Private key for the entered address is not available.</source>
-        <translation>Zasebni ključ vnešenega naslov ni na voljo.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Message signing failed.</source>
-        <translation>Podpisovanje sporočila spodletelo.</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Message signed.</source>
-        <translation>Sporočilo podpisano.</translation>
+        <location line="+16"/>
+        <source>Last received %1 was generated %2.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+59"/>
-        <source>The signature could not be decoded.</source>
-        <translation>Ni bilo mogoče dešifrirati podpisa.</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+13"/>
-        <source>Please check the signature and try again.</source>
-        <translation>Prosimo preverite podpis in poizkusite znova.</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>The signature did not match the message digest.</source>
-        <translation>Podpis se ni ujemal s povzetkom sporočila.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Message verification failed.</source>
-        <translation>Pregledovanje sporočila spodletelo.</translation>
+        <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
+        <translation type="unfinished">Ta transakcija je prekoračila limit. Še vedno jo lahko pošljete za plačilo %1 transakcije, ki je plačano vsem delom omrežja kot deležnina in pomaga zagotavljati njegovo varnost. Ali želite plačati provizijo?</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Message verified.</source>
-        <translation>Sporočilo pregledano.</translation>
+        <source>Confirm transaction fee</source>
+        <translation type="unfinished">Potrdi transakcijsko provizijo</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Sent transaction</source>
+        <translation type="unfinished">Odlivi</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Incoming transaction</source>
+        <translation type="unfinished">Prilivi</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Date: %1
+Amount: %2
+Type: %3
+Address: %4
+</source>
+        <translation type="unfinished">Datum: %1
+Količina: %2
+Vrsta: %3
+Naslov: %4
+</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <location line="+15"/>
+        <source>Incoming Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Date: %1
+From Address: %2
+To Address: %3
+Message: %4
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <location line="+23"/>
+        <source>URI handling</source>
+        <translation type="unfinished">Rokovanje z URI</translation>
+    </message>
+    <message>
+        <location line="-23"/>
+        <location line="+23"/>
+        <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
+        <translation type="unfinished">URI ne more biti razčlenjen! To se lahko zgodi zaradi neveljavnega ShadowCoin naslova ali slabih parametrov URI.</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
+        <translation type="unfinished">Denarnica je &lt;b&gt;šifrirana&lt;/b&gt; in trenutno &lt;b&gt;odklenjena&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
+        <translation type="unfinished">Denarnica je &lt;b&gt;šifrirana&lt;/b&gt; in trenutno &lt;b&gt;zaklenjena&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Backup Wallet</source>
+        <translation type="unfinished">Napravi varnostno kopijo denarnice</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Wallet Data (*.dat)</source>
+        <translation type="unfinished">Datoteka denarnice (*.dat)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Backup Failed</source>
+        <translation type="unfinished">Ustvarjanje varnostne kopije je spodeltelo </translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>There was an error trying to save the wallet data to the new location.</source>
+        <translation type="unfinished">Prišlo je do napake ob poskušanju shranjevanja datoteke denarnice na novo lokacijo.</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Lock Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error: Wallet must first be encrypted to be locked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+69"/>
+        <source>%n second(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n sekundo</numerusform>
+            <numerusform>%n sekundama</numerusform>
+            <numerusform>%n sekund</numerusform>
+            <numerusform>%n sekund</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n minute(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n minuto</numerusform>
+            <numerusform>%n minutama</numerusform>
+            <numerusform>%n minut</numerusform>
+            <numerusform>%n minut</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n hour(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n ura</numerusform>
+            <numerusform>%n uri</numerusform>
+            <numerusform>%n ure</numerusform>
+            <numerusform>%n ura</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n day(s)</source>
+        <translation type="unfinished">
+            <numerusform>%n dan</numerusform>
+            <numerusform>%n dneva</numerusform>
+            <numerusform>%n dnevi</numerusform>
+            <numerusform>%n dni</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Staking.
+Your weight is %1
+Network weight is %2
+Expected time to earn reward is %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Not staking because wallet is in thin mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking, staking is disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because wallet is locked</source>
+        <translation type="unfinished">Ne deležite ker je denarnica zakljenjena</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because wallet is offline</source>
+        <translation type="unfinished">Ne deležite ker denarnica ni povezana</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because wallet is syncing</source>
+        <translation type="unfinished">Ne deležite ker se denarnica sinhronizira z omrežjem</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking because you don&apos;t have mature coins</source>
+        <translation type="unfinished">Ne deležite ker nimate zrelih kovancev. </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not staking</source>
+        <translation type="unfinished">Ne deležite</translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="+23"/>
+        <source>Received with</source>
+        <translation type="unfinished">Prejeto z</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Received from</source>
+        <translation type="unfinished">Prejeto od</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sent to</source>
+        <translation type="unfinished">Poslano</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Payment to yourself</source>
+        <translation type="unfinished">Izplačilo sebi</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Mined</source>
+        <translation type="unfinished">Minirano</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Received shadow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sent shadow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other</source>
+        <translation type="unfinished">Drugo</translation>
+    </message>
+</context>
+<context>
+    <name>TrafficGraphWidget</name>
+    <message>
+        <location filename="../trafficgraphwidget.cpp" line="+79"/>
+        <source>KB/s</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TransactionDesc</name>
     <message>
-        <location filename="../transactiondesc.cpp" line="+19"/>
+        <location filename="../transactiondesc.cpp" line="+20"/>
         <source>Open until %1</source>
         <translation>Odpri enoto %1</translation>
     </message>
     <message numerus="yes">
         <location line="-2"/>
         <source>Open for %n block(s)</source>
-        <translation><numerusform>Odprt za %n blok</numerusform><numerusform>Odprt za %n bloka</numerusform><numerusform>Odprt za %n blokov</numerusform><numerusform>Odprt za %n blokov</numerusform></translation>
+        <translation>
+            <numerusform>Odprt za %n blok</numerusform>
+            <numerusform>Odprt za %n bloka</numerusform>
+            <numerusform>Odprt za %n blokov</numerusform>
+            <numerusform>Odprt za %n blokov</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>conflicted</source>
         <translation>sporen</translation>
     </message>
@@ -2153,10 +1839,15 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
     <message numerus="yes">
         <location line="+7"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, predvajanje skozi %n vozlišče</numerusform><numerusform>, predvajanje skozi %n vozlišči</numerusform><numerusform>, predvajanje skozi %n vozlišč</numerusform><numerusform>, predvajanje skozi %n vozlišč</numerusform></translation>
+        <translation>
+            <numerusform>, predvajanje skozi %n vozlišče</numerusform>
+            <numerusform>, predvajanje skozi %n vozlišči</numerusform>
+            <numerusform>, predvajanje skozi %n vozlišč</numerusform>
+            <numerusform>, predvajanje skozi %n vozlišč</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Date</source>
         <translation>Datum</translation>
     </message>
@@ -2173,40 +1864,50 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
     <message>
         <location line="+5"/>
         <location line="+17"/>
+        <location line="+20"/>
         <source>From</source>
         <translation>Pošiljatelj</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+22"/>
-        <location line="+58"/>
+        <location line="-19"/>
+        <location line="+20"/>
+        <location line="+23"/>
+        <location line="+57"/>
         <source>To</source>
         <translation>Prejemnik</translation>
     </message>
     <message>
-        <location line="-77"/>
+        <location line="-96"/>
+        <location line="+2"/>
+        <location line="+18"/>
         <location line="+2"/>
         <source>own address</source>
         <translation>lasten naslov</translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="-22"/>
+        <location line="+20"/>
         <source>label</source>
         <translation>oznaka</translation>
     </message>
     <message>
         <location line="+37"/>
         <location line="+12"/>
-        <location line="+45"/>
-        <location line="+17"/>
-        <location line="+30"/>
+        <location line="+44"/>
+        <location line="+20"/>
+        <location line="+40"/>
         <source>Credit</source>
         <translation>Kredit</translation>
     </message>
     <message numerus="yes">
-        <location line="-102"/>
+        <location line="-114"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>dozori čez %n blok</numerusform><numerusform>dozori čez %n bloka</numerusform><numerusform>dozori čez %n blokov</numerusform><numerusform>dozori čez %n blokov</numerusform></translation>
+        <translation>
+            <numerusform>dozori čez %n blok</numerusform>
+            <numerusform>dozori čez %n bloka</numerusform>
+            <numerusform>dozori čez %n blokov</numerusform>
+            <numerusform>dozori čez %n blokov</numerusform>
+        </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2214,20 +1915,20 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>ni bilo sprejeto</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+43"/>
         <location line="+8"/>
-        <location line="+15"/>
-        <location line="+30"/>
+        <location line="+16"/>
+        <location line="+42"/>
         <source>Debit</source>
         <translation>Dolg</translation>
     </message>
     <message>
-        <location line="-39"/>
+        <location line="-52"/>
         <source>Transaction fee</source>
         <translation>Provizija transakcije</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+19"/>
         <source>Net amount</source>
         <translation>Neto količina</translation>
     </message>
@@ -2242,14 +1943,14 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Opomba</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+12"/>
         <source>Transaction ID</source>
         <translation>ID transakcije</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Generated coins must mature 510 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Ustvarjeni kovanci morajo zoreti 510 blokov preden so lahko potrošeni. Ko ustvarite ta blok, je predvajan po mreži in nanizan v verigo blokov. Če mu priključitev na verigo spodleti, se bo njegovo stanje spremenilo v &quot;ni sprejet&quot; in ne bo razpoložljiv. To se lahko občasno zgodi, če drugo vozlišče ustvari blok par sekund pred vami. </translation>
+        <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation type="unfinished">Ustvarjeni kovanci morajo zoreti 510 blokov preden so lahko potrošeni. Ko ustvarite ta blok, je predvajan po mreži in nanizan v verigo blokov. Če mu priključitev na verigo spodleti, se bo njegovo stanje spremenilo v &quot;ni sprejet&quot; in ne bo razpoložljiv. To se lahko občasno zgodi, če drugo vozlišče ustvari blok par sekund pred vami.  {120 ?}</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2267,7 +1968,7 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Vnosi</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+44"/>
         <source>Amount</source>
         <translation>Količina</translation>
     </message>
@@ -2282,12 +1983,13 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>nepravilno</translation>
     </message>
     <message>
-        <location line="-211"/>
+        <location line="-266"/>
         <source>, has not been successfully broadcast yet</source>
         <translation>, še ni bil uspešno predvajan</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+36"/>
+        <location line="+20"/>
         <source>unknown</source>
         <translation>neznano</translation>
     </message>
@@ -2308,7 +2010,7 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+226"/>
+        <location filename="../transactiontablemodel.cpp" line="+217"/>
         <source>Date</source>
         <translation>Datum</translation>
     </message>
@@ -2328,7 +2030,7 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Količina</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+54"/>
         <source>Open until %1</source>
         <translation>Odpri enoto %1</translation>
     </message>
@@ -2340,10 +2042,20 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
     <message numerus="yes">
         <location line="-15"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Odprt še  %n blok</numerusform><numerusform>Odprt še  %n bloka</numerusform><numerusform>Odprt še  %n blokov</numerusform><numerusform>Odprt še  %n blokov</numerusform></translation>
+        <translation>
+            <numerusform>Odprt še  %n blok</numerusform>
+            <numerusform>Odprt še  %n bloka</numerusform>
+            <numerusform>Odprt še  %n blokov</numerusform>
+            <numerusform>Odprt še  %n blokov</numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-51"/>
+        <source>Narration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+57"/>
         <source>Offline</source>
         <translation>Nepovezan</translation>
     </message>
@@ -2378,37 +2090,12 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
         <translation>Generirano, toda ne sprejeto</translation>
     </message>
     <message>
-        <location line="+42"/>
-        <source>Received with</source>
-        <translation>Prejeto z</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Received from</source>
-        <translation>Prejeto od</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Sent to</source>
-        <translation>Poslano</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Payment to yourself</source>
-        <translation>Izplačilo sebi</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Mined</source>
-        <translation>Minirano</translation>
-    </message>
-    <message>
-        <location line="+38"/>
+        <location line="+49"/>
         <source>(n/a)</source>
         <translation>(ni na voljo)</translation>
     </message>
     <message>
-        <location line="+190"/>
+        <location line="+202"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Stanje transakcije. Zapeljite z miško čez to polje za prikaz števila potrdil. </translation>
     </message>
@@ -2434,178 +2121,10 @@ Ta oznaka se obarva rdeče, če je prioriteta manjša kot &quot;srednja&quot;.
     </message>
 </context>
 <context>
-    <name>TransactionView</name>
-    <message>
-        <location filename="../transactionview.cpp" line="+55"/>
-        <location line="+16"/>
-        <source>All</source>
-        <translation>Vse</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <source>Today</source>
-        <translation>Danes</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This week</source>
-        <translation>Ta teden</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This month</source>
-        <translation>Ta mesec</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Last month</source>
-        <translation>Prejšnji mesec</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This year</source>
-        <translation>To leto</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Range...</source>
-        <translation>Območje ...</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Received with</source>
-        <translation>Prejeto z</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Sent to</source>
-        <translation>Poslano</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>To yourself</source>
-        <translation>Samemu sebi</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Mined</source>
-        <translation>Minirano</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Other</source>
-        <translation>Drugo</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Enter address or label to search</source>
-        <translation>Vnesite naslov ali oznako za iskanje</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Min amount</source>
-        <translation>Minimalna količina</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Copy address</source>
-        <translation>Kopiraj naslov</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy label</source>
-        <translation>Kopiraj oznako</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy amount</source>
-        <translation>Kopiraj količino</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy transaction ID</source>
-        <translation>Kopiraj ID transakcije</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit label</source>
-        <translation>Uredi oznako</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show transaction details</source>
-        <translation>Prikaži podrobnosti transakcije</translation>
-    </message>
-    <message>
-        <location line="+144"/>
-        <source>Export Transaction Data</source>
-        <translation>Izvozi podatke transakcij</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Comma separated file (*.csv)</source>
-        <translation>Datoteka s podatki, ločenimi z vejico (*.csv)</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Confirmed</source>
-        <translation>Potrjeno</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Date</source>
-        <translation>Datum</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Type</source>
-        <translation>Vrsta</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Label</source>
-        <translation>Oznaka</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Address</source>
-        <translation>Naslov</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Amount</source>
-        <translation>Količina</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>ID</source>
-        <translation>ID</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error exporting</source>
-        <translation>Napaka pri izvažanju podatkov</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Could not write to file %1.</source>
-        <translation>Napaka pri pisanju na datoteko %1.</translation>
-    </message>
-    <message>
-        <location line="+100"/>
-        <source>Range:</source>
-        <translation>Območje:</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>to</source>
-        <translation>za</translation>
-    </message>
-</context>
-<context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+206"/>
+        <location filename="../walletmodel.cpp" line="+393"/>
+        <location line="+246"/>
         <source>Sending...</source>
         <translation>Pošiljanje...</translation>
     </message>
@@ -3112,7 +2631,7 @@ na primer: alertnotify=echo %%s | mail -s &quot;ShadowCoin Alarm&quot; admin@foo
     <message>
         <location line="+53"/>
         <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+18"/>
