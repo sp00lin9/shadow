@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" version="2.1">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -32,7 +30,7 @@ This is experimental software.
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -50,12 +48,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+0"/>
         <source>pubkey</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>stealth</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
@@ -65,12 +63,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+4"/>
         <source>Stealth Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>n/a</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -526,7 +524,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>&amp;Stealth Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../editaddressdialog.cpp" line="+20"/>
@@ -580,7 +578,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+0"/>
         <location line="+12"/>
         <source>Shadow</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-10"/>
@@ -618,53 +616,53 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../messagemodel.cpp" line="+375"/>
         <source>Type</source>
-        <translation type="unfinished">类型</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Sent Date Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Received Date Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Label</source>
-        <translation type="unfinished">标签</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>To Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>From Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Message</source>
-        <translation type="unfinished">消息</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+41"/>
         <source>Send Secure Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Send failed: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+22"/>
         <location line="+1"/>
         <source>(no label)</source>
-        <translation type="unfinished">(没有标签)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -672,7 +670,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../paymentserver.cpp" line="+107"/>
         <source>Cannot start shadow: click-to-pay handler</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -680,17 +678,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../peertablemodel.cpp" line="+118"/>
         <source>Address/Hostname</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>User Agent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -698,38 +696,38 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../guiutil.cpp" line="-470"/>
         <source>%1 d</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 h</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 m</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <location line="+55"/>
         <source>%1 s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-10"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>N/A</source>
-        <translation type="unfinished">不可用</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 ms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -782,12 +780,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-10"/>
         <source>Shadow - Debug window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <source>Shadow Core</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+53"/>
@@ -797,7 +795,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+49"/>
@@ -812,7 +810,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
@@ -822,121 +820,121 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+157"/>
         <source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+99"/>
         <source>&amp;Network Traffic</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+52"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <source>Totals</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+64"/>
         <location filename="../rpcconsole.cpp" line="+396"/>
         <source>In:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+80"/>
         <location filename="../rpcconsole.cpp" line="+1"/>
         <source>Out:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+41"/>
         <source>&amp;Peers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../rpcconsole.cpp" line="-167"/>
         <location line="+328"/>
         <source>Select a peer to view detailed information.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <source>Peer ID</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Direction</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>User Agent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Services</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Starting Height</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Sync Height</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Ban Score</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Connection Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Send</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Receive</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Sent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Received</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Ping Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Time Offset</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-866"/>
@@ -961,7 +959,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+49"/>
         <source>Open the Shadow debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
@@ -1001,7 +999,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../rpcconsole.cpp" line="-197"/>
         <source>Welcome to the Shadow Core RPC console.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -1016,34 +1014,34 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+233"/>
         <source>via %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <location line="+1"/>
         <source>never</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+9"/>
         <source>Inbound</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Outbound</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+13"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <location line="+1"/>
         <source>Fetching...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1051,32 +1049,32 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../shadowbridge.cpp" line="+399"/>
         <source>Incoming Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
         <source>default</source>
-        <translation type="unfinished">默认</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+58"/>
         <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt; 至 %2 (%3)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>&lt;b&gt;%1&lt;/b&gt; to SHADOW %2 (%3)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SHADOW %3 (%4)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SDC %3 (%4)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
@@ -1084,50 +1082,50 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+12"/>
         <location line="+8"/>
         <source>Error:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-30"/>
         <source>Unknown txn type detected %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <source>Input types must match for all recipients.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
         <source>Ring sizes must match for all recipients.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Ring size outside range [%1, %2].</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <location line="+9"/>
         <source>Confirm send coins</source>
-        <translation type="unfinished">确认发送货币</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-9"/>
         <source>Are you sure you want to send?
 Ring size of one is not anonymous, and harms the network.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <location line="+9"/>
         <source> and </source>
-        <translation type="unfinished">和</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Are you sure you want to send %1?</source>
-        <translation type="unfinished">确认要发送 %1 ?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+15"/>
@@ -1147,89 +1145,89 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+5"/>
         <location line="+5"/>
         <source>Send Coins</source>
-        <translation type="unfinished">发送货币</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-95"/>
         <source>The change address is not valid, please recheck.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <location line="+362"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation type="unfinished">收款人地址不合法，请检查。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-357"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation type="unfinished">支付金额必须大于0。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>The amount exceeds your balance.</source>
-        <translation type="unfinished">金额超出您的账上余额。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished">计入 %1 交易费后的金额超出您的账上余额。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <location line="+351"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation type="unfinished">发现重复的地址, 每次只能对同一地址发送一次。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-346"/>
         <source>Error: Transaction creation failed.</source>
-        <translation type="unfinished">错误：交易创建失败。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished">错误：交易被拒绝。可能由于钱包中部分金额已被使用，例如您使用了钱包数据的副本，在副本中某些金额已被使用，但在此处尚未被标记为已使用。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Narration is too long.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Ring Size Error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Input Type Error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Must be in full mode to send anon.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Invalid Stealth Address.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your shadow balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error generating transaction.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error generating transaction: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+290"/>
@@ -1238,32 +1236,32 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+5"/>
         <location line="+5"/>
         <source>Send Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-14"/>
         <source>The message can&apos;t be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <source>Error: Message creation failed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: The message was rejected.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+98"/>
         <source>Sanity Error!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1271,289 +1269,277 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location filename="../shadow.cpp" line="+111"/>
         <source>A fatal error occurred. Shadow can no longer continue safely and will quit.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../shadowgui.cpp" line="+89"/>
         <location line="+178"/>
         <source>Umbra</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-178"/>
         <source>Client</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+90"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished">退出(&amp;X)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Quit application</source>
-        <translation type="unfinished">退出程序</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;About ShadowCoin</source>
-        <translation type="unfinished">关于暗影币(&amp;A)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Show information about ShadowCoin</source>
-        <translation type="unfinished">显示关于暗影币的信息</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished">关于 &amp;Qt</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Show information about Qt</source>
-        <translation type="unfinished">显示 Qt 相关信息</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Options...</source>
-        <translation type="unfinished">选项(&amp;O)...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Modify configuration options for ShadowCoin</source>
-        <translation type="unfinished">更改设置选项</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Show / Hide</source>
-        <translation type="unfinished">显示 / 隐藏(&amp;S)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Encrypt Wallet...</source>
-        <translation type="unfinished">加密钱包(&amp;E)...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Encrypt or decrypt wallet</source>
-        <translation type="unfinished">加密/解密钱包</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Backup Wallet...</source>
-        <translation type="unfinished">备份钱包(&amp;B)...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Backup wallet to another location</source>
-        <translation type="unfinished">备份钱包到其他文件夹</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Change Passphrase...</source>
-        <translation type="unfinished">更改密码(&amp;C)...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation type="unfinished">更改钱包加密口令</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Unlock Wallet...</source>
-        <translation type="unfinished">解锁钱包(&amp;U)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Unlock wallet</source>
-        <translation type="unfinished">解锁钱包</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Lock Wallet</source>
-        <translation type="unfinished">锁定钱包(&amp;L)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Lock wallet</source>
-        <translation type="unfinished">锁定钱包</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>&amp;Debug window</source>
-        <translation type="unfinished">调试窗口(&amp;D)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Open debugging and diagnostic console</source>
-        <translation type="unfinished">打开调试和诊断控制台</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+26"/>
         <source>&amp;File</source>
-        <translation type="unfinished">文件(&amp;F)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;Settings</source>
-        <translation type="unfinished">设置(&amp;S)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">帮助(&amp;H)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+19"/>
         <source>Wallet</source>
-        <translation type="unfinished">钱包</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <location line="+9"/>
         <source>[testnet]</source>
-        <translation type="unfinished">[测试网络]</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <location line="+74"/>
         <source>Umbra client</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+63"/>
         <source>%n active connection(s) to ShadowCoin network</source>
-        <translation type="unfinished">
-            <numerusform>与暗影币网络建立了 %n 个连接</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+18"/>
         <source>block</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>header</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>blocks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>headers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Synchronizing with network...</source>
-        <translation type="unfinished">正在与网络同步...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Downloading filtered blocks...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <source>~%1 filtered block(s) remaining (%2% done).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+19"/>
         <source>~%n block(s) remaining</source>
-        <translation type="unfinished">
-            <numerusform>~%n 个区块未完成</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+4"/>
         <source>Imported</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-4"/>
         <location line="+4"/>
         <source>Downloaded</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-3"/>
         <source>%1 of %2 %3 of transaction history (%4% done).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 blocks of transaction history.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+23"/>
         <source>%n second(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n 秒前</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n minute(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n 分钟前</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n hour(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n 小时前</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n day(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n 天前</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Up to date</source>
-        <translation type="unfinished">已是最新</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
         <source>Catching up...</source>
-        <translation type="unfinished">更新中...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <source>Last received %1 was generated %2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+59"/>
         <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation type="unfinished">该笔交易数据量太大，需支付%1手续费给执行该笔交易的网络结点。您愿意支付吗？</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Confirm transaction fee</source>
-        <translation type="unfinished">手续费确认</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+28"/>
         <source>Sent transaction</source>
-        <translation type="unfinished">发送交易</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Incoming transaction</source>
-        <translation type="unfinished">流入交易</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -1562,17 +1548,13 @@ Amount: %2
 Type: %3
 Address: %4
 </source>
-        <translation type="unfinished">日期: %1
-金额: %2
-类别: %3
-地址: %4
-</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <location line="+15"/>
         <source>Incoming Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -1581,92 +1563,84 @@ From Address: %2
 To Address: %3
 Message: %4
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+45"/>
         <location line="+23"/>
         <source>URI handling</source>
-        <translation type="unfinished">URI处理</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-23"/>
         <location line="+23"/>
         <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
-        <translation type="unfinished">无法解析URI：无效的暗影币地址或错误的URI参数。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+39"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+9"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation type="unfinished">钱包已被&lt;b&gt;加密&lt;/b&gt;，当前为&lt;b&gt;解锁&lt;/b&gt;状态</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+27"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation type="unfinished">钱包已被&lt;b&gt;加密&lt;/b&gt;，当前为&lt;b&gt;锁定&lt;/b&gt;状态</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+33"/>
         <source>Backup Wallet</source>
-        <translation type="unfinished">备份钱包</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Wallet Data (*.dat)</source>
-        <translation type="unfinished">钱包数据文件(*.dat)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Backup Failed</source>
-        <translation type="unfinished">备份失败</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
-        <translation type="unfinished">试图将钱包地址保存到新位置时出现错误</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+48"/>
         <source>Lock Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+69"/>
         <source>%n second(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n秒</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n minute(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n 分钟</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n hour(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n 小时</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n day(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n 天</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1674,82 +1648,82 @@ Message: %4
 Your weight is %1
 Network weight is %2
 Expected time to earn reward is %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
         <source>Not staking because wallet is in thin mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking, staking is disabled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished">未进行权益增值，因为钱包已锁定</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is offline</source>
-        <translation type="unfinished">未进行权益增值，因为钱包处于离线状态</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is syncing</source>
-        <translation type="unfinished">未进行权益增值，因为钱包正在同步</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation type="unfinished">未进行权益增值，因为钱包中没有成熟的暗影币</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking</source>
-        <translation type="unfinished">未进行权益增值</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="+23"/>
         <source>Received with</source>
-        <translation type="unfinished">接收于</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Received from</source>
-        <translation type="unfinished">收款来自</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>Sent to</source>
-        <translation type="unfinished">发送给</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Payment to yourself</source>
-        <translation type="unfinished">付款给自己</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Mined</source>
-        <translation type="unfinished">挖矿所得</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Received shadow</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Sent shadow</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Other</source>
-        <translation type="unfinished">其他</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1757,7 +1731,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location filename="../trafficgraphwidget.cpp" line="+79"/>
         <source>KB/s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1770,9 +1744,7 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="-2"/>
         <source>Open for %n block(s)</source>
-        <translation>
-            <numerusform>为 %n 个数据块开启</numerusform>
-        </translation>
+        <translation><numerusform>为 %n 个数据块开启</numerusform></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1802,9 +1774,7 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="+7"/>
         <source>, broadcast through %n node(s)</source>
-        <translation>
-            <numerusform>通过 %n 个节点广播</numerusform>
-        </translation>
+        <translation><numerusform>通过 %n 个节点广播</numerusform></translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1862,9 +1832,7 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="-114"/>
         <source>matures in %n more block(s)</source>
-        <translation>
-            <numerusform>将在 %n 个数据块后成熟</numerusform>
-        </translation>
+        <translation><numerusform>将在 %n 个数据块后成熟</numerusform></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1907,7 +1875,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+3"/>
         <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation type="unfinished">通过权益累积获得的金额需要在510个块确认后方可使用。此数据块生成时，将被广播到网络并加入区块链。如果未能成功加入区块链，其状态会显示为“未接受”，该部分金额也不可被使用。如果其他节点在您生成区块后的几秒钟内也生成了区块，这种情况会偶尔发生。 {120 ?}</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
@@ -1999,14 +1967,12 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="-15"/>
         <source>Open for %n more block(s)</source>
-        <translation>
-            <numerusform>为 %n 个更多的区块开启</numerusform>
-        </translation>
+        <translation><numerusform>为 %n 个更多的区块开启</numerusform></translation>
     </message>
     <message>
         <location line="-51"/>
         <source>Narration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+57"/>

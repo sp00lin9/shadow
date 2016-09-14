@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sv">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sv" version="2.1">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -32,7 +30,7 @@ This is experimental software.
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -50,12 +48,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+0"/>
         <source>pubkey</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>stealth</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+34"/>
@@ -65,12 +63,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+4"/>
         <source>Stealth Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>n/a</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -533,7 +531,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="+7"/>
         <source>&amp;Stealth Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../editaddressdialog.cpp" line="+20"/>
@@ -587,7 +585,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
         <location line="+0"/>
         <location line="+12"/>
         <source>Shadow</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-10"/>
@@ -625,53 +623,53 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location filename="../messagemodel.cpp" line="+375"/>
         <source>Type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Sent Date Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Received Date Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>To Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>From Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Message</source>
-        <translation type="unfinished">Meddelande</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+41"/>
         <source>Send Secure Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Send failed: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+22"/>
         <location line="+1"/>
         <source>(no label)</source>
-        <translation type="unfinished">(Ingen etikett)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -679,7 +677,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location filename="../paymentserver.cpp" line="+107"/>
         <source>Cannot start shadow: click-to-pay handler</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -687,17 +685,17 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location filename="../peertablemodel.cpp" line="+118"/>
         <source>Address/Hostname</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>User Agent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -705,38 +703,38 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location filename="../guiutil.cpp" line="-470"/>
         <source>%1 d</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 h</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 m</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <location line="+55"/>
         <source>%1 s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-10"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>N/A</source>
-        <translation type="unfinished">ej tillgänglig</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>%1 ms</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -789,12 +787,12 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="-10"/>
         <source>Shadow - Debug window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <source>Shadow Core</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+53"/>
@@ -804,7 +802,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+49"/>
@@ -819,7 +817,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="+7"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
@@ -829,121 +827,121 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="+157"/>
         <source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+99"/>
         <source>&amp;Network Traffic</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+52"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <source>Totals</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+64"/>
         <location filename="../rpcconsole.cpp" line="+396"/>
         <source>In:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+80"/>
         <location filename="../rpcconsole.cpp" line="+1"/>
         <source>Out:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+41"/>
         <source>&amp;Peers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../rpcconsole.cpp" line="-167"/>
         <location line="+328"/>
         <source>Select a peer to view detailed information.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <source>Peer ID</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Direction</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>User Agent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Services</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Starting Height</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Sync Height</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Ban Score</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Connection Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Send</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Last Receive</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Sent</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Bytes Received</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Ping Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+23"/>
         <source>Time Offset</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-866"/>
@@ -968,7 +966,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="+49"/>
         <source>Open the Shadow debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
@@ -1008,7 +1006,7 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location filename="../rpcconsole.cpp" line="-197"/>
         <source>Welcome to the Shadow Core RPC console.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -1023,34 +1021,34 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location line="+233"/>
         <source>via %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <location line="+1"/>
         <source>never</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+9"/>
         <source>Inbound</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Outbound</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+13"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <location line="+1"/>
         <source>Fetching...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1058,32 +1056,32 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
     <message>
         <location filename="../shadowbridge.cpp" line="+399"/>
         <source>Incoming Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
         <source>default</source>
-        <translation type="unfinished">standard</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+58"/>
         <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
-        <translation type="unfinished">&lt;b&gt;%1&lt;/b&gt; till %2 (%3)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>&lt;b&gt;%1&lt;/b&gt; to SHADOW %2 (%3)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SHADOW %3 (%4)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SDC %3 (%4)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
@@ -1091,50 +1089,50 @@ Detta betyder att en avgift på minst %2 krävs.</translation>
         <location line="+12"/>
         <location line="+8"/>
         <source>Error:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-30"/>
         <source>Unknown txn type detected %1.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <source>Input types must match for all recipients.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
         <source>Ring sizes must match for all recipients.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Ring size outside range [%1, %2].</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <location line="+9"/>
         <source>Confirm send coins</source>
-        <translation type="unfinished">Bekräfta skickade mynt</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-9"/>
         <source>Are you sure you want to send?
 Ring size of one is not anonymous, and harms the network.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <location line="+9"/>
         <source> and </source>
-        <translation type="unfinished">och</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Are you sure you want to send %1?</source>
-        <translation type="unfinished">Är du säker att du vill skicka %1?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+15"/>
@@ -1154,89 +1152,89 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+5"/>
         <location line="+5"/>
         <source>Send Coins</source>
-        <translation type="unfinished">Skicka pengar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-95"/>
         <source>The change address is not valid, please recheck.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
         <location line="+362"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation type="unfinished">Mottagarens adress är inte giltig, vänligen kontrollera igen.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-357"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation type="unfinished">Det betalade beloppet måste vara större än 0.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>The amount exceeds your balance.</source>
-        <translation type="unfinished">Värdet överstiger ditt saldo.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished">Totalvärdet överstiger ditt saldo när transaktionsavgiften %1 är pålagd.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <location line="+351"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation type="unfinished">Dubblett av adress funnen, kan bara skicka till varje adress en gång per sändning.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-346"/>
         <source>Error: Transaction creation failed.</source>
-        <translation type="unfinished">Fel: Transaktionen kunde inte skapas.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished">Fel: Transaktionen nekades. Detta kan hända om vissa av mynten i din plånbok redan är använda, t.ex om du använder en kopia av wallet.dat och mynten redan var använda i kopia men inte markerade som använda här.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Narration is too long.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Ring Size Error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Input Type Error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Must be in full mode to send anon.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: Invalid Stealth Address.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your shadow balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error generating transaction.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error generating transaction: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+290"/>
@@ -1245,32 +1243,32 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+5"/>
         <location line="+5"/>
         <source>Send Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-14"/>
         <source>The message can&apos;t be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+10"/>
         <source>Error: Message creation failed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Error: The message was rejected.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+98"/>
         <source>Sanity Error!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1278,295 +1276,277 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location filename="../shadow.cpp" line="+111"/>
         <source>A fatal error occurred. Shadow can no longer continue safely and will quit.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../shadowgui.cpp" line="+89"/>
         <location line="+178"/>
         <source>Umbra</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-178"/>
         <source>Client</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+90"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished">&amp;Avsluta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Quit application</source>
-        <translation type="unfinished">Avsluta programmet</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;About ShadowCoin</source>
-        <translation type="unfinished">&amp;Om ShadowCoin</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Show information about ShadowCoin</source>
-        <translation type="unfinished">Visa information om ShadowCoin</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished">Om &amp;Qt</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Show information about Qt</source>
-        <translation type="unfinished">Visa information om Qt</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Options...</source>
-        <translation type="unfinished">&amp;Alternativ...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Modify configuration options for ShadowCoin</source>
-        <translation type="unfinished">Modifiera konfigurations-alternativ för ShadowCoin</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Show / Hide</source>
-        <translation type="unfinished">&amp;Visa / Göm</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Encrypt Wallet...</source>
-        <translation type="unfinished">&amp;Kryptera plånbok...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Encrypt or decrypt wallet</source>
-        <translation type="unfinished">Kryptera eller avkryptera plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;Backup Wallet...</source>
-        <translation type="unfinished">&amp;Säkerhetskopiera plånbok...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Backup wallet to another location</source>
-        <translation type="unfinished">Säkerhetskopiera plånboken till en annan plats</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Change Passphrase...</source>
-        <translation type="unfinished">&amp;Byt Lösenord...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation type="unfinished">Byt lösenord för kryptering av plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Unlock Wallet...</source>
-        <translation type="unfinished">Lås &amp;Upp plånboken</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Unlock wallet</source>
-        <translation type="unfinished">Lås upp plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Lock Wallet</source>
-        <translation type="unfinished">&amp;Lås plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Lock wallet</source>
-        <translation type="unfinished">Lås plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+4"/>
         <source>&amp;Debug window</source>
-        <translation type="unfinished">&amp;Debug fönster</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Open debugging and diagnostic console</source>
-        <translation type="unfinished">Öppna debug- och diagnostikkonsolen</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+26"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Arkiv</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <source>&amp;Settings</source>
-        <translation type="unfinished">&amp;Inställningar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Hjälp</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+19"/>
         <source>Wallet</source>
-        <translation type="unfinished">Plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <location line="+9"/>
         <source>[testnet]</source>
-        <translation type="unfinished">[testnet]</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <location line="+74"/>
         <source>Umbra client</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+63"/>
         <source>%n active connection(s) to ShadowCoin network</source>
-        <translation type="unfinished">
-            <numerusform>%n aktiv anslutning till ShadowCoin nätverket</numerusform>
-            <numerusform>%n aktiva anslutning till ShadowCoin nätverket</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+18"/>
         <source>block</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>header</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>blocks</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>headers</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+8"/>
         <source>Synchronizing with network...</source>
-        <translation type="unfinished">Synkroniserar med nätverk...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Downloading filtered blocks...</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+6"/>
         <source>~%1 filtered block(s) remaining (%2% done).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+19"/>
         <source>~%n block(s) remaining</source>
-        <translation type="unfinished">
-            <numerusform>~%n block remaining</numerusform>
-            <numerusform>~%n block kvar</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+4"/>
         <source>Imported</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-4"/>
         <location line="+4"/>
         <source>Downloaded</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-3"/>
         <source>%1 of %2 %3 of transaction history (%4% done).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 blocks of transaction history.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+23"/>
         <source>%n second(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n sekund sen</numerusform>
-            <numerusform>%n sekunder sen</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n minute(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n minut sen</numerusform>
-            <numerusform>%n minuter sen</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n hour(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n timme sen</numerusform>
-            <numerusform>%n timmar sen</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n day(s) ago</source>
-        <translation type="unfinished">
-            <numerusform>%n dag sen</numerusform>
-            <numerusform>%n dagar sen</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Up to date</source>
-        <translation type="unfinished">Uppdaterad</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+12"/>
         <source>Catching up...</source>
-        <translation type="unfinished">Hämtar senaste...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <source>Last received %1 was generated %2.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+59"/>
         <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation type="unfinished">Denna transaktion är över gränsen. Du kan ändå skicka den med en %1 avgift, som går till noderna som processerar din transaktion och hjälper till med att upprätthålla nätverket. Vill du betala denna avgift?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Confirm transaction fee</source>
-        <translation type="unfinished">Bekräfta transaktionsavgiften</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+28"/>
         <source>Sent transaction</source>
-        <translation type="unfinished">Transaktion skickad</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Incoming transaction</source>
-        <translation type="unfinished">Inkommande transaktion</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -1575,17 +1555,13 @@ Amount: %2
 Type: %3
 Address: %4
 </source>
-        <translation type="unfinished">Datum: %1
-Belopp: %2
-Typ: %3
-Adress: %4
-</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+16"/>
         <location line="+15"/>
         <source>Incoming Message</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
@@ -1594,96 +1570,84 @@ From Address: %2
 To Address: %3
 Message: %4
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+45"/>
         <location line="+23"/>
         <source>URI handling</source>
-        <translation type="unfinished">URI hantering</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="-23"/>
         <location line="+23"/>
         <source>URI can not be parsed! This can be caused by an invalid ShadowCoin address or malformed URI parameters.</source>
-        <translation type="unfinished">URI:n kan inte tolkas! Detta kan bero på en ogiltig ShadowCoin adress eller felaktiga URI parametrar.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+39"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+9"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation type="unfinished">Denna plånbok är &lt;b&gt;krypterad&lt;/b&gt; och för närvarande &lt;b&gt;olåst&lt;/b&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+27"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation type="unfinished">Denna plånbok är &lt;b&gt;krypterad&lt;/b&gt; och för närvarande &lt;b&gt;låst&lt;/b&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+33"/>
         <source>Backup Wallet</source>
-        <translation type="unfinished">Säkerhetskopiera plånbok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>Wallet Data (*.dat)</source>
-        <translation type="unfinished">Plånboksdata (*.dat)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
         <source>Backup Failed</source>
-        <translation type="unfinished">Säkerhetskopieringen misslyckades</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+0"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
-        <translation type="unfinished">Ett fel uppstod vid sparandet av plånboken till den nya platsen.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+48"/>
         <source>Lock Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
         <location line="+69"/>
         <source>%n second(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n sekund</numerusform>
-            <numerusform>%n sekunder</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n minute(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n minut</numerusform>
-            <numerusform>%n minuter</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n hour(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n timme</numerusform>
-            <numerusform>%n timmar</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n day(s)</source>
-        <translation type="unfinished">
-            <numerusform>%n dag</numerusform>
-            <numerusform>%n dagar</numerusform>
-        </translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1691,82 +1655,82 @@ Message: %4
 Your weight is %1
 Network weight is %2
 Expected time to earn reward is %3</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
         <source>Not staking because wallet is in thin mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking, staking is disabled</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished">Ingen staking för att plånboken är låst</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is offline</source>
-        <translation type="unfinished">Ingen staking för att plånboken är offline</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is syncing</source>
-        <translation type="unfinished">Ingen staking för att plånboken synkroniseras</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation type="unfinished">Ingen staking för att dina coins är ännu inte föråldrade</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking</source>
-        <translation type="unfinished">Ingen staking</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="+23"/>
         <source>Received with</source>
-        <translation type="unfinished">Mottagen med</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Received from</source>
-        <translation type="unfinished">Mottaget från</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+3"/>
         <source>Sent to</source>
-        <translation type="unfinished">Skickad till</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Payment to yourself</source>
-        <translation type="unfinished">Betalning till dig själv</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Mined</source>
-        <translation type="unfinished">Genererade</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Received shadow</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Sent shadow</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
         <source>Other</source>
-        <translation type="unfinished">Övriga</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1774,7 +1738,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location filename="../trafficgraphwidget.cpp" line="+79"/>
         <source>KB/s</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1787,10 +1751,7 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="-2"/>
         <source>Open for %n block(s)</source>
-        <translation>
-            <numerusform>Öppen för %n block</numerusform>
-            <numerusform>Öppen för %n block</numerusform>
-        </translation>
+        <translation><numerusform>Öppen för %n block</numerusform><numerusform>Öppen för %n block</numerusform></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1820,10 +1781,7 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="+7"/>
         <source>, broadcast through %n node(s)</source>
-        <translation>
-            <numerusform>, sänd genom %n nod</numerusform>
-            <numerusform>, sänd genom %n noder</numerusform>
-        </translation>
+        <translation><numerusform>, sänd genom %n nod</numerusform><numerusform>, sänd genom %n noder</numerusform></translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1881,10 +1839,7 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="-114"/>
         <source>matures in %n more block(s)</source>
-        <translation>
-            <numerusform>mognar om %n block</numerusform>
-            <numerusform>mognar om %n fler block</numerusform>
-        </translation>
+        <translation><numerusform>mognar om %n block</numerusform><numerusform>mognar om %n fler block</numerusform></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1927,7 +1882,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+3"/>
         <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation type="unfinished">Genererad mynt måste mogna i 510 block före de kan användas. När du genererade detta blocket sändes det ut till nätverket för att läggas till i blockkedjan. Om det inte kan läggas till i kedjan kommer dess status att ändras till &quot;Ej accepterat&quot; och det kommer inte gå att använda. Detta kan hända imellanåt om en annan klient genererar ett block inom ett par sekunder från ditt. {120 ?}</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+7"/>
@@ -2019,15 +1974,12 @@ Expected time to earn reward is %3</source>
     <message numerus="yes">
         <location line="-15"/>
         <source>Open for %n more block(s)</source>
-        <translation>
-            <numerusform>Öppet för %n mer block</numerusform>
-            <numerusform>Öppet för %n mer block</numerusform>
-        </translation>
+        <translation><numerusform>Öppet för %n mer block</numerusform><numerusform>Öppet för %n mer block</numerusform></translation>
     </message>
     <message>
         <location line="-51"/>
         <source>Narration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+57"/>
