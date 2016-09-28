@@ -116,7 +116,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+7"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>此操作需要您首先使用密码解锁该钱包。</translation>
+        <translation>此操作需要您首先输入密码解锁该钱包。</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -549,12 +549,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+82"/>
         <source>The entered address &quot;%1&quot; is already in the address book.</source>
-        <translation>输入的地址“%1”已经存在于地址簿中。</translation>
+        <translation>输入的地址&quot;%1&quot;已经存在于地址簿中。</translation>
     </message>
     <message>
         <location line="-5"/>
         <source>The entered address &quot;%1&quot; is not a valid ShadowCoin address.</source>
-        <translation>“%1” 不是有效的暗影币地址。</translation>
+        <translation>&quot;%1&quot; 不是有效的暗影币地址。</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -874,7 +874,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation type="unfinished"/>
+        <translation>版本</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -1049,12 +1049,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../shadowbridge.cpp" line="+399"/>
         <source>Incoming Message</source>
-        <translation type="unfinished"/>
+        <translation>收到的消息</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>default</source>
-        <translation type="unfinished"/>
+        <translation>默认</translation>
     </message>
     <message>
         <location line="+58"/>
@@ -1108,7 +1108,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+8"/>
         <location line="+9"/>
         <source>Confirm send coins</source>
-        <translation type="unfinished"/>
+        <translation>确认发送货币</translation>
     </message>
     <message>
         <location line="-9"/>
@@ -1120,12 +1120,12 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+0"/>
         <location line="+9"/>
         <source> and </source>
-        <translation type="unfinished"/>
+        <translation>和</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Are you sure you want to send %1?</source>
-        <translation type="unfinished"/>
+        <translation>确认要发送 %1 ?</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1145,7 +1145,7 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+5"/>
         <location line="+5"/>
         <source>Send Coins</source>
-        <translation type="unfinished"/>
+        <translation>发送货币</translation>
     </message>
     <message>
         <location line="-95"/>
@@ -1156,33 +1156,33 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+25"/>
         <location line="+362"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation type="unfinished"/>
+        <translation>收款人地址无效，请再检查。</translation>
     </message>
     <message>
         <location line="-357"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation type="unfinished"/>
+        <translation>支付金额必须大于0。</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The amount exceeds your balance.</source>
-        <translation type="unfinished"/>
+        <translation>金额超出您的余额。</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished"/>
+        <translation>计入 %1 交易费后的金额超出您的余额。</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+351"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation type="unfinished"/>
+        <translation>发现重复的地址, 每次只能对同一地址发送一次。</translation>
     </message>
     <message>
         <location line="-346"/>
         <source>Error: Transaction creation failed.</source>
-        <translation type="unfinished"/>
+        <translation>错误：建立交易失败</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1212,7 +1212,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+5"/>
         <source>Error: Invalid Stealth Address.</source>
-        <translation type="unfinished"/>
+        <translation>错误：隐秘地址无限</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1236,12 +1236,12 @@ Ring size of one is not anonymous, and harms the network.</source>
         <location line="+5"/>
         <location line="+5"/>
         <source>Send Message</source>
-        <translation type="unfinished"/>
+        <translation>发出信息</translation>
     </message>
     <message>
         <location line="-14"/>
         <source>The message can&apos;t be empty.</source>
-        <translation type="unfinished"/>
+        <translation>信息不能空白。</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1285,17 +1285,17 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+90"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished"/>
+        <translation>退出(&amp;X)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Quit application</source>
-        <translation type="unfinished"/>
+        <translation>退出程序</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;About ShadowCoin</source>
-        <translation type="unfinished"/>
+        <translation>关于暗影币(&amp;A)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1305,7 +1305,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+2"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished"/>
+        <translation>关于 &amp;Qt</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1315,7 +1315,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+2"/>
         <source>&amp;Options...</source>
-        <translation type="unfinished"/>
+        <translation>选项(&amp;O)...</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1365,7 +1365,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+1"/>
         <source>Unlock wallet</source>
-        <translation type="unfinished"/>
+        <translation>解锁钱包</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1375,7 +1375,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+1"/>
         <source>Lock wallet</source>
-        <translation type="unfinished"/>
+        <translation>钱包上锁</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1395,7 +1395,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+6"/>
         <source>&amp;Settings</source>
-        <translation type="unfinished"/>
+        <translation>设置(&amp;S)</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1489,32 +1489,32 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message numerus="yes">
         <location line="+23"/>
         <source>%n second(s) ago</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 秒前</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n minute(s) ago</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 分钟前</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n hour(s) ago</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 小时前</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n day(s) ago</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 日前</numerusform></translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Up to date</source>
-        <translation type="unfinished"/>
+        <translation>更新完毕</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Catching up...</source>
-        <translation type="unfinished"/>
+        <translation>更新中...</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -1529,7 +1529,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+5"/>
         <source>Confirm transaction fee</source>
-        <translation type="unfinished"/>
+        <translation>手续费确认</translation>
     </message>
     <message>
         <location line="+28"/>
@@ -1554,7 +1554,7 @@ Address: %4
         <location line="+16"/>
         <location line="+15"/>
         <source>Incoming Message</source>
-        <translation type="unfinished"/>
+        <translation>收到的消息</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1585,12 +1585,12 @@ Message: %4
     <message>
         <location line="+9"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>钱包已被&lt;b&gt;加密&lt;/b&gt;，目前为&lt;b&gt;解锁&lt;/b&gt;状态</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>钱包已被&lt;b&gt;加密&lt;/b&gt;，目前为&lt;b&gt;锁定&lt;/b&gt;状态</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1620,27 +1620,27 @@ Message: %4
     <message>
         <location line="+1"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
-        <translation type="unfinished"/>
+        <translation>错误：钱包必须先加密才能上锁</translation>
     </message>
     <message numerus="yes">
         <location line="+69"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 秒</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n minute(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 分钟</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n hour(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 小时</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n day(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 日</numerusform></translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1648,42 +1648,45 @@ Message: %4
 Your weight is %1
 Network weight is %2
 Expected time to earn reward is %3</source>
-        <translation type="unfinished"/>
+        <translation>正进行利益增值
+您的重量 %1
+网络重量 %2
+预期下一奖励距离 %3</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Not staking because wallet is in thin mode</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为钱包在輕模式</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking, staking is disabled</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为权益增值设定为停用。</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为钱包已锁定</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is offline</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为钱包处于离线状态</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is syncing</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为钱包正同步中</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为钱包中没有成熟的暗影币</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="+23"/>
@@ -1693,7 +1696,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+2"/>
         <source>Received from</source>
-        <translation type="unfinished"/>
+        <translation>收款来自</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1723,7 +1726,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+2"/>
         <source>Other</source>
-        <translation type="unfinished"/>
+        <translation>其他</translation>
     </message>
 </context>
 <context>

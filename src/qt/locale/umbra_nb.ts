@@ -369,7 +369,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+1"/>
         <source>Copy bytes</source>
-        <translation type="unfinished"/>
+        <translation>Kopier bytes</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -580,7 +580,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+1"/>
         <source>command-line options</source>
-        <translation type="unfinished"/>
+        <translation>ledetekst valg</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -590,7 +590,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+1"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-        <translation type="unfinished"/>
+        <translation>Velg språk, for eksempel &quot;de_DE&quot; (default: system locale)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -600,7 +600,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+1"/>
         <source>Show splash screen on startup (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Vis velkomstbilde ved oppstart (default: 1)</translation>
     </message>
 </context>
 <context>
@@ -608,53 +608,53 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location filename="../messagemodel.cpp" line="+375"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Type</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Sent Date Time</source>
-        <translation type="unfinished"/>
+        <translation>Sendt Dato Tid</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Received Date Time</source>
-        <translation type="unfinished"/>
+        <translation>Mottatt Dato Tid</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Label</source>
-        <translation type="unfinished"/>
+        <translation>Merkelapp</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>To Address</source>
-        <translation type="unfinished"/>
+        <translation>Til adresse</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>From Address</source>
-        <translation type="unfinished"/>
+        <translation>Fra adresse</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Message</source>
-        <translation type="unfinished"/>
+        <translation>Beskjed</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Send Secure Message</source>
-        <translation type="unfinished"/>
+        <translation>Send sikker beskjed</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send failed: %1.</source>
-        <translation type="unfinished"/>
+        <translation>Sending feilet: %1.</translation>
     </message>
     <message>
         <location line="+22"/>
         <location line="+1"/>
         <source>(no label)</source>
-        <translation type="unfinished"/>
+        <translation>(ingen merkelapp)</translation>
     </message>
 </context>
 <context>
@@ -670,7 +670,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location filename="../peertablemodel.cpp" line="+118"/>
         <source>Address/Hostname</source>
-        <translation type="unfinished"/>
+        <translation>Adresse/Vertsnavn</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -777,7 +777,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+25"/>
         <source>Shadow Core</source>
-        <translation type="unfinished"/>
+        <translation>Shadow Core</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -787,7 +787,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation type="unfinished"/>
+        <translation>Bruker BerkeleyDB versjon</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -802,7 +802,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+7"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Navn</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -817,7 +817,7 @@ Dette betyr at det trengs en avgift på minimum %2.</translation>
     <message>
         <location line="+99"/>
         <source>&amp;Network Traffic</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Nettverkstrafikk</translation>
     </message>
     <message>
         <location line="+52"/>

@@ -4,12 +4,12 @@
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
         <source>About ShadowCoin</source>
-        <translation>ブラックコインについて</translation>
+        <translation>シャドーコインについて</translation>
     </message>
     <message>
         <location line="+39"/>
         <source>&lt;b&gt;ShadowCoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;ブラックコイン&lt;/b&gt;バージョン</translation>
+        <translation>&lt;b&gt;シャドーコイン&lt;/b&gt;バージョン</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -29,7 +29,13 @@ This is experimental software.
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-        <translation type="unfinished"/>
+        <translation>
+これは実験ソフト.
+
+MIT/X11 ソフト免許の分散型, COPYING ファイルを一緒に見て &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
+
+
+この製品には、OpenSSL Toolkitで使用するためにOpenSSL Projectによって開発されたソフトウェアが含ま (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) 暗号化 (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</translation>
     </message>
 </context>
 <context>
@@ -47,12 +53,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+0"/>
         <source>pubkey</source>
-        <translation type="unfinished"/>
+        <translation>パブリックキー</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>stealth</source>
-        <translation type="unfinished"/>
+        <translation>ステルス</translation>
     </message>
     <message>
         <location line="+34"/>
@@ -62,12 +68,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+4"/>
         <source>Stealth Address</source>
-        <translation type="unfinished"/>
+        <translation>ステルスアドレス</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>n/a</source>
-        <translation type="unfinished"/>
+        <translation>該当無し</translation>
     </message>
 </context>
 <context>
@@ -530,7 +536,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>&amp;Stealth Address</source>
-        <translation type="unfinished"/>
+        <translation>ステルスアドレス</translation>
     </message>
     <message>
         <location filename="../editaddressdialog.cpp" line="+20"/>
@@ -584,7 +590,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+0"/>
         <location line="+12"/>
         <source>Shadow</source>
-        <translation type="unfinished"/>
+        <translation>シャドー</translation>
     </message>
     <message>
         <location line="-10"/>
@@ -622,53 +628,53 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../messagemodel.cpp" line="+375"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>タイプ</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Sent Date Time</source>
-        <translation type="unfinished"/>
+        <translation>送信時間</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Received Date Time</source>
-        <translation type="unfinished"/>
+        <translation>受信日時</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Label</source>
-        <translation type="unfinished"/>
+        <translation>ラベル</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>To Address</source>
-        <translation type="unfinished"/>
+        <translation>送信アドレス</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>From Address</source>
-        <translation type="unfinished"/>
+        <translation>受信アドレス</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Message</source>
-        <translation type="unfinished"/>
+        <translation>メッセージ</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Send Secure Message</source>
-        <translation type="unfinished"/>
+        <translation>セキュアなメッセージを送信</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send failed: %1.</source>
-        <translation type="unfinished"/>
+        <translation>送信を失敗しました：％１</translation>
     </message>
     <message>
         <location line="+22"/>
         <location line="+1"/>
         <source>(no label)</source>
-        <translation type="unfinished"/>
+        <translation>ラベル無し</translation>
     </message>
 </context>
 <context>
@@ -684,17 +690,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../peertablemodel.cpp" line="+118"/>
         <source>Address/Hostname</source>
-        <translation type="unfinished"/>
+        <translation>アドレス・ホストネーム</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>User Agent</source>
-        <translation type="unfinished"/>
+        <translation>ユーザーエージエント</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation type="unfinished"/>
+        <translation>Pingの時間</translation>
     </message>
 </context>
 <context>
@@ -702,33 +708,33 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../guiutil.cpp" line="-470"/>
         <source>%1 d</source>
-        <translation type="unfinished"/>
+        <translation>%1 日</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 h</source>
-        <translation type="unfinished"/>
+        <translation>%1 時</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 m</source>
-        <translation type="unfinished"/>
+        <translation>%1 分</translation>
     </message>
     <message>
         <location line="+2"/>
         <location line="+55"/>
         <source>%1 s</source>
-        <translation type="unfinished"/>
+        <translation>%1 秒</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>無し</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>N/A</source>
-        <translation type="unfinished"/>
+        <translation>該当無し</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -786,12 +792,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-10"/>
         <source>Shadow - Debug window</source>
-        <translation type="unfinished"/>
+        <translation>シャドー　ディバッグウインドー</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Shadow Core</source>
-        <translation type="unfinished"/>
+        <translation>シャドーコアー</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -801,7 +807,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation type="unfinished"/>
+        <translation>BerkeleyDB バージョンを使う</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -816,7 +822,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>名前</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -826,51 +832,51 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+157"/>
         <source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
-        <translation type="unfinished"/>
+        <translation>可能なシャドーコマンドラインオプションのリストを取得するにはシャドーヘルプメッセージを表示します。</translation>
     </message>
     <message>
         <location line="+99"/>
         <source>&amp;Network Traffic</source>
-        <translation type="unfinished"/>
+        <translation>&amp;ネットワークトラフィック</translation>
     </message>
     <message>
         <location line="+52"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished"/>
+        <translation>&amp;クリア</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Totals</source>
-        <translation type="unfinished"/>
+        <translation>会計</translation>
     </message>
     <message>
         <location line="+64"/>
         <location filename="../rpcconsole.cpp" line="+396"/>
         <source>In:</source>
-        <translation type="unfinished"/>
+        <translation>内:</translation>
     </message>
     <message>
         <location line="+80"/>
         <location filename="../rpcconsole.cpp" line="+1"/>
         <source>Out:</source>
-        <translation type="unfinished"/>
+        <translation>外:</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>&amp;Peers</source>
-        <translation type="unfinished"/>
+        <translation>&amp;ピアーズ</translation>
     </message>
     <message>
         <location line="+39"/>
         <location filename="../rpcconsole.cpp" line="-167"/>
         <location line="+328"/>
         <source>Select a peer to view detailed information.</source>
-        <translation type="unfinished"/>
+        <translation>詳細情報を表示するためにピアーを選択します。</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Peer ID</source>
-        <translation type="unfinished"/>
+        <translation>ピアーID</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -880,17 +886,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+23"/>
         <source>Version</source>
-        <translation type="unfinished"/>
+        <translation>バージョン</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>User Agent</source>
-        <translation type="unfinished"/>
+        <translation>ユーザーエージエント</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Services</source>
-        <translation type="unfinished"/>
+        <translation>サービス</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -1689,7 +1695,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+1"/>
         <source>Not staking</source>
-        <translation type="unfinished"/>
+        <translation>ステークしません</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="+23"/>
@@ -1704,32 +1710,32 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+3"/>
         <source>Sent to</source>
-        <translation type="unfinished"/>
+        <translation>送り先</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Payment to yourself</source>
-        <translation type="unfinished"/>
+        <translation>自身のお支払い</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Mined</source>
-        <translation type="unfinished"/>
+        <translation>マインされました</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Received shadow</source>
-        <translation type="unfinished"/>
+        <translation>シャドーの受信</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Sent shadow</source>
-        <translation type="unfinished"/>
+        <translation>シャドーの送信</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Other</source>
-        <translation type="unfinished"/>
+        <translation>その他</translation>
     </message>
 </context>
 <context>
@@ -1737,7 +1743,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location filename="../trafficgraphwidget.cpp" line="+79"/>
         <source>KB/s</source>
-        <translation type="unfinished"/>
+        <translation>KB/s</translation>
     </message>
 </context>
 <context>

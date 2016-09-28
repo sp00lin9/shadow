@@ -584,7 +584,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
         <location line="+0"/>
         <location line="+12"/>
         <source>Shadow</source>
-        <translation type="unfinished"/>
+        <translation>Shadow</translation>
     </message>
     <message>
         <location line="-10"/>
@@ -642,17 +642,17 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+0"/>
         <source>To Address</source>
-        <translation type="unfinished"/>
+        <translation>Van adres</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>From Address</source>
-        <translation type="unfinished"/>
+        <translation>Naar adres</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Message</source>
-        <translation type="unfinished"/>
+        <translation>Bericht</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -662,7 +662,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+1"/>
         <source>Send failed: %1.</source>
-        <translation type="unfinished"/>
+        <translation>Versturen mislukt: %1.</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -694,7 +694,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+0"/>
         <source>Ping Time</source>
-        <translation type="unfinished"/>
+        <translation>Ping tijd</translation>
     </message>
 </context>
 <context>
@@ -791,7 +791,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+25"/>
         <source>Shadow Core</source>
-        <translation type="unfinished"/>
+        <translation>Shadow Core</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -801,7 +801,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+26"/>
         <source>Using BerkeleyDB version</source>
-        <translation type="unfinished"/>
+        <translation>Gebruikt BerkeleyDB versie</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -816,7 +816,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+7"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Naam</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -831,7 +831,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+99"/>
         <source>&amp;Network Traffic</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Netwerkverkeer</translation>
     </message>
     <message>
         <location line="+52"/>
@@ -841,7 +841,7 @@ Dit betekend dat een fee van %2 is vereist.</translation>
     <message>
         <location line="+16"/>
         <source>Totals</source>
-        <translation type="unfinished"/>
+        <translation>Totalen</translation>
     </message>
     <message>
         <location line="+64"/>
@@ -1167,28 +1167,28 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="-357"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation type="unfinished"/>
+        <translation>Het ingevoerde bedrag moet groter zijn dan 0.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The amount exceeds your balance.</source>
-        <translation type="unfinished"/>
+        <translation>Bedrag is hoger dan uw huidige saldo</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished"/>
+        <translation>Totaal overschrijdt uw huidige saldo wanneer de %1 transactiekosten worden meegerekend</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+351"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation type="unfinished"/>
+        <translation>Dubbel adres gevonden, u kunt slechts eenmaal naar een bepaald adres verzenden per transactie</translation>
     </message>
     <message>
         <location line="-346"/>
         <source>Error: Transaction creation failed.</source>
-        <translation type="unfinished"/>
+        <translation>Fout: Creëren van transactie mislukt.</translation>
     </message>
     <message>
         <location line="+5"/>

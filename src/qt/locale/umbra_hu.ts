@@ -831,13 +831,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+64"/>
         <location filename="../rpcconsole.cpp" line="+396"/>
         <source>In:</source>
-        <translation type="unfinished"/>
+        <translation>Be:</translation>
     </message>
     <message>
         <location line="+80"/>
         <location filename="../rpcconsole.cpp" line="+1"/>
         <source>Out:</source>
-        <translation type="unfinished"/>
+        <translation>Ki:</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -1010,12 +1010,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+3"/>
         <location line="+1"/>
         <source>never</source>
-        <translation type="unfinished"/>
+        <translation>soha</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Inbound</source>
-        <translation type="unfinished"/>
+        <translation>Bejövő</translation>
     </message>
     <message>
         <location line="+0"/>
