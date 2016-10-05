@@ -1,1132 +1,1132 @@
-	<?xml version="1.0" ?><!DOCTYPE TS><TS language="nl" version="2.1">
-	<context>
-	    <name>AboutDialog</name>
-	    <message>
-		<location filename="../forms/aboutdialog.ui" line="+14"/>
-		<source>About ShadowCoin</source>
-		<translation>Over ShadowCoin</translation>
-	    </message>
-	    <message>
-		<location line="+39"/>
-		<source>&lt;b&gt;ShadowCoin&lt;/b&gt; version</source>
-		<translation>&lt;b&gt;ShadowCoin&lt;/b&gt; versie</translation>
-	    </message>
-	    <message>
-		<location line="+41"/>
-		<source>Copyright © 2009-2014 The Bitcoin developers
-	Copyright © 2012-2014 The NovaCoin developers
-	Copyright © 2014 The BlackCoin developers
-	Copyright © 2014-2015 The ShadowCoin developers</source>
-		<translation>Copyright © 2009-2014 De Bitcoin ontwikkelaars
-	Copyright © 2012-2014 De NovaCoin ontwikkelaars
-	Copyright © 2014-2016 De ShadowCash ontwikkelaars</translation>
-	    </message>
-	    <message>
-		<location line="+16"/>
-		<source>
-	This is experimental software.
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="nl" version="2.1">
+<context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../forms/aboutdialog.ui" line="+14"/>
+        <source>About ShadowCoin</source>
+        <translation>Over ShadowCoin</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>&lt;b&gt;ShadowCoin&lt;/b&gt; version</source>
+        <translation>&lt;b&gt;ShadowCoin&lt;/b&gt; versie</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Copyright © 2009-2014 The Bitcoin developers
+Copyright © 2012-2014 The NovaCoin developers
+Copyright © 2014 The BlackCoin developers
+Copyright © 2014-2015 The ShadowCoin developers</source>
+        <translation>Copyright © 2009-2014 De Bitcoin ontwikkelaars
+Copyright © 2012-2014 De NovaCoin ontwikkelaars
+Copyright © 2014-2016 De ShadowCash ontwikkelaars</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>
+This is experimental software.
 
-	Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
+Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
-	This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-		<translation type="unfinished"/>
-	    </message>
-	</context>
-	<context>
-	    <name>AddressTableModel</name>
-	    <message>
-		<location filename="../addresstablemodel.cpp" line="+217"/>
-		<source>Label</source>
-		<translation>Label</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Address</source>
-		<translation>Adres</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>pubkey</source>
-		<translation>pubsleutel</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>stealth</source>
-		<translation>onzichtbaar</translation>
-	    </message>
-	    <message>
-		<location line="+34"/>
-		<source>(no label)</source>
-		<translation>(geen label)</translation>
-	    </message>
-	    <message>
-		<location line="+4"/>
-		<source>Stealth Address</source>
-		<translation>Onzichtbaar Adres</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>n/a</source>
-		<translation>(nvt)</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>AskPassphraseDialog</name>
-	    <message>
-		<location filename="../forms/askpassphrasedialog.ui" line="+26"/>
-		<source>Passphrase Dialog</source>
-		<translation>Wachtwoordscherm</translation>
-	    </message>
-	    <message>
-		<location line="+21"/>
-		<source>Enter passphrase</source>
-		<translation>Voer wachtwoord in</translation>
-	    </message>
-	    <message>
-		<location line="+14"/>
-		<source>New passphrase</source>
-		<translation>Nieuw wachtwoord</translation>
-	    </message>
-	    <message>
-		<location line="+14"/>
-		<source>Repeat new passphrase</source>
-		<translation>Herhaal wachtwoord</translation>
-	    </message>
-	    <message>
-		<location line="+33"/>
-		<source>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</source>
-		<translation>Bedoeld om het command &apos;sendmoney&apos; uit te schakelen indien het OS niet meer veilig is. Geeft geen echte beveiliging.</translation>
-	    </message>
-	    <message>
-		<location line="+3"/>
-		<source>For staking only</source>
-		<translation>Alleen voor staking</translation>
-	    </message>
-	    <message>
-		<location filename="../askpassphrasedialog.cpp" line="+37"/>
-		<source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-		<translation>Vul een nieuw wachtwoord in voor uw portemonnee. &lt;br/&gt; Gebruik een wachtwoord van &lt;b&gt;10 of meer verschillende karakters&lt;/b&gt;, of &lt;b&gt; acht of meer woorden&lt;/b&gt; . </translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Encrypt wallet</source>
-		<translation>Versleutel portemonnee</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>This operation needs your wallet passphrase to unlock the wallet.</source>
-		<translation>Deze operatie vereist uw portemonneewachtwoord om de portemonnee te openen.</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Unlock wallet</source>
-		<translation>Open portemonnee</translation>
-	    </message>
-	    <message>
-		<location line="+3"/>
-		<source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-		<translation>Deze operatie vereist uw portemonneewachtwoord om de portemonnee te ontsleutelen</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Decrypt wallet</source>
-		<translation>Ontsleutel portemonnee</translation>
-	    </message>
-	    <message>
-		<location line="+3"/>
-		<source>Change passphrase</source>
-		<translation>Wijzig wachtwoord</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Enter the old and new passphrase to the wallet.</source>
-		<translation>Vul uw oude en nieuwe portemonneewachtwoord in.</translation>
-	    </message>
-	    <message>
-		<location line="+45"/>
-		<source>Confirm wallet encryption</source>
-		<translation>Bevestig versleuteling van de portemonnee</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
-		<translation>Waarschuwing: Als je je portemonnee versleuteld en je verliest je wachtwoord zul je &lt;b&gt;AL JE MUNTEN VERLIEZEN&lt;/b&gt;!</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Are you sure you wish to encrypt your wallet?</source>
-		<translation>Weet u zeker dat u uw portemonnee wilt versleutelen?</translation>
-	    </message>
-	    <message>
-		<location line="+15"/>
-		<source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-		<translation>BELANGRIJK: Elke eerder gemaakte backup van uw portemonneebestand dient u te vervangen door het nieuw gegenereerde, versleutelde portemonneebestand. Om veiligheidsredenen zullen eerdere backups van het niet-versleutelde portemonneebestand onbruikbaar worden zodra u uw nieuwe, versleutelde, portemonnee begint te gebruiken.</translation>
-	    </message>
-	    <message>
-		<location line="+103"/>
-		<location line="+24"/>
-		<source>Warning: The Caps Lock key is on!</source>
-		<translation>Waarschuwing: De Caps-Lock-toets staat aan!</translation>
-	    </message>
-	    <message>
-		<location line="-133"/>
-		<location line="+60"/>
-		<source>Wallet encrypted</source>
-		<translation>Portemonnee versleuteld</translation>
-	    </message>
-	    <message>
-		<location line="-58"/>
-		<source>ShadowCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-		<translation>ShadowCoin zal nu sluiten om het versleutel proces te voltooien. Onthou dat het versleutelen van je portemonnee je niet volledig beschermt tegen diefstal van munten door malware op je computer.</translation>
-	    </message>
-	    <message>
-		<location line="+13"/>
-		<location line="+7"/>
-		<location line="+44"/>
-		<location line="+6"/>
-		<source>Wallet encryption failed</source>
-		<translation>Portemonneeversleuteling mislukt</translation>
-	    </message>
-	    <message>
-		<location line="-56"/>
-		<source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
-		<translation>Portemonneeversleuteling mislukt door een interne fout. Uw portemonnee is niet versleuteld.</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<location line="+50"/>
-		<source>The supplied passphrases do not match.</source>
-		<translation>De opgegeven wachtwoorden komen niet overeen</translation>
-	    </message>
-	    <message>
-		<location line="-38"/>
-		<source>Wallet unlock failed</source>
-		<translation>Portemonnee openen mislukt</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<location line="+12"/>
-		<location line="+19"/>
-		<source>The passphrase entered for the wallet decryption was incorrect.</source>
-		<translation>Het opgegeven wachtwoord voor de portemonnee-ontsleuteling is niet correct.</translation>
-	    </message>
-	    <message>
-		<location line="-20"/>
-		<source>Wallet decryption failed</source>
-		<translation>Portemonnee-ontsleuteling mislukt</translation>
-	    </message>
-	    <message>
-		<location line="+14"/>
-		<source>Wallet passphrase was successfully changed.</source>
-		<translation>Portemonneewachtwoord is met succes gewijzigd.</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>ClientModel</name>
-	    <message>
-		<location filename="../clientmodel.cpp" line="+137"/>
-		<source>Network Alert</source>
-		<translation>Netwerkwaarschuwing</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>CoinControlDialog</name>
-	    <message>
-		<location filename="../forms/coincontroldialog.ui" line="+14"/>
-		<source>Coin Control</source>
-		<translation>Coin controle opties</translation>
-	    </message>
-	    <message>
-		<location line="+31"/>
-		<source>Quantity:</source>
-		<translation>Kwantiteit</translation>
-	    </message>
-	    <message>
-		<location line="+32"/>
-		<source>Bytes:</source>
-		<translation>Bytes:</translation>
-	    </message>
-	    <message>
-		<location line="+48"/>
-		<source>Amount:</source>
-		<translation>Bedrag:</translation>
-	    </message>
-	    <message>
-		<location line="+32"/>
-		<source>Priority:</source>
-		<translation>Prioriteit:</translation>
-	    </message>
-	    <message>
-		<location line="+48"/>
-		<source>Fee:</source>
-		<translation>Vergoeding:</translation>
-	    </message>
-	    <message>
-		<location line="+35"/>
-		<source>Low Output:</source>
-		<translation>Lage uitvoer:</translation>
-	    </message>
-	    <message>
-		<location filename="../coincontroldialog.cpp" line="+528"/>
-		<location line="+30"/>
-		<source>no</source>
-		<translation>nee</translation>
-	    </message>
-	    <message>
-		<location filename="../forms/coincontroldialog.ui" line="+51"/>
-		<source>After Fee:</source>
-		<translation>Na vergoeding:</translation>
-	    </message>
-	    <message>
-		<location line="+35"/>
-		<source>Change:</source>
-		<translation>Wijzigen:</translation>
-	    </message>
-	    <message>
-		<location line="+69"/>
-		<source>(un)select all</source>
-		<translation>(de)selecteer alles</translation>
-	    </message>
-	    <message>
-		<location line="+13"/>
-		<source>Tree mode</source>
-		<translation>Boom modus</translation>
-	    </message>
-	    <message>
-		<location line="+16"/>
-		<source>List mode</source>
-		<translation>Lijst modus</translation>
-	    </message>
-	    <message>
-		<location line="+45"/>
-		<source>Amount</source>
-		<translation>Bedrag</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Label</source>
-		<translation>Label</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Address</source>
-		<translation>Adres</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Date</source>
-		<translation>Datum</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Confirmations</source>
-		<translation>Bevestigingen</translation>
-	    </message>
-	    <message>
-		<location line="+3"/>
-		<source>Confirmed</source>
-		<translation>Bevestigd</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>Priority</source>
-		<translation>Prioriteit</translation>
-	    </message>
-	    <message>
-		<location filename="../coincontroldialog.cpp" line="-520"/>
-		<source>Copy address</source>
-		<translation>Kopieer adres</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Copy label</source>
-		<translation>Kopieer label</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<location line="+26"/>
-		<source>Copy amount</source>
-		<translation>Kopieer bedrag</translation>
-	    </message>
-	    <message>
-		<location line="-25"/>
-		<source>Copy transaction ID</source>
-		<translation>Kopieer transactie-ID</translation>
-	    </message>
-	    <message>
-		<location line="+24"/>
-		<source>Copy quantity</source>
-		<translation>Kopieer aantal</translation>
-	    </message>
-	    <message>
-		<location line="+2"/>
-		<source>Copy fee</source>
-		<translation>Kopieer vergoeding</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Copy after fee</source>
-		<translation>Kopieer na vergoeding</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Copy bytes</source>
-		<translation>Kopieer bytes</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Copy priority</source>
-		<translation>Kopieer prioriteit</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Copy low output</source>
-		<translation>Kopieer lage uitvoer</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Copy change</source>
-		<translation>Kopieer wijzig</translation>
-	    </message>
-	    <message>
-		<location line="+317"/>
-		<source>highest</source>
-		<translation>hoogste</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>high</source>
-		<translation>hoog</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>medium-high</source>
-		<translation>gemiddeld hoog</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>medium</source>
-		<translation>gemiddeld</translation>
-	    </message>
-	    <message>
-		<location line="+4"/>
-		<source>low-medium</source>
-		<translation>laag gemiddeld</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>low</source>
-		<translation>laag</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>lowest</source>
-		<translation>laagste</translation>
-	    </message>
-	    <message>
-		<location line="+130"/>
-		<location line="+30"/>
-		<source>DUST</source>
-		<translation>STOF</translation>
-	    </message>
-	    <message>
-		<location line="-30"/>
-		<location line="+30"/>
-		<source>yes</source>
-		<translation>ja</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<source>This label turns red, if the transaction size is bigger than 10000 bytes.
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>AddressTableModel</name>
+    <message>
+        <location filename="../addresstablemodel.cpp" line="+217"/>
+        <source>Label</source>
+        <translation>Label</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Address</source>
+        <translation>Adres</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>pubkey</source>
+        <translation>pubsleutel</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>stealth</source>
+        <translation>onzichtbaar</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>(no label)</source>
+        <translation>(geen label)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stealth Address</source>
+        <translation>Onzichtbaar Adres</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>n/a</source>
+        <translation>(nvt)</translation>
+    </message>
+</context>
+<context>
+    <name>AskPassphraseDialog</name>
+    <message>
+        <location filename="../forms/askpassphrasedialog.ui" line="+26"/>
+        <source>Passphrase Dialog</source>
+        <translation>Wachtwoordscherm</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Enter passphrase</source>
+        <translation>Voer wachtwoord in</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>New passphrase</source>
+        <translation>Nieuw wachtwoord</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Repeat new passphrase</source>
+        <translation>Herhaal wachtwoord</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</source>
+        <translation>Bedoeld om het command &apos;sendmoney&apos; uit te schakelen indien het OS niet meer veilig is. Geeft geen echte beveiliging.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>For staking only</source>
+        <translation>Alleen voor staking</translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="+37"/>
+        <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
+        <translation>Vul een nieuw wachtwoord in voor uw portemonnee. &lt;br/&gt; Gebruik een wachtwoord van &lt;b&gt;10 of meer verschillende karakters&lt;/b&gt;, of &lt;b&gt; acht of meer woorden&lt;/b&gt; . </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Encrypt wallet</source>
+        <translation>Versleutel portemonnee</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This operation needs your wallet passphrase to unlock the wallet.</source>
+        <translation>Deze operatie vereist uw portemonneewachtwoord om de portemonnee te openen.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Unlock wallet</source>
+        <translation>Open portemonnee</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
+        <translation>Deze operatie vereist uw portemonneewachtwoord om de portemonnee te ontsleutelen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Decrypt wallet</source>
+        <translation>Ontsleutel portemonnee</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Change passphrase</source>
+        <translation>Wijzig wachtwoord</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Enter the old and new passphrase to the wallet.</source>
+        <translation>Vul uw oude en nieuwe portemonneewachtwoord in.</translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Confirm wallet encryption</source>
+        <translation>Bevestig versleuteling van de portemonnee</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
+        <translation>Waarschuwing: Als je je portemonnee versleuteld en je verliest je wachtwoord zul je &lt;b&gt;AL JE MUNTEN VERLIEZEN&lt;/b&gt;!</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Are you sure you wish to encrypt your wallet?</source>
+        <translation>Weet u zeker dat u uw portemonnee wilt versleutelen?</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
+        <translation>BELANGRIJK: Elke eerder gemaakte backup van uw portemonneebestand dient u te vervangen door het nieuw gegenereerde, versleutelde portemonneebestand. Om veiligheidsredenen zullen eerdere backups van het niet-versleutelde portemonneebestand onbruikbaar worden zodra u uw nieuwe, versleutelde, portemonnee begint te gebruiken.</translation>
+    </message>
+    <message>
+        <location line="+103"/>
+        <location line="+24"/>
+        <source>Warning: The Caps Lock key is on!</source>
+        <translation>Waarschuwing: De Caps-Lock-toets staat aan!</translation>
+    </message>
+    <message>
+        <location line="-133"/>
+        <location line="+60"/>
+        <source>Wallet encrypted</source>
+        <translation>Portemonnee versleuteld</translation>
+    </message>
+    <message>
+        <location line="-58"/>
+        <source>ShadowCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
+        <translation>ShadowCoin zal nu sluiten om het versleutel proces te voltooien. Onthou dat het versleutelen van je portemonnee je niet volledig beschermt tegen diefstal van munten door malware op je computer.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <location line="+7"/>
+        <location line="+44"/>
+        <location line="+6"/>
+        <source>Wallet encryption failed</source>
+        <translation>Portemonneeversleuteling mislukt</translation>
+    </message>
+    <message>
+        <location line="-56"/>
+        <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
+        <translation>Portemonneeversleuteling mislukt door een interne fout. Uw portemonnee is niet versleuteld.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+50"/>
+        <source>The supplied passphrases do not match.</source>
+        <translation>De opgegeven wachtwoorden komen niet overeen</translation>
+    </message>
+    <message>
+        <location line="-38"/>
+        <source>Wallet unlock failed</source>
+        <translation>Portemonnee openen mislukt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+12"/>
+        <location line="+19"/>
+        <source>The passphrase entered for the wallet decryption was incorrect.</source>
+        <translation>Het opgegeven wachtwoord voor de portemonnee-ontsleuteling is niet correct.</translation>
+    </message>
+    <message>
+        <location line="-20"/>
+        <source>Wallet decryption failed</source>
+        <translation>Portemonnee-ontsleuteling mislukt</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Wallet passphrase was successfully changed.</source>
+        <translation>Portemonneewachtwoord is met succes gewijzigd.</translation>
+    </message>
+</context>
+<context>
+    <name>ClientModel</name>
+    <message>
+        <location filename="../clientmodel.cpp" line="+137"/>
+        <source>Network Alert</source>
+        <translation>Netwerkwaarschuwing</translation>
+    </message>
+</context>
+<context>
+    <name>CoinControlDialog</name>
+    <message>
+        <location filename="../forms/coincontroldialog.ui" line="+14"/>
+        <source>Coin Control</source>
+        <translation>Coin controle opties</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Quantity:</source>
+        <translation>Kwantiteit</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Bytes:</source>
+        <translation>Bytes:</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Amount:</source>
+        <translation>Bedrag:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Priority:</source>
+        <translation>Prioriteit:</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Fee:</source>
+        <translation>Vergoeding:</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Low Output:</source>
+        <translation>Lage uitvoer:</translation>
+    </message>
+    <message>
+        <location filename="../coincontroldialog.cpp" line="+528"/>
+        <location line="+30"/>
+        <source>no</source>
+        <translation>nee</translation>
+    </message>
+    <message>
+        <location filename="../forms/coincontroldialog.ui" line="+51"/>
+        <source>After Fee:</source>
+        <translation>Na vergoeding:</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Change:</source>
+        <translation>Wijzigen:</translation>
+    </message>
+    <message>
+        <location line="+69"/>
+        <source>(un)select all</source>
+        <translation>(de)selecteer alles</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Tree mode</source>
+        <translation>Boom modus</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>List mode</source>
+        <translation>Lijst modus</translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Amount</source>
+        <translation>Bedrag</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Label</source>
+        <translation>Label</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Address</source>
+        <translation>Adres</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Date</source>
+        <translation>Datum</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Confirmations</source>
+        <translation>Bevestigingen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Confirmed</source>
+        <translation>Bevestigd</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Priority</source>
+        <translation>Prioriteit</translation>
+    </message>
+    <message>
+        <location filename="../coincontroldialog.cpp" line="-520"/>
+        <source>Copy address</source>
+        <translation>Kopieer adres</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy label</source>
+        <translation>Kopieer label</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+26"/>
+        <source>Copy amount</source>
+        <translation>Kopieer bedrag</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>Copy transaction ID</source>
+        <translation>Kopieer transactie-ID</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Copy quantity</source>
+        <translation>Kopieer aantal</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy fee</source>
+        <translation>Kopieer vergoeding</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy after fee</source>
+        <translation>Kopieer na vergoeding</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy bytes</source>
+        <translation>Kopieer bytes</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy priority</source>
+        <translation>Kopieer prioriteit</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy low output</source>
+        <translation>Kopieer lage uitvoer</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy change</source>
+        <translation>Kopieer wijzig</translation>
+    </message>
+    <message>
+        <location line="+317"/>
+        <source>highest</source>
+        <translation>hoogste</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>high</source>
+        <translation>hoog</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>medium-high</source>
+        <translation>gemiddeld hoog</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>medium</source>
+        <translation>gemiddeld</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>low-medium</source>
+        <translation>laag gemiddeld</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>low</source>
+        <translation>laag</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>lowest</source>
+        <translation>laagste</translation>
+    </message>
+    <message>
+        <location line="+130"/>
+        <location line="+30"/>
+        <source>DUST</source>
+        <translation>STOF</translation>
+    </message>
+    <message>
+        <location line="-30"/>
+        <location line="+30"/>
+        <source>yes</source>
+        <translation>ja</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>This label turns red, if the transaction size is bigger than 10000 bytes.
 
-	 This means a fee of at least %1 per kb is required.
+ This means a fee of at least %1 per kb is required.
 
-	 Can vary +/- 1 Byte per input.</source>
-		<translation>Dit label wordt rood, als de transactie grootte groter is dan 10000 bytes.&lt;br&gt;
+ Can vary +/- 1 Byte per input.</source>
+        <translation>Dit label wordt rood, als de transactie grootte groter is dan 10000 bytes.&lt;br&gt;
 
-	Dit betekend een fee van minimaal %1 per kb is noodzakelijk.&lt;br&gt;
+Dit betekend een fee van minimaal %1 per kb is noodzakelijk.&lt;br&gt;
 
-	Kan varieren van +/- 1 Byte per invulling</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Transactions with higher priority get more likely into a block.
+Kan varieren van +/- 1 Byte per invulling</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Transactions with higher priority get more likely into a block.
 
-	This label turns red, if the priority is smaller than &quot;medium&quot;.
+This label turns red, if the priority is smaller than &quot;medium&quot;.
 
-	 This means a fee of at least %1 per kb is required.</source>
-		<translation>Transacties met hogere prioriteit komen sneller in een blok
+ This means a fee of at least %1 per kb is required.</source>
+        <translation>Transacties met hogere prioriteit komen sneller in een blok
 
-	Dit label wordt rood, als de prioriteit kleiner is dan &quot;normaal&quot;.
+Dit label wordt rood, als de prioriteit kleiner is dan &quot;normaal&quot;.
 
-	Dit betekend een fee van minimaal %1 per kb is noodzakelijk.</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>This label turns red, if any recipient receives an amount smaller than %1.
+Dit betekend een fee van minimaal %1 per kb is noodzakelijk.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This label turns red, if any recipient receives an amount smaller than %1.
 
-	 This means a fee of at least %2 is required. 
+ This means a fee of at least %2 is required. 
 
-	 Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
-		<translation>Dit label wordt rood, als elke ontvanger ontvangt een bedrag dat kleiner is dan 1%. 
+ Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
+        <translation>Dit label wordt rood, als elke ontvanger ontvangt een bedrag dat kleiner is dan 1%.
 
-	Dit betekent dat een vergoeding van ten minste 2% is vereist. 
+Dit betekent dat een vergoeding van ten minste 2% is vereist.
 
-	Bedragen onder 0.546 keer het minimum vergoeding worden weergegeven als DUST.</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>This label turns red, if the change is smaller than %1.
+Bedragen onder 0.546 keer het minimum vergoeding worden weergegeven als DUST.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This label turns red, if the change is smaller than %1.
 
-	 This means a fee of at least %2 is required.</source>
-		<translation>Dit label wordt rood, als de verandering kleiner is dan %1.
+ This means a fee of at least %2 is required.</source>
+        <translation>Dit label wordt rood, als de verandering kleiner is dan %1.
 
-	Dit betekend dat een fee van %2 is vereist.</translation>
-	    </message>
-	    <message>
-		<location line="+40"/>
-		<location line="+66"/>
-		<source>(no label)</source>
-		<translation>(geen label)</translation>
-	    </message>
-	    <message>
-		<location line="-9"/>
-		<source>change from %1 (%2)</source>
-		<translation>wijzig van %1 (%2)</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>(change)</source>
-		<translation>(wijzig)</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>EditAddressDialog</name>
-	    <message>
-		<location filename="../forms/editaddressdialog.ui" line="+14"/>
-		<source>Edit Address</source>
-		<translation>Bewerk Adres</translation>
-	    </message>
-	    <message>
-		<location line="+11"/>
-		<source>&amp;Label</source>
-		<translation>&amp;Label</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<source>The label associated with this address book entry</source>
-		<translation>Het label geassocieerd met deze notitie in het adresboek</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>&amp;Address</source>
-		<translation>&amp;Adres</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<source>The address associated with this address book entry. This can only be modified for sending addresses.</source>
-		<translation>Het adres geassocieerd met deze notitie in het adresboek. Dit kan enkel aangepast worden bij verzend-adressen.</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>&amp;Stealth Address</source>
-		<translation>Onzichtbaar Adres</translation>
-	    </message>
-	    <message>
-		<location filename="../editaddressdialog.cpp" line="+20"/>
-		<source>New receiving address</source>
-		<translation>Nieuw ontvangstadres</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>New sending address</source>
-		<translation>Nieuw adres om naar te verzenden</translation>
-	    </message>
-	    <message>
-		<location line="+4"/>
-		<source>Edit receiving address</source>
-		<translation>Bewerk ontvangstadres</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>Edit sending address</source>
-		<translation>Bewerk adres om naar te verzenden</translation>
-	    </message>
-	    <message>
-		<location line="+82"/>
-		<source>The entered address &quot;%1&quot; is already in the address book.</source>
-		<translation>Het opgegeven adres &quot;%1&quot; bestaat al in uw adresboek.</translation>
-	    </message>
-	    <message>
-		<location line="-5"/>
-		<source>The entered address &quot;%1&quot; is not a valid ShadowCoin address.</source>
-		<translation>Het ingevoerde adres &quot;%1&quot; is geen geldig ShadowCoin adres.</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<source>Could not unlock wallet.</source>
-		<translation>Kon de portemonnee niet openen.</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>New key generation failed.</source>
-		<translation>Genereren nieuwe sleutel mislukt.</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>GUIUtil::HelpMessageBox</name>
-	    <message>
-		<location filename="../guiutil.cpp" line="+526"/>
-		<source>version</source>
-		<translation>versie</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<location line="+12"/>
-		<source>Shadow</source>
-		<translation>Shadow</translation>
-	    </message>
-	    <message>
-		<location line="-10"/>
-		<source>Usage:</source>
-		<translation>Gebruik:</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>command-line options</source>
-		<translation>Commandoregel-opties</translation>
-	    </message>
-	    <message>
-		<location line="+4"/>
-		<source>UI options</source>
-		<translation>Gebruikerinterface-opties</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-		<translation>Stel taal in, bijvoorbeeld &quot;de_DE&quot; (standaard: systeeminstellingen)</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Start minimized</source>
-		<translation>Geminimaliseerd starten</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Show splash screen on startup (default: 1)</source>
-		<translation>Laat laadscherm zien bij het opstarten. (standaard: 1)</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>MessageModel</name>
-	    <message>
-		<location filename="../messagemodel.cpp" line="+375"/>
-		<source>Type</source>
-		<translation>Type</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Sent Date Time</source>
-		<translation>Verzonden tijd</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Received Date Time</source>
-		<translation>Ontvangen Tijd</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Label</source>
-		<translation>Label</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>To Address</source>
-		<translation>Van adres</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>From Address</source>
-		<translation>Naar adres</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Message</source>
-		<translation>Bericht</translation>
-	    </message>
-	    <message>
-		<location line="+41"/>
-		<source>Send Secure Message</source>
-		<translation>Verstuur Beveiligd Bericht</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Send failed: %1.</source>
-		<translation>Versturen mislukt: %1.</translation>
-	    </message>
-	    <message>
-		<location line="+22"/>
-		<location line="+1"/>
-		<source>(no label)</source>
-		<translation>(geen label)</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>PaymentServer</name>
-	    <message>
-		<location filename="../paymentserver.cpp" line="+107"/>
-		<source>Cannot start shadow: click-to-pay handler</source>
-		<translation>Kan shadow niet starten: click-om-te-betalen handler</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>PeerTableModel</name>
-	    <message>
-		<location filename="../peertablemodel.cpp" line="+118"/>
-		<source>Address/Hostname</source>
-		<translation>Adres/Hostnaam</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>User Agent</source>
-		<translation>Gebruiker Agent</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Ping Time</source>
-		<translation>Ping tijd</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>QObject</name>
-	    <message>
-		<location filename="../guiutil.cpp" line="-470"/>
-		<source>%1 d</source>
-		<translation>%1 d</translation>
-	    </message>
-	    <message>
-		<location line="+2"/>
-		<source>%1 h</source>
-		<translation>%1 h</translation>
-	    </message>
-	    <message>
-		<location line="+2"/>
-		<source>%1 m</source>
-		<translation>%1 m</translation>
-	    </message>
-	    <message>
-		<location line="+2"/>
-		<location line="+55"/>
-		<source>%1 s</source>
-		<translation>%1 s</translation>
-	    </message>
-	    <message>
-		<location line="-10"/>
-		<source>None</source>
-		<translation>Geen</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>N/A</source>
-		<translation>N.v.t.</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>%1 ms</source>
-		<translation>%1 ms</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>RPCConsole</name>
-	    <message>
-		<location filename="../forms/rpcconsole.ui" line="+46"/>
-		<source>Client name</source>
-		<translation>Clientnaam</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<location line="+23"/>
-		<location line="+26"/>
-		<location line="+26"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+36"/>
-		<location line="+23"/>
-		<location line="+36"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+491"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<location line="+23"/>
-		<source>N/A</source>
-		<translation>N.v.t.</translation>
-	    </message>
-	    <message>
-		<location line="-1062"/>
-		<source>Client version</source>
-		<translation>Clientversie</translation>
-	    </message>
-	    <message>
-		<location line="-45"/>
-		<source>&amp;Information</source>
-		<translation>&amp;Informatie</translation>
-	    </message>
-	    <message>
-		<location line="-10"/>
-		<source>Shadow - Debug window</source>
-		<translation>Shadow - Debug scherm</translation>
-	    </message>
-	    <message>
-		<location line="+25"/>
-		<source>Shadow Core</source>
-		<translation>Shadow Core</translation>
-	    </message>
-	    <message>
-		<location line="+53"/>
-		<source>Using OpenSSL version</source>
-		<translation>Gebruikt OpenSSL versie</translation>
-	    </message>
-	    <message>
-		<location line="+26"/>
-		<source>Using BerkeleyDB version</source>
-		<translation>Gebruikt BerkeleyDB versie</translation>
-	    </message>
-	    <message>
-		<location line="+49"/>
-		<source>Startup time</source>
-		<translation>Opstarttijd</translation>
-	    </message>
-	    <message>
-		<location line="+29"/>
-		<source>Network</source>
-		<translation>Netwerk</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>Name</source>
-		<translation>Naam</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Number of connections</source>
-		<translation>Aantal connecties</translation>
-	    </message>
-	    <message>
-		<location line="+157"/>
-		<source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
-		<translation type="unfinished"/>
-	    </message>
-	    <message>
-		<location line="+99"/>
-		<source>&amp;Network Traffic</source>
-		<translation>&amp;Netwerkverkeer</translation>
-	    </message>
-	    <message>
-		<location line="+52"/>
-		<source>&amp;Clear</source>
-		<translation>&amp;Opschonen</translation>
-	    </message>
-	    <message>
-		<location line="+16"/>
-		<source>Totals</source>
-		<translation>Totalen</translation>
-	    </message>
-	    <message>
-		<location line="+64"/>
-		<location filename="../rpcconsole.cpp" line="+396"/>
-		<source>In:</source>
-		<translation>In:</translation>
-	    </message>
-	    <message>
-		<location line="+80"/>
-		<location filename="../rpcconsole.cpp" line="+1"/>
-		<source>Out:</source>
-		<translation>Uit:</translation>
-	    </message>
-	    <message>
-		<location line="+41"/>
-		<source>&amp;Peers</source>
-		<translation>&amp;Peers</translation>
-	    </message>
-	    <message>
-		<location line="+39"/>
-		<location filename="../rpcconsole.cpp" line="-167"/>
-		<location line="+328"/>
-		<source>Select a peer to view detailed information.</source>
-		<translation>Selecteer een peer om gedetailleerde info te zien.</translation>
-	    </message>
-	    <message>
-		<location line="+25"/>
-		<source>Peer ID</source>
-		<translation>Peer ID</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Direction</source>
-		<translation>Directie</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Version</source>
-		<translation>Versie</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>User Agent</source>
-		<translation>Gebruiker Agent</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Services</source>
-		<translation>Diensten</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Starting Height</source>
-		<translation>Start Hoogte</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Sync Height</source>
-		<translation>Sync Hoogte</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Ban Score</source>
-		<translation>Ban Score</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Connection Time</source>
-		<translation>Connectie Tijd</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Last Send</source>
-		<translation>Laatst Verzonden</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Last Receive</source>
-		<translation>Laatst Ontvangen</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Bytes Sent</source>
-		<translation>Bytes verstuurd</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Bytes Received</source>
-		<translation>Bytes ontvangen</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Ping Time</source>
-		<translation>Ping tijd</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Time Offset</source>
-		<translation>Tijd compenseren</translation>
-	    </message>
-	    <message>
-		<location line="-866"/>
-		<source>Block chain</source>
-		<translation>Blokketen</translation>
-	    </message>
-	    <message>
-		<location line="+7"/>
-		<source>Current number of blocks</source>
-		<translation>Huidig aantal blokken</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Estimated total blocks</source>
-		<translation>Geschat totaal aantal blokken</translation>
-	    </message>
-	    <message>
-		<location line="+23"/>
-		<source>Last block time</source>
-		<translation>Tijd laatste blok</translation>
-	    </message>
-	    <message>
-		<location line="+49"/>
-		<source>Open the Shadow debug log file from the current data directory. This can take a few seconds for large log files.</source>
-		<translation>Open de Shadow debog log bestand van de huidige data directory. Dit kan enkele minuten duren voor grote log bestanden.</translation>
-	    </message>
-	    <message>
-		<location line="+3"/>
-		<source>&amp;Open</source>
-		<translation>&amp;Open</translation>
-	    </message>
-	    <message>
-		<location line="+16"/>
-		<source>Command-line options</source>
-		<translation>Commandoregel-opties</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<source>&amp;Show</source>
-		<translation>&amp;Show</translation>
-	    </message>
-	    <message>
-		<location line="+24"/>
-		<source>&amp;Console</source>
-		<translation>&amp;Console</translation>
-	    </message>
-	    <message>
-		<location line="-266"/>
-		<source>Build date</source>
-		<translation>Bouwdatum</translation>
-	    </message>
-	    <message>
-		<location line="+206"/>
-		<source>Debug log file</source>
-		<translation>Debug-logbestand</translation>
-	    </message>
-	    <message>
-		<location line="+109"/>
-		<source>Clear console</source>
-		<translation>Maak console leeg</translation>
-	    </message>
-	    <message>
-		<location filename="../rpcconsole.cpp" line="-197"/>
-		<source>Welcome to the Shadow Core RPC console.</source>
-		<translation>Welkom bij het Shadow Kern RPC paneel.</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
-		<translation>Gebruik de pijltjestoetsen om door de geschiedenis te navigeren, en &lt;b&gt;Ctrl-L&lt;/b&gt; om het scherm leeg te maken.</translation>
-	    </message>
-	    <message>
-		<location line="+1"/>
-		<source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
-		<translation>Typ &lt;b&gt;help&lt;/b&gt; voor een overzicht van de beschikbare commando&apos;s.</translation>
-	    </message>
-	    <message>
-		<location line="+233"/>
-		<source>via %1</source>
-		<translation>via %1</translation>
-	    </message>
-	    <message>
-		<location line="+3"/>
-		<location line="+1"/>
-		<source>never</source>
-		<translation>nooit</translation>
-	    </message>
-	    <message>
-		<location line="+9"/>
-		<source>Inbound</source>
-		<translation>Inkomend</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<source>Outbound</source>
-		<translation>Uitgaand</translation>
-	    </message>
-	    <message>
-		<location line="+13"/>
-		<source>Unknown</source>
-		<translation>Onbekend</translation>
-	    </message>
-	    <message>
-		<location line="+2"/>
-		<location line="+1"/>
-		<source>Fetching...</source>
-		<translation>Ophalen...</translation>
-	    </message>
-	</context>
-	<context>
-	    <name>ShadowBridge</name>
-	    <message>
-		<location filename="../shadowbridge.cpp" line="+401"/>
-		<source>Incoming Message</source>
-		<translation>Inkomend Bericht</translation>
-	    </message>
-	    <message>
-		<location line="+12"/>
-		<source>default</source>
-		<translation>standaard</translation>
-	    </message>
-	    <message>
-		<location line="+58"/>
-		<source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
-		<translation>&lt;b&gt; %1 &lt;/b&gt; to %2 (%3)</translation>
-	    </message>
-	    <message>
-		<location line="+4"/>
-		<source>&lt;b&gt;%1&lt;/b&gt; to SHADOW %2 (%3)</source>
-		<translation>&lt;b&gt;%1&lt;/b&gt; aan SHADOW %2 (%3)</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SHADOW %3 (%4)</source>
-		<translation>&lt;b&gt;%1&lt;/b&gt; SHADOW, kring grootte %2 aan SHADOW %3 (%4)</translation>
-	    </message>
-	    <message>
-		<location line="+5"/>
-		<source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SDC %3 (%4)</source>
-		<translation>&lt;b&gt;%1&lt;/b&gt; SHADOW, kring grootte %2 aan SDC %3 (%4)</translation>
-	    </message>
-	    <message>
-		<location line="+4"/>
-		<location line="+10"/>
-		<location line="+12"/>
-		<location line="+8"/>
-		<source>Error:</source>
-		<translation>Fout:</translation>
-	    </message>
-	    <message>
-		<location line="-30"/>
-		<source>Unknown txn type detected %1.</source>
-		<translation>Onbekende txn type gedetecteerd %1.</translation>
-	    </message>
-	    <message>
-		<location line="+10"/>
-		<source>Input types must match for all recipients.</source>
-		<translation>Invoer types moet matchen voor alle ontvangers.</translation>
-	    </message>
-	    <message>
-		<location line="+12"/>
-		<source>Ring sizes must match for all recipients.</source>
-		<translation>Kring grootte moet matchen voor alle ontvangers.</translation>
-	    </message>
-	    <message>
-		<location line="+8"/>
-		<source>Ring size outside range [%1, %2].</source>
-		<translation>Kring grootte buiten bereik [%1, %2}.</translation>
-	    </message>
-	    <message>
-		<location line="+8"/>
-		<location line="+9"/>
-		<source>Confirm send coins</source>
-		<translation>Bevestig versturen munten</translation>
-	    </message>
-	    <message>
-		<location line="-9"/>
-		<source>Are you sure you want to send?
-	Ring size of one is not anonymous, and harms the network.</source>
-		<translation>Weet je zeker dat je dit wil versturen?
-	Kring grootte van één is niet geheim en tast het netwerk aan.</translation>
-	    </message>
-	    <message>
-		<location line="+0"/>
-		<location line="+9"/>
-		<source> and </source>
+Dit betekend dat een fee van %2 is vereist.</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <location line="+66"/>
+        <source>(no label)</source>
+        <translation>(geen label)</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>change from %1 (%2)</source>
+        <translation>wijzig van %1 (%2)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>(change)</source>
+        <translation>(wijzig)</translation>
+    </message>
+</context>
+<context>
+    <name>EditAddressDialog</name>
+    <message>
+        <location filename="../forms/editaddressdialog.ui" line="+14"/>
+        <source>Edit Address</source>
+        <translation>Bewerk Adres</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>&amp;Label</source>
+        <translation>&amp;Label</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The label associated with this address book entry</source>
+        <translation>Het label geassocieerd met deze notitie in het adresboek</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>&amp;Address</source>
+        <translation>&amp;Adres</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The address associated with this address book entry. This can only be modified for sending addresses.</source>
+        <translation>Het adres geassocieerd met deze notitie in het adresboek. Dit kan enkel aangepast worden bij verzend-adressen.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>&amp;Stealth Address</source>
+        <translation>Onzichtbaar Adres</translation>
+    </message>
+    <message>
+        <location filename="../editaddressdialog.cpp" line="+20"/>
+        <source>New receiving address</source>
+        <translation>Nieuw ontvangstadres</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>New sending address</source>
+        <translation>Nieuw adres om naar te verzenden</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Edit receiving address</source>
+        <translation>Bewerk ontvangstadres</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Edit sending address</source>
+        <translation>Bewerk adres om naar te verzenden</translation>
+    </message>
+    <message>
+        <location line="+82"/>
+        <source>The entered address &quot;%1&quot; is already in the address book.</source>
+        <translation>Het opgegeven adres &quot;%1&quot; bestaat al in uw adresboek.</translation>
+    </message>
+    <message>
+        <location line="-5"/>
+        <source>The entered address &quot;%1&quot; is not a valid ShadowCoin address.</source>
+        <translation>Het ingevoerde adres &quot;%1&quot; is geen geldig ShadowCoin adres.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Could not unlock wallet.</source>
+        <translation>Kon de portemonnee niet openen.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New key generation failed.</source>
+        <translation>Genereren nieuwe sleutel mislukt.</translation>
+    </message>
+</context>
+<context>
+    <name>GUIUtil::HelpMessageBox</name>
+    <message>
+        <location filename="../guiutil.cpp" line="+526"/>
+        <source>version</source>
+        <translation>versie</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+12"/>
+        <source>Shadow</source>
+        <translation>Shadow</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <source>Usage:</source>
+        <translation>Gebruik:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>command-line options</source>
+        <translation>Commandoregel-opties</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>UI options</source>
+        <translation>Gebruikerinterface-opties</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
+        <translation>Stel taal in, bijvoorbeeld &quot;de_DE&quot; (standaard: systeeminstellingen)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Start minimized</source>
+        <translation>Geminimaliseerd starten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show splash screen on startup (default: 1)</source>
+        <translation>Laat laadscherm zien bij het opstarten. (standaard: 1)</translation>
+    </message>
+</context>
+<context>
+    <name>MessageModel</name>
+    <message>
+        <location filename="../messagemodel.cpp" line="+375"/>
+        <source>Type</source>
+        <translation>Type</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Sent Date Time</source>
+        <translation>Verzonden tijd</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Received Date Time</source>
+        <translation>Ontvangen Tijd</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Label</source>
+        <translation>Label</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>To Address</source>
+        <translation>Van adres</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>From Address</source>
+        <translation>Naar adres</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Message</source>
+        <translation>Bericht</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Send Secure Message</source>
+        <translation>Verstuur Beveiligd Bericht</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send failed: %1.</source>
+        <translation>Versturen mislukt: %1.</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location line="+1"/>
+        <source>(no label)</source>
+        <translation>(geen label)</translation>
+    </message>
+</context>
+<context>
+    <name>PaymentServer</name>
+    <message>
+        <location filename="../paymentserver.cpp" line="+107"/>
+        <source>Cannot start shadow: click-to-pay handler</source>
+        <translation>Kan shadow niet starten: click-om-te-betalen handler</translation>
+    </message>
+</context>
+<context>
+    <name>PeerTableModel</name>
+    <message>
+        <location filename="../peertablemodel.cpp" line="+118"/>
+        <source>Address/Hostname</source>
+        <translation>Adres/Hostnaam</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>User Agent</source>
+        <translation>Gebruiker Agent</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Ping Time</source>
+        <translation>Ping tijd</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../guiutil.cpp" line="-470"/>
+        <source>%1 d</source>
+        <translation>%1 d</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 h</source>
+        <translation>%1 h</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 m</source>
+        <translation>%1 m</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+55"/>
+        <source>%1 s</source>
+        <translation>%1 s</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <source>None</source>
+        <translation>Geen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>N/A</source>
+        <translation>N.v.t.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>%1 ms</source>
+        <translation>%1 ms</translation>
+    </message>
+</context>
+<context>
+    <name>RPCConsole</name>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="+46"/>
+        <source>Client name</source>
+        <translation>Clientnaam</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+23"/>
+        <location line="+26"/>
+        <location line="+26"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+36"/>
+        <location line="+23"/>
+        <location line="+36"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+491"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <location line="+23"/>
+        <source>N/A</source>
+        <translation>N.v.t.</translation>
+    </message>
+    <message>
+        <location line="-1062"/>
+        <source>Client version</source>
+        <translation>Clientversie</translation>
+    </message>
+    <message>
+        <location line="-45"/>
+        <source>&amp;Information</source>
+        <translation>&amp;Informatie</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <source>Shadow - Debug window</source>
+        <translation>Shadow - Debug scherm</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Shadow Core</source>
+        <translation>Shadow Core</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Using OpenSSL version</source>
+        <translation>Gebruikt OpenSSL versie</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Using BerkeleyDB version</source>
+        <translation>Gebruikt BerkeleyDB versie</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Startup time</source>
+        <translation>Opstarttijd</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Network</source>
+        <translation>Netwerk</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Name</source>
+        <translation>Naam</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Number of connections</source>
+        <translation>Aantal connecties</translation>
+    </message>
+    <message>
+        <location line="+157"/>
+        <source>Show the Shadow help message to get a list with possible Shadow command-line options.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+99"/>
+        <source>&amp;Network Traffic</source>
+        <translation>&amp;Netwerkverkeer</translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>&amp;Clear</source>
+        <translation>&amp;Opschonen</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Totals</source>
+        <translation>Totalen</translation>
+    </message>
+    <message>
+        <location line="+64"/>
+        <location filename="../rpcconsole.cpp" line="+396"/>
+        <source>In:</source>
+        <translation>In:</translation>
+    </message>
+    <message>
+        <location line="+80"/>
+        <location filename="../rpcconsole.cpp" line="+1"/>
+        <source>Out:</source>
+        <translation>Uit:</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>&amp;Peers</source>
+        <translation>&amp;Peers</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location filename="../rpcconsole.cpp" line="-167"/>
+        <location line="+328"/>
+        <source>Select a peer to view detailed information.</source>
+        <translation>Selecteer een peer om gedetailleerde info te zien.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Peer ID</source>
+        <translation>Peer ID</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Direction</source>
+        <translation>Directie</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Version</source>
+        <translation>Versie</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>User Agent</source>
+        <translation>Gebruiker Agent</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Services</source>
+        <translation>Diensten</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Starting Height</source>
+        <translation>Start Hoogte</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Sync Height</source>
+        <translation>Sync Hoogte</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Ban Score</source>
+        <translation>Ban Score</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Connection Time</source>
+        <translation>Connectie Tijd</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last Send</source>
+        <translation>Laatst Verzonden</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last Receive</source>
+        <translation>Laatst Ontvangen</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Bytes Sent</source>
+        <translation>Bytes verstuurd</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Bytes Received</source>
+        <translation>Bytes ontvangen</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Ping Time</source>
+        <translation>Ping tijd</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Time Offset</source>
+        <translation>Tijd compenseren</translation>
+    </message>
+    <message>
+        <location line="-866"/>
+        <source>Block chain</source>
+        <translation>Blokketen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Current number of blocks</source>
+        <translation>Huidig aantal blokken</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Estimated total blocks</source>
+        <translation>Geschat totaal aantal blokken</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Last block time</source>
+        <translation>Tijd laatste blok</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Open the Shadow debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Open de Shadow debog log bestand van de huidige data directory. Dit kan enkele minuten duren voor grote log bestanden.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>&amp;Open</source>
+        <translation>&amp;Open</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Command-line options</source>
+        <translation>Commandoregel-opties</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&amp;Show</source>
+        <translation>&amp;Show</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>&amp;Console</source>
+        <translation>&amp;Console</translation>
+    </message>
+    <message>
+        <location line="-266"/>
+        <source>Build date</source>
+        <translation>Bouwdatum</translation>
+    </message>
+    <message>
+        <location line="+206"/>
+        <source>Debug log file</source>
+        <translation>Debug-logbestand</translation>
+    </message>
+    <message>
+        <location line="+109"/>
+        <source>Clear console</source>
+        <translation>Maak console leeg</translation>
+    </message>
+    <message>
+        <location filename="../rpcconsole.cpp" line="-197"/>
+        <source>Welcome to the Shadow Core RPC console.</source>
+        <translation>Welkom bij het Shadow Kern RPC paneel.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
+        <translation>Gebruik de pijltjestoetsen om door de geschiedenis te navigeren, en &lt;b&gt;Ctrl-L&lt;/b&gt; om het scherm leeg te maken.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
+        <translation>Typ &lt;b&gt;help&lt;/b&gt; voor een overzicht van de beschikbare commando&apos;s.</translation>
+    </message>
+    <message>
+        <location line="+233"/>
+        <source>via %1</source>
+        <translation>via %1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+1"/>
+        <source>never</source>
+        <translation>nooit</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Inbound</source>
+        <translation>Inkomend</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Outbound</source>
+        <translation>Uitgaand</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Unknown</source>
+        <translation>Onbekend</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+1"/>
+        <source>Fetching...</source>
+        <translation>Ophalen...</translation>
+    </message>
+</context>
+<context>
+    <name>ShadowBridge</name>
+    <message>
+        <location filename="../shadowbridge.cpp" line="+401"/>
+        <source>Incoming Message</source>
+        <translation>Inkomend Bericht</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>default</source>
+        <translation>standaard</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
+        <translation>&lt;b&gt; %1 &lt;/b&gt; to %2 (%3)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; to SHADOW %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; aan SHADOW %2 (%3)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SHADOW %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; SHADOW, kring grootte %2 aan SHADOW %3 (%4)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; SHADOW, ring size %2 to SDC %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; SHADOW, kring grootte %2 aan SDC %3 (%4)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+10"/>
+        <location line="+12"/>
+        <location line="+8"/>
+        <source>Error:</source>
+        <translation>Fout:</translation>
+    </message>
+    <message>
+        <location line="-30"/>
+        <source>Unknown txn type detected %1.</source>
+        <translation>Onbekende txn type gedetecteerd %1.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Input types must match for all recipients.</source>
+        <translation>Invoer types moet matchen voor alle ontvangers.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Ring sizes must match for all recipients.</source>
+        <translation>Kring grootte moet matchen voor alle ontvangers.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Ring size outside range [%1, %2].</source>
+        <translation>Kring grootte buiten bereik [%1, %2}.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+9"/>
+        <source>Confirm send coins</source>
+        <translation>Bevestig versturen munten</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Are you sure you want to send?
+Ring size of one is not anonymous, and harms the network.</source>
+        <translation>Weet je zeker dat je dit wil versturen?
+Kring grootte van één is niet geheim en tast het netwerk aan.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+9"/>
+        <source> and </source>
         <translation> en </translation>
     </message>
     <message>
