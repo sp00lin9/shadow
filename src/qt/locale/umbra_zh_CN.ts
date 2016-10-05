@@ -1626,7 +1626,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished"/>
+        <translation>未进行权益增值，因为钱包已锁定</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2077,7 +2077,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message numerus="yes">
         <location line="+63"/>
         <source>%n active connection(s) to ShadowCoin network</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n个活动连接在影子网络传递数据</numerusform></translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2241,7 +2241,7 @@ Message: %4
     <message>
         <location line="+39"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
-        <translation type="unfinished"/>
+        <translation>钱包已被&lt;b&gt;加密&lt;/b&gt;，目前为&lt;b&gt;解锁&lt;/b&gt;状态，只允许权益增值</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2309,7 +2309,7 @@ Message: %4
 Your weight is %1
 Network weight is %2
 Expected time to earn reward is %3</source>
-        <translation>正进行利益增值
+        <translation>正进行权益增值
 您的重量 %1
 网络重量 %2
 预期下一奖励距离 %3</translation>
