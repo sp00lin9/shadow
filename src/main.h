@@ -696,10 +696,7 @@ public:
 
     uint256 GetHash() const
     {
-        if (nVersion > 6)
-            return Hash(BEGIN(nVersion), END(nNonce));
-        else
-            return scrypt_blockhash(CVOIDBEGIN(nVersion));
+		return HashKeccak(BEGIN(nVersion), END(nNonce));
     }
 
     int64_t GetBlockTime() const

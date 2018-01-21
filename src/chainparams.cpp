@@ -22,20 +22,17 @@ struct SeedSpec6 {
 int64_t CChainParams::GetProofOfWorkReward(int nHeight, int64_t nFees) const
 {
     // miner's coin base reward
-    int64_t nSubsidy = 0;
+    int64_t nSubsidy;
 
-    if (nHeight <= 0)
-        nSubsidy = 0;
-    else
-    if (nHeight <= nLastFairLaunchBlock)
-        nSubsidy = 1 * COIN;
-    else
-    if (nHeight <= nLastPOWBlock)
-        nSubsidy = (NetworkID() == CChainParams::TESTNET ? 10000 : 400) * COIN;
-
+    if(nHeight == 1) {
+        nSubsidy = 25000000 * COIN;
+    } else {
+        nSubsidy = 5 * COIN;
+    }
+            
     if (fDebug && GetBoolArg("-printcreation"))
         LogPrintf("GetProofOfWorkReward() : create=%s nSubsidy=%d\n", FormatMoney(nSubsidy).c_str(), nSubsidy);
-
+    
     return nSubsidy + nFees;
 };
 
@@ -45,14 +42,11 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
     // miner's coin stake reward based on coin age spent (coin-days)
     int64_t nSubsidy;
 
-    if (IsProtocolV3(pindexPrev->nHeight))
-        nSubsidy = (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
-    else
-        nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
+    nSubsidy = (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
 
     if (fDebug && GetBoolArg("-printcreation"))
         LogPrintf("GetProofOfStakeReward(): create=%s nCoinAge=%d\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
-
+    
     return nSubsidy + nFees;
 }
 
@@ -108,7 +102,7 @@ static void convertSeeds(std::vector<CAddress> &vSeedsOut, const unsigned int *d
 class CBaseChainParams : public CChainParams {
 public:
     CBaseChainParams() {
-        const char* pszTimestamp = "www.cryptocoinsnews.com/news/bitlicense-regulations-forked-github-bitcoin-community/2014/07/19";
+        const char* pszTimestamp = " 09/08/2017 - Equifax reports breach affecting 143 million U.S. consumers. ";
         CTransaction txNew;
         txNew.nTime = GENESIS_BLOCK_TIME;
         txNew.vin.resize(1);
@@ -121,12 +115,7 @@ public:
         genesis.nVersion = 1;
         genesis.nTime    = GENESIS_BLOCK_TIME;
 
-        vSeeds.push_back(CDNSSeedData("main.shadow.cash",  "seed.shadow.cash"));
-        vSeeds.push_back(CDNSSeedData("seed2.shadow.cash", "seed2.shadow.cash"));
-        vSeeds.push_back(CDNSSeedData("seed3.shadow.cash", "seed3.shadow.cash"));
-        vSeeds.push_back(CDNSSeedData("seed4.shadow.cash", "seed4.shadow.cash"));
-        vSeeds.push_back(CDNSSeedData("shadowproject.io",  "seed.shadowproject.io"));
-        vSeeds.push_back(CDNSSeedData("shadowchain.info",  "seed.shadowchain.info"));
+		vSeeds.push_back(CDNSSeedData("seed.educoins.io", "seed2.educoins.io"));
     }
     virtual const CBlock& GenesisBlock() const { return genesis; }
     virtual const std::vector<CAddress>& FixedSeeds() const {
@@ -145,38 +134,28 @@ public:
         // The message start string is designed to be unlikely to occur in normal data.
         // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
         // a large 4-byte int at any alignment.
-        pchMessageStart[0] = 0xfa;
+        pchMessageStart[0] = 0xfe;
         pchMessageStart[1] = 0xf2;
         pchMessageStart[2] = 0xef;
         pchMessageStart[3] = 0xb4;
-
-        vAlertPubKey = ParseHex("031d5def92b2d59943e57aaa8b1adbb110ff215fc4ebdc6fb5c9a797e2b1dea527");
-
-        nDefaultPort = 51737;
-        nRPCPort = 51736;
+        vAlertPubKey = ParseHex("715d8f1537e487ef7d38d155c2066c352772bc0fa4fa123418566747b315f1d4");
+        nDefaultPort = 17389;
+        nRPCPort = 17388;
         nBIP44ID = 0x80000023;
-
-        nLastPOWBlock = 31000;
-        nLastFairLaunchBlock = 120;
-
-        nFirstPosv2Block = 453000;
-        nFirstPosv3Block = 783000;
-
+        nFirstPosv3Block = 1;
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 48);
-
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce   = 261836;
+        genesis.nNonce   = 604954;
         hashGenesisBlock = genesis.GetHash();
+        assert(hashGenesisBlock == uint256("0x00000bc6f02b52898ff523aa3a79250eddcd350d919c5718d4fa523de88dc9b7"));
+        assert(genesis.hashMerkleRoot == uint256("0xcd36f110d7f2ec0421fdc6e82ab94046fc8ed3aec2b336c270955db91b922447"));
 
-        assert(hashGenesisBlock == uint256("0x00000eca234f07edc98aaf3f2a7b7478dc58992a9cd439323d099c6a590ca2bb"));
-        assert(genesis.hashMerkleRoot == uint256("0x26a3ff5d3dc46b091e7b58b6022982e6d27dff1bab3bd1da6beb4790983c87c4"));
-
-        base58Prefixes[PUBKEY_ADDRESS]      = list_of(63).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[PUBKEY_ADDRESS]      = list_of(33).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[SCRIPT_ADDRESS]      = list_of(125).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[SECRET_KEY]          = list_of(191).convert_to_container<std::vector<unsigned char> >();
-        base58Prefixes[STEALTH_ADDRESS]     = list_of(40).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[SECRET_KEY]          = list_of(203).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[STEALTH_ADDRESS]     = list_of(11).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_PUBLIC_KEY]      = list_of(0xEE)(0x80)(0x28)(0x6A).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY]      = list_of(0xEE)(0x80)(0x31)(0xE8).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_KEY_HASH]        = list_of(137).convert_to_container<std::vector<unsigned char> >();         // x
@@ -216,9 +195,6 @@ public:
         nRPCPort = 51996;
         nBIP44ID = 0x80000001;
 
-        nLastPOWBlock = 110;
-        nLastFairLaunchBlock = 10;
-
         nFirstPosv2Block = 110;
         nFirstPosv3Block = 500;
 
@@ -229,7 +205,7 @@ public:
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce = 55887;
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x0000910a87c1385247edc82808ec498a2d738fea5f0d3f8801512d6b84ad6f72"));
+        //assert(hashGenesisBlock == uint256("0x0000910a87c1385247edc82808ec498a2d738fea5f0d3f8801512d6b84ad6f72"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(127).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[SCRIPT_ADDRESS]      = list_of(196).convert_to_container<std::vector<unsigned char> >();

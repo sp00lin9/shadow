@@ -251,6 +251,8 @@ HEADERS += \
     src/rpcprotocol.h \
     src/rpcserver.h \
     src/rpcclient.h \
+	src/sph_types.h \
+	src/sph_keccak.h \
     src/json/json_spirit_writer_template.h \
     src/json/json_spirit_writer.h \
     src/json/json_spirit_value.h \
@@ -342,6 +344,7 @@ SOURCES += \
     src/rpcsmessage.cpp \
     src/rpcextkey.cpp \
     src/rpcmnemonic.cpp \
+	src/keccak.c \
     src/qt/transactiontablemodel.cpp \
     src/qt/coincontroldialog.cpp \
     src/qt/coincontroltreewidget.cpp \

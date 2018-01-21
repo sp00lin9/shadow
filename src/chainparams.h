@@ -64,7 +64,7 @@ public:
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
 
-    const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
+    const bool IsProtocolV2(int nHeight) const { return false; }
     const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
@@ -84,10 +84,6 @@ public:
     int RPCPort() const { return nRPCPort; }
 
     int BIP44ID() const { return nBIP44ID; }
-
-
-    int LastPOWBlock() const { return nLastPOWBlock; }
-    int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
 
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
@@ -113,8 +109,6 @@ protected:
     std::string strDataDir;
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
-    int nLastPOWBlock;
-    int nLastFairLaunchBlock;
 };
 
 /**

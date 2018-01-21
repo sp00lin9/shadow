@@ -1047,7 +1047,7 @@ boost::filesystem::path GetDefaultDataDir()
     
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "ShadowCoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "EduCoin2017";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1059,10 +1059,10 @@ boost::filesystem::path GetDefaultDataDir()
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
-        return pathRet / "ShadowCoin";
+        return pathRet / "EduCoin2017";
     #else
         // Unix
-        return pathRet / ".shadowcoin";
+        return pathRet / ".EduCoin2017";
     #endif
 #endif
 

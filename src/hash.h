@@ -7,14 +7,30 @@
 
 #include "uint256.h"
 #include "serialize.h"
-
+#include "sph_keccak.h"
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
+#include <vector>
+#include <string>
+
+template<typename T1>
+inline uint256 HashKeccak(const T1 pbegin, const T1 pend)
+{
+    sph_keccak256_context ctx_keccak;
+    static unsigned char pblank[1];
+    uint256 hash;
+
+    sph_keccak256_init(&ctx_keccak);
+    sph_keccak256 (&ctx_keccak, (pbegin == pend ? pblank : static_cast<const void*>(&pbegin[0])), (pend - pbegin) * sizeof(pbegin[0]));
+    sph_keccak256_close(&ctx_keccak, static_cast<void*>(&hash));
+
+    return hash;
+}
 
 template<typename T1>
 inline uint256 Hash(const T1 pbegin, const T1 pend)
 {
-    static unsigned char pblank[1];
+	static unsigned char pblank[1];
     uint256 hash1;
     SHA256((pbegin == pend ? pblank : (unsigned char*)&pbegin[0]), (pend - pbegin) * sizeof(pbegin[0]), (unsigned char*)&hash1);
     uint256 hash2;

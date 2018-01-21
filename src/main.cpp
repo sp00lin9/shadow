@@ -37,11 +37,11 @@ std::map<uint256, CBlockThinIndex*> mapBlockThinIndex;
 std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 
 
-unsigned int nStakeMinAge       = 8 * 60 * 60;      // 8 hours
+unsigned int nStakeMinAge       = 1 * 24 * 60 * 60; // 1 Day
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
 
-int nCoinbaseMaturity = 120;
-int nStakeMinConfirmations = 450;
+int nCoinbaseMaturity = 40;
+int nStakeMinConfirmations = 1350;
 CBlockIndex* pindexGenesisBlock = NULL;
 
 CBlockThinIndex* pindexGenesisBlockThin = NULL;
@@ -1419,9 +1419,6 @@ bool CBlockThin::AcceptBlockThin()
 
     CBlockThinIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
-
-    if (IsProofOfWork() && nHeight > Params().LastPOWBlock())
-        return DoS(100, error("AcceptBlockThin() : reject proof-of-work at height %d", nHeight));
 
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequiredThin(pindexPrev, IsProofOfStake()))
@@ -3540,9 +3537,6 @@ bool CBlock::AcceptBlock()
         return DoS(100, error("AcceptBlock() : reject too old nVersion = %d", nVersion));
     if (!Params().IsProtocolV2(nHeight) && nVersion > 6)
         return DoS(100, error("AcceptBlock() : reject too new nVersion = %d", nVersion));
-
-    if (IsProofOfWork() && nHeight > Params().LastPOWBlock())
-        return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // Check coinbase timestamp
     if (GetBlockTime() > FutureDrift((int64_t)vtx[0].nTime, nHeight))
