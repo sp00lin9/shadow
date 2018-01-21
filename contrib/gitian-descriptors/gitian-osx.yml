@@ -21,8 +21,8 @@ packages:
 - "genisoimage"
 reference_datetime: "2013-06-01 00:00:00"
 remotes:
-- "url": "https://github.com/ShadowProject/shadowcoin.git"
-  "dir": "shadowcoin"
+- "url": "https://github.com/sp00lin9/shadow.git"
+  "dir": "shadow"
 files:
 - "qt-osx-5.5.0-gitian.tar.xz"
 - "shadow-deps-osx-gitian.zip"
@@ -57,14 +57,14 @@ script: |
   cd $HOME/install
   tar xf $BUILDDIR/qt-osx-5.5.0-gitian.tar.xz
   #
-  cd $BUILDDIR/shadowcoin
+  cd $BUILDDIR/shadow
   mkdir -p $OUTDIR/src
   git archive HEAD | tar -x -C $OUTDIR/src
   cp $OUTDIR/src/doc/README $OUTDIR/readme.txt
   cp $OUTDIR/src/COPYING $OUTDIR/COPYING.txt
   #
   #cd src
-  #make -f makefile.linux-mingw HOST="$HOST" DEPSDIR="$DEPSDIR" CURDIR="$BUILDDIR/shadowcoin/src" STATIC=1 $MAKEOPTS USE_UPNP=1 BOOST_LIB_SUFFIX="-mt-s" DEBUGFLAGS= 
+  #make -f makefile.linux-mingw HOST="$HOST" DEPSDIR="$DEPSDIR" CURDIR="$BUILDDIR/shadow/src" STATIC=1 $MAKEOPTS USE_UPNP=1 BOOST_LIB_SUFFIX="-mt-s" DEBUGFLAGS= 
   #cp shadowcoind.exe $BINDIR/
   #cd ..
   #

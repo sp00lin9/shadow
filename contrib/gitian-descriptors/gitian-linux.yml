@@ -19,8 +19,8 @@ packages:
 - "bsdmainutils"
 reference_datetime: "2015-05-25 00:00:00"
 remotes:
-- "url": "https://github.com/ShadowProject/shadowcoin.git"
-  "dir": "shadowcoin"
+- "url": "https://github.com/sp00lin9/shadow.git"
+  "dir": "shadow"
 files:
 - "shadow-deps-linux32-gitian.tar.xz"
 - "shadow-deps-linux64-gitian.tar.xz"
@@ -47,7 +47,7 @@ script: |
   tar xf ../build/shadow-deps-linux${GBUILD_BITS}-gitian.tar.xz
   cd ../build
   #
-  cd shadowcoin
+  cd shadow
   mkdir -p $OUTDIR/src
   git archive HEAD | tar -x -C $OUTDIR/src
   cp $OUTDIR/src/doc/README $OUTDIR

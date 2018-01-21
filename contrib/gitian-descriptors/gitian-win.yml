@@ -17,8 +17,8 @@ packages:
 - "bsdmainutils"
 reference_datetime: "2013-06-01 00:00:00"
 remotes:
-- "url": "https://github.com/ShadowProject/shadowcoin.git"
-  "dir": "shadowcoin"
+- "url": "https://github.com/sp00lin9/shadow.git"
+  "dir": "shadow"
 files:
 - "qt-win32-5.5.0-gitian.tar.xz"
 - "qt-win64-5.5.0-gitian.tar.xz"
@@ -72,15 +72,15 @@ script: |
     tar xf $INDIR/shadow-deps-win${BITS}-gitian.tar.xz
     #
     cd $BUILDDIR
-    cp -r ../build/shadowcoin .
-    cd shadowcoin
+    cp -r ../build/shadow .
+    cd shadow
     mkdir -p $OUTDIR/src
     git archive HEAD | tar -x -C $OUTDIR/src
     cp $OUTDIR/src/doc/README_windows.txt $OUTDIR/readme.txt
     cp $OUTDIR/src/COPYING $OUTDIR/COPYING.txt
     #
     cd src
-    make -f makefile.linux-mingw HOST="$HOST" DEPSDIR="$DEPSDIR" CURDIR="$BUILDDIR/shadowcoin/src" STATIC=1 $MAKEOPTS USE_UPNP=1 BOOST_LIB_SUFFIX="-mt-s" DEBUGFLAGS= 
+    make -f makefile.linux-mingw HOST="$HOST" DEPSDIR="$DEPSDIR" CURDIR="$BUILDDIR/shadow/src" STATIC=1 $MAKEOPTS USE_UPNP=1 BOOST_LIB_SUFFIX="-mt-s" DEBUGFLAGS= 
     cp shadowcoind.exe $BINDIR/
     cd ..
     #
@@ -99,4 +99,4 @@ script: |
   mkdir -p $TEMPDIR
   cd $TEMPDIR
   cd $BINDIR
-  #tar -xvf $HOME/build/shadowcoin/$DISTNAME | sort | tar --no-recursion -cT /dev/stdin --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 --mtime="$REFERENCE_DATETIME" | gzip -n > $OUTDIR/src/$DISTNAME
+  #tar -xvf $HOME/build/shadow/$DISTNAME | sort | tar --no-recursion -cT /dev/stdin --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 --mtime="$REFERENCE_DATETIME" | gzip -n > $OUTDIR/src/$DISTNAME
