@@ -55,22 +55,23 @@ public:
         EXT_ACC_HASH,
         EXT_PUBLIC_KEY_BTC,
         EXT_SECRET_KEY_BTC,
-
+        
         MAX_BASE58_TYPES
     };
-
+    
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
 
-    const bool IsProtocolV2(int nHeight) const { return false; }
+    const bool IsProtocolV1(int nHeight) const { return false; }
+	const bool IsProtocolV2(int nHeight) const { return false; }
     const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum& ProofOfStakeLimit(int nHeight) const { return IsProtocolV2(nHeight) ? bnProofOfStakeLimitV2 : bnProofOfStakeLimit; }
-
-
+    
+    
     virtual const CBlock& GenesisBlock() const = 0;
     virtual bool RequireRPCPassword() const { return true; }
     const std::string& DataDir() const { return strDataDir; }
@@ -78,11 +79,11 @@ public:
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
     const std::vector<unsigned char> &Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     virtual const std::vector<CAddress>& FixedSeeds() const = 0;
-
+    
     std::string NetworkIDString() const { return strNetworkID; }
-
+    
     int RPCPort() const { return nRPCPort; }
-
+    
     int BIP44ID() const { return nBIP44ID; }
 
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
@@ -90,7 +91,7 @@ public:
 
 protected:
     CChainParams() {};
-
+    
     uint256 hashGenesisBlock;
     MessageStartChars pchMessageStart;
     // Raw pub key bytes for the broadcast alert signing key.
@@ -100,12 +101,10 @@ protected:
     int nRPCPort;
     int nBIP44ID;
 
-    int nFirstPosv2Block;
-    int nFirstPosv3Block;
     CBigNum bnProofOfWorkLimit;
     CBigNum bnProofOfStakeLimit;
     CBigNum bnProofOfStakeLimitV2;
-
+    int nFirstPosv3Block;
     std::string strDataDir;
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
