@@ -3535,7 +3535,7 @@ bool CBlock::AcceptBlock()
 
     if (Params().IsProtocolV2(nHeight) && nVersion < 7)
         return DoS(100, error("AcceptBlock() : reject too old nVersion = %d", nVersion));
-    if (!Params().IsProtocolV2(nHeight) && nVersion > 6)
+    if (!Params().IsProtocolV2(nHeight) && nVersion > 7)
         return DoS(100, error("AcceptBlock() : reject too new nVersion = %d", nVersion));
 
     // Check coinbase timestamp
