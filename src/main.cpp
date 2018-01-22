@@ -38,6 +38,7 @@ std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 
 
 unsigned int nStakeMinAge       = 1 * 24 * 60 * 60; // 1 Day
+unsigned int nStakeMaxAge       = 7 * 24 * 60 * 60; // 7 Days
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 40;
@@ -1907,7 +1908,7 @@ const CBlockThinIndex* GetLastBlockThinIndex(const CBlockThinIndex* pindex, bool
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake)
 {
     CBigNum bnTargetLimit = fProofOfStake ? Params().ProofOfStakeLimit(pindexLast->nHeight) : Params().ProofOfWorkLimit();
-
+    
 
     if (pindexLast == NULL)
         return bnTargetLimit.GetCompact(); // genesis block
@@ -1918,8 +1919,8 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     const CBlockIndex* pindexPrevPrev = GetLastBlockIndex(pindexPrev->pprev, fProofOfStake);
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
-
-    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight);
+    
+    int64_t nTargetSpacing = 64;
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;

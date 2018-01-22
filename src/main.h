@@ -68,7 +68,7 @@ extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeenOrphan;
 extern CBlockIndex* pindexGenesisBlock;
 extern CBlockThinIndex* pindexGenesisBlockThin;
 extern CBlockThinIndex* pindexRear;
-
+extern unsigned int nStakeMaxAge;
 extern unsigned int nStakeMinAge;
 extern unsigned int nNodeLifespan;
 extern int nCoinbaseMaturity;
