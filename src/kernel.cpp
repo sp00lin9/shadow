@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <boost/assign/list_of.hpp>
-
+#include "hash.h"
 #include "kernel.h"
 #include "txdb.h"
 

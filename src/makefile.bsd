@@ -135,7 +135,8 @@ OBJS= \
     obj/zerocoin/Params.o \
     obj/zerocoin/SerialNumberSignatureOfKnowledge.o \
     obj/zerocoin/SpendMetaData.o \
-    obj/zerocoin/ZeroTest.o
+    obj/zerocoin/ZeroTest.o \
+	obj/keccak.o
 
 all: shadowcoind
 
